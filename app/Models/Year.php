@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Setting extends Model
+class Year extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'logbook_settings';
+    protected $table = 'ukes_years';
     protected $fillable = [
-        'date',
+        'name'
     ];
 }

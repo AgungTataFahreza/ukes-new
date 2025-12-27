@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Menu extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $table = 'logbook_menus';
+    protected $table = 'ukes_menus';
 
     protected $fillable = [
         "menu_id",

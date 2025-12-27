@@ -6,24 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Role extends Model
+class StudyProgram extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $table = 'ukes_roles';
+    protected $table = 'ukes_study_programs';
 
     protected $fillable = [
         'name'
     ];
 
-    public function role_permission()
+    public function applicant()
     {
-        return $this->hasMany(RolePermission::class, 'role_id', 'id');
-    }
-
-    public function users()
-    {
-        return $this->hasMany(User::class, 'role_id');
+        return $this->hasMany(ApplicantMedicalRecord::class, 'study_program_id', 'id');
     }
 }

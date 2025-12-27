@@ -6,21 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Unit extends Model
+class Period extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
-    protected $table = 'logbook_units';
-
+    protected $table = 'ukes_periods';
     protected $fillable = [
         'name',
-        'jurusan',
-        'name'
+        'year_id',
+        'is_active'
     ];
 
-    public function users()
+    public function year()
     {
-        return $this->hasMany(User::class, 'unit_id', 'id');
+        return $this->belongsTo(Year::class, 'year_id', 'id');
     }
 }
