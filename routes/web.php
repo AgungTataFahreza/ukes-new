@@ -92,6 +92,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/period/edit', [PeriodController::class, 'edit']);
         Route::post('/period/update', [PeriodController::class, 'update']);
         Route::post('/period/delete', [PeriodController::class, 'delete']);
+        Route::post('/period/toggle', [PeriodController::class, 'toggle']);
     });
     Route::get('/logout', [AuthController::class, 'logout']);
 
