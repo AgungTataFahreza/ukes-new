@@ -8,8 +8,11 @@ use App\Http\Controllers\admin\ChatController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\MenuController;
+use App\Http\Controllers\admin\PeriodController;
 use App\Http\Controllers\admin\RoleController;
+use App\Http\Controllers\admin\StudyProgramController;
 use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\admin\YearController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TestController;
 
@@ -69,15 +72,26 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/user/update-password', [UserController::class, 'updatePassword']);
         Route::get('/user/get-user', [UserController::class, 'getUsers']);
 
-        // Route::get('/user', [UserController::class, 'index']);
-        // Route::post('/user/show', [UserController::class, 'show']);
-        // Route::post('/user/add', [UserController::class, 'add']);
-        // Route::post('/user/edit', [UserController::class, 'edit']);
-        // Route::post('/user/update', [UserController::class, 'update']);
-        // Route::post('/user/delete', [UserController::class, 'delete']);
-        // });
+        Route::get('/year', [YearController::class, 'index']);
+        Route::post('/year/show', [YearController::class, 'show']);
+        Route::post('/year/add', [YearController::class, 'add']);
+        Route::post('/year/edit', [YearController::class, 'edit']);
+        Route::post('/year/update', [YearController::class, 'update']);
+        Route::post('/year/delete', [YearController::class, 'delete']);
 
+        Route::get('/study-program', [StudyProgramController::class, 'index']);
+        Route::post('/study-program/show', [StudyProgramController::class, 'show']);
+        Route::post('/study-program/add', [StudyProgramController::class, 'add']);
+        Route::post('/study-program/edit', [StudyProgramController::class, 'edit']);
+        Route::post('/study-program/update', [StudyProgramController::class, 'update']);
+        Route::post('/study-program/delete', [StudyProgramController::class, 'delete']);
 
+        Route::get('/period', [PeriodController::class, 'index']);
+        Route::post('/period/show', [PeriodController::class, 'show']);
+        Route::post('/period/add', [PeriodController::class, 'add']);
+        Route::post('/period/edit', [PeriodController::class, 'edit']);
+        Route::post('/period/update', [PeriodController::class, 'update']);
+        Route::post('/period/delete', [PeriodController::class, 'delete']);
     });
     Route::get('/logout', [AuthController::class, 'logout']);
 

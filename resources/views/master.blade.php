@@ -38,6 +38,14 @@
     <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
     <link href="{{ asset('assets/css/custom.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
+    <!--datatable responsive css-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+
+    @stack('after-style')
 </head>
 
 <body>
@@ -75,62 +83,14 @@
                                 <span></span>
                             </span>
                         </button>
-
-                        <!-- App Search-->
-                        <form class="app-search d-none d-md-block">
-                            <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="Search..." autocomplete="off"
-                                    id="search-options" value="">
-                                <span class="mdi mdi-magnify search-widget-icon"></span>
-                                <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none"
-                                    id="search-close-options"></span>
-                            </div>
-
-                        </form>
                     </div>
 
                     <div class="d-flex align-items-center">
-
-                        <div class="dropdown d-md-none topbar-head-dropdown header-item">
-                            <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
-                                id="page-header-search-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                <i class="bx bx-search fs-22"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
-                                aria-labelledby="page-header-search-dropdown">
-                                <form class="p-3">
-                                    <div class="form-group m-0">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search ..."
-                                                aria-label="Recipient's username">
-                                            <button class="btn btn-primary" type="submit"><i
-                                                    class="mdi mdi-magnify"></i></button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="ms-1 header-item d-none d-sm-flex">
-                            <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
-                                data-toggle="fullscreen">
-                                <i class='bx bx-fullscreen fs-22'></i>
-                            </button>
-                        </div>
-
-                        <div class="ms-1 header-item d-none d-sm-flex">
-                            <button type="button"
-                                class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode">
-                                <i class='bx bx-moon fs-22'></i>
-                            </button>
-                        </div>
-
                         <div class="dropdown ms-sm-3 header-item topbar-user">
                             <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">
                                 <span class="d-flex align-items-center">
-                                    <img class="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg"
+                                    <img class="rounded-circle header-profile-user" src="{{ asset('assets/images/users/avatar-1.jpg') }}"
                                         alt="Header Avatar">
                                     <span class="text-start ms-xl-2">
                                         <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">Username Disini nanti</span>
@@ -176,10 +136,12 @@
                     <i class="ri-record-circle-line"></i>
                 </button>
             </div>
-
+            @php
+            $menu = trim($__env->yieldContent('menu'));
+            $menuParent = trim($__env->yieldContent('menu_parent'));
+            @endphp
             <div id="scrollbar">
                 <div class="container-fluid">
-
                     <div id="two-column-menu">
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
@@ -187,7 +149,7 @@
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="?app=dashboard-main" role="button"
                                 aria-expanded="false" aria-controls="sidebarDashboards">
-                                <i class="ri-dashboard-2-line"></i> <span>Dashboard</span>
+                                <i class="ri-dashboard-2-line"></i> <span>DASHBOARD</span>
                             </a>
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#datapeserta" data-bs-toggle="collapse" role="button"
@@ -197,25 +159,16 @@
                             <div class="collapse menu-dropdown" id="datapeserta">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="?app=daftar_registrasi" class="nav-link">Registrasi Peserta</a>
+                                        <a href="{{ url('admin/registration') }}" class="nav-link">Registrasi Peserta</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="?app=daftar_registrasi_all" class="nav-link">Daftar Registrasi All</a>
+                                        <a href="{{ url('admin/payment') }}" class="nav-link">Update Pembayaran</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="?app=daftarbayar_pendaftar" class="nav-link">Update Pembayaran</a>
+                                        <a href="{{ url('admin/medical-form') }}" class="nav-link">Formulir Uji Kesehatan</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="?app=daftar_pemeriksaan" class="nav-link">Formulir Uji Kesehatan</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="?app=data_pemeriksaan" class="nav-link">Data Hasil Pemeriksaan</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="?app=daftar_pemeriksaan_all" class="nav-link">Formulir Uji Kesehatan All</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="?app=daftar_registrasi_done" class="nav-link">Sudah Registrasi</a>
+                                        <a href="{{ url('admin/medical-result') }}" class="nav-link">Data Hasil Pemeriksaan</a>
                                     </li>
                                 </ul>
                             </div>
@@ -223,44 +176,63 @@
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#datadokter" data-bs-toggle="collapse" role="button"
                                 aria-expanded="false" aria-controls="datadokter">
-                                <i class="ri-apps-2-line"></i> <span>DATA DOKTER</span>
+                                <i class="ri-apps-2-line"></i> <span>PENGGUNA</span>
                             </a>
                             <div class="collapse menu-dropdown" id="datadokter">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="?app=daftar_dokter" class="nav-link">Daftar Dokter</a>
+                                        <a href="{{ url('admin/user') }}" class="nav-link">User</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ url('admin/role') }}" class="nav-link">Role</a>
                                     </li>
                                 </ul>
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#dataparamedis" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="dataparamedis">
-                                <i class="ri-apps-2-line"></i> <span>DATA PARAMEDIS</span>
+                            <a class="nav-link menu-link {{ $menuParent === 'datapelengkap' ? '' : 'collapsed' }}"
+                                href="#datapelengkap"
+                                data-bs-toggle="collapse"
+                                role="button"
+                                aria-expanded="{{ $menuParent === 'datapelengkap' ? 'true' : 'false' }}"
+                                aria-controls="datapelengkap">
+                                <i class="ri-apps-2-line"></i>
+                                <span>DATA PELENGKAP</span>
                             </a>
-                            <div class="collapse menu-dropdown" id="dataparamedis">
+
+                            <div class="collapse menu-dropdown {{ $menuParent === 'datapelengkap' ? 'show' : '' }}"
+                                id="datapelengkap">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="?app=daftar_paramedis" class="nav-link">Daftar Paramedis</a>
+                                        <a href="{{ url('admin/period') }}"
+                                            class="nav-link {{ $menu === 'period' ? 'active' : '' }}">
+                                            Periode
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="{{ url('admin/year') }}"
+                                            class="nav-link {{ $menu === 'year' ? 'active' : '' }}">
+                                            Tahun
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="{{ url('admin/menu') }}"
+                                            class="nav-link {{ $menu === 'menu' ? 'active' : '' }}">
+                                            Menu
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="{{ url('admin/study-program') }}"
+                                            class="nav-link {{ $menu === 'study-program' ? 'active' : '' }}">
+                                            Program Studi
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="#dataadmin" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="dataadmin">
-                                <i class="ri-apps-2-line"></i> <span>DATA ADMIN</span>
-                            </a>
-                            <div class="collapse menu-dropdown" id="dataadmin">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="?app=daftar_admin" class="nav-link">Daftar Admin</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-
                     </ul>
                 </div>
                 <!-- Sidebar -->
@@ -328,34 +300,43 @@
         <!--Swiper slider js-->
         <script src="{{ asset('assets/libs/swiper/swiper-bundle.min.js') }}"></script>
 
-        <!-- Dashboard init -->
-        <script src="{{ asset('assets/js/pages/dashboard-ecommerce.init.js') }}"></script>
-
-        <!-- init js -->
-        <script src="{{ asset('assets/js/pages/form-pickers.init.js') }}"></script>
-
         <!-- Sweet Alerts js -->
         <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
         <!-- prismjs plugin -->
         <script src="{{ asset('assets/libs/prismjs/prism.js') }}"></script>
-
-        <!-- Modal Js -->
-        <script src="{{ asset('assets/js/pages/modal.init.js') }}"></script>
-
-        <!-- notifications init -->
-        <script src="{{ asset('assets/js/pages/notifications.init.js') }}"></script>
-
         <!--select2 cdn-->
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-        <script src="{{ asset('assets/js/pages/select2.init.js') }}"></script>
-
         <!-- form wizard init -->
-        <script src="{{ asset('assets/js/pages/form-wizard.init.js') }}"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
+        <!--datatable js-->
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <!-- App js -->
         <script src="{{ asset('assets/js/app.js') }}"></script>
+
+        <script>
+            function showAlert(title, message, type = 'info') {
+                Swal.fire({
+                    icon: type,
+                    title: title,
+                    text: message,
+                    confirmButtonClass: 'btn btn-primary w-xs mt-2',
+                    buttonsStyling: false,
+                    showCloseButton: true
+                });
+            }
+        </script>
+        @stack('after-script')
 </body>
 
 </html>

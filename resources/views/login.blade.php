@@ -65,15 +65,15 @@
                                     <p class="text-muted">Sign in to continue to UJI KESEHATAN Application.</p>
                                 </div>
                                 <div class="p-2 mt-4">
-                                    <form action="" method="post">
-
+                                    <form action="{{ url('/login') }}" method="post">
+                                        @csrf
                                         <label for="username" class="form-label">Username</label>
                                         <input type="text" class="form-control" value="" name="username" id="username" placeholder="Enter username">
                                         <span class="text-danger"></span>
 
                                         <label class="form-label" for="password-input">Password</label>
                                         <div class="position-relative auth-pass-inputgroup mb-3">
-                                            <input type="password" class="form-control pe-5 password-input" value="Password1" name="password" placeholder="Enter password" id="password-input">
+                                            <input type="password" class="form-control pe-5 password-input" value="" name="password" placeholder="Enter password" id="password">
                                             <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i class="ri-eye-fill align-middle"></i></button>
                                         </div>
                                         <div class="mt-4">

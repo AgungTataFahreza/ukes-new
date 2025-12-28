@@ -14,4 +14,9 @@ class Year extends Model
     protected $fillable = [
         'name'
     ];
+
+    public function periods()
+    {
+        return $this->hasMany(Period::class, 'year_id', 'id');
+    }
 }
