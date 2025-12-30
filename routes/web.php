@@ -39,28 +39,25 @@ Route::get('/', function () {
 Route::get('login', [AuthController::class, 'getLogin'])->name('login');
 Route::post('login', [AuthController::class, 'postLogin']);
 
-Route::get('/dashboard', [DashboardController::class, 'index']);
-
-
 Route::group(['middleware' => ['auth']], function () {
     Route::prefix('/admin')->name('admin.')->namespace('Admin')->group(function () {
         Route::get('/', [DashboardController::class, 'index']);
         Route::get('/dashboard', [DashboardController::class, 'index']);
 
-        Route::get('/menu', [MenuController::class, 'index'])->middleware('access:Menu,view');
-        Route::post('/menu/show', [MenuController::class, 'show'])->middleware('access:Menu,view');
-        Route::post('/menu/add', [MenuController::class, 'add'])->middleware('access:Menu,add');
-        Route::post('/menu/edit', [MenuController::class, 'edit'])->middleware('access:Menu,edit');
-        Route::post('/menu/update', [MenuController::class, 'update'])->middleware('access:Menu,edit');
-        Route::post('/menu/delete', [MenuController::class, 'delete'])->middleware('access:Menu,delete');
+        // Route::get('/menu', [MenuController::class, 'index'])->middleware('access:Menu,view');
+        // Route::post('/menu/show', [MenuController::class, 'show'])->middleware('access:Menu,view');
+        // Route::post('/menu/add', [MenuController::class, 'add'])->middleware('access:Menu,add');
+        // Route::post('/menu/edit', [MenuController::class, 'edit'])->middleware('access:Menu,edit');
+        // Route::post('/menu/update', [MenuController::class, 'update'])->middleware('access:Menu,edit');
+        // Route::post('/menu/delete', [MenuController::class, 'delete'])->middleware('access:Menu,delete');
 
-        Route::get('/role', [RoleController::class, 'index'])->middleware('access:Role,view');
-        Route::post('/role/show', [RoleController::class, 'show'])->middleware('access:Role,view');
-        Route::get('/role/add', [RoleController::class, 'add'])->middleware('access:Role,add');
-        Route::post('/role/create', [RoleController::class, 'create'])->middleware('access:Role,add');
-        Route::get('/role/edit/{role_id}', [RoleController::class, 'edit'])->middleware('access:Role,edit');
-        Route::post('/role/update', [RoleController::class, 'update'])->middleware('access:Role,edit');
-        Route::post('/role/delete', [RoleController::class, 'delete'])->middleware('access:Role,delete');
+        // Route::get('/role', [RoleController::class, 'index'])->middleware('access:Role,view');
+        // Route::post('/role/show', [RoleController::class, 'show'])->middleware('access:Role,view');
+        // Route::get('/role/add', [RoleController::class, 'add'])->middleware('access:Role,add');
+        // Route::post('/role/create', [RoleController::class, 'create'])->middleware('access:Role,add');
+        // Route::get('/role/edit/{role_id}', [RoleController::class, 'edit'])->middleware('access:Role,edit');
+        // Route::post('/role/update', [RoleController::class, 'update'])->middleware('access:Role,edit');
+        // Route::post('/role/delete', [RoleController::class, 'delete'])->middleware('access:Role,delete');
 
         Route::get('/user', [UserController::class, 'index'])->middleware('access:User,view');
         Route::post('/user/show', [UserController::class, 'show'])->middleware('access:User,view');
@@ -93,6 +90,21 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/period/update', [PeriodController::class, 'update']);
         Route::post('/period/delete', [PeriodController::class, 'delete']);
         Route::post('/period/toggle', [PeriodController::class, 'toggle']);
+
+        Route::get('/menu', [MenuController::class, 'index']);
+        Route::post('/menu/show', [MenuController::class, 'show']);
+        Route::post('/menu/add', [MenuController::class, 'add']);
+        Route::post('/menu/edit', [MenuController::class, 'edit']);
+        Route::post('/menu/update', [MenuController::class, 'update']);
+        Route::post('/menu/delete', [MenuController::class, 'delete']);
+
+        Route::get('/role', [RoleController::class, 'index']);
+        Route::post('/role/show', [RoleController::class, 'show']);
+        Route::get('/role/add', [RoleController::class, 'add']);
+        Route::post('/role/create', [RoleController::class, 'create']);
+        Route::get('/role/edit/{role_id}', [RoleController::class, 'edit']);
+        Route::post('/role/update', [RoleController::class, 'update']);
+        Route::post('/role/delete', [RoleController::class, 'delete']);
     });
     Route::get('/logout', [AuthController::class, 'logout']);
 

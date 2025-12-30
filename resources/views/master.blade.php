@@ -154,7 +154,7 @@
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#datapeserta" data-bs-toggle="collapse" role="button"
                                 aria-expanded="false" aria-controls="datapeserta">
-                                <i class="ri-apps-2-line"></i> <span>UJI KESEHATAN</span>
+                                <i class="ri-hospital-line"></i> <span>UJI KESEHATAN</span>
                             </a>
                             <div class="collapse menu-dropdown" id="datapeserta">
                                 <ul class="nav nav-sm flex-column">
@@ -170,21 +170,29 @@
                                     <li class="nav-item">
                                         <a href="{{ url('admin/medical-result') }}" class="nav-link">Data Hasil Pemeriksaan</a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="{{ url('admin/applicant') }}" class="nav-link">Daftar Peserta</a>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#datadokter" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="datadokter">
-                                <i class="ri-apps-2-line"></i> <span>PENGGUNA</span>
+                            <a class="nav-link menu-link {{ $menuParent === 'datapengguna' ? '' : 'collapsed' }}"
+                                href="#datapengguna"
+                                data-bs-toggle="collapse"
+                                role="button"
+                                aria-expanded="{{ $menuParent === 'datapengguna' ? 'true' : 'false' }}"
+                                aria-controls="datapengguna">
+                                <i class="ri-user-2-line"></i>
+                                <span>PENGGUNA</span>
                             </a>
-                            <div class="collapse menu-dropdown" id="datadokter">
+                            <div class="collapse menu-dropdown {{ $menuParent === 'datapengguna' ? 'show' : '' }}" id="datapengguna">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{ url('admin/user') }}" class="nav-link">User</a>
+                                        <a href="{{ url('admin/user') }}" class="nav-link {{ $menu === 'user' ? 'active' : '' }}">User</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ url('admin/role') }}" class="nav-link">Role</a>
+                                        <a href="{{ url('admin/role') }}" class="nav-link {{ $menu === 'role' ? 'active' : '' }}">Role</a>
                                     </li>
                                 </ul>
                             </div>

@@ -8,25 +8,30 @@ use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 use App\Models\Menu;
 use App\Models\RolePermission;
-use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
 
 class RoleController extends Controller
 {
     private $key;
+    private $permissions;
 
     public function __construct()
     {
         $this->key = 'Role';
+        $this->middleware(function ($request, $next) {
+            $this->permissions = store_permissions();
+            return $next($request);
+        });
     }
 
     public function index()
     {
-        session()->flash('menu', $this->key);
-        session()->flash('title', $this->key);
-        session()->flash('key', $this->key);
-        return view('admin.role');
+        session()->put('menu', 'role');
+        session()->put('title', 'Role');
+        session()->put('key', $this->key);
+        $data['permissions'] = $this->permissions;
+        return view('admin.role', $data);
     }
 
     public function show(Request $request)
@@ -38,17 +43,17 @@ class RoleController extends Controller
                 ->addColumn('action', function ($result) {
                     $button = ' <div class="d-flex">';
 
-                    if (can($this->key, 'edit')) {
-                        $button .= '<div class="edit">
-                                                <a href="' . url('admin/role/edit/' . $result->id) . '" class="btn btn-primary shadow btn-sm sharp mr-1"><i class="fa fa-pencil"></i> Edit</a>
+                    // if (can($this->key, 'edit')) {
+                    $button .= '<div class="edit">
+                                                <a href="' . url('admin/role/edit/' . $result->id) . '" style="margin-right:5px;" class="btn btn-warning btn-sm btn-label waves-effect waves-light"><i class="ri-pencil-line label-icon align-middle fs-16 me-2"></i> Edit</a>
                                             </div>';
-                    }
+                    // }
 
-                    if (can($this->key, 'delete')) {
-                        $button .= '<div class="remove">
-                                                <a class="btn btn-success shadow btn-sm sharp mr-1" onclick="deletee(' . "'" . $result->id . "'" . ')"><i class="fa fa-trash"></i> Hapus</a>
+                    // if (can($this->key, 'delete')) {
+                    $button .= '<div class="remove">
+                                                <button class="btn btn-danger btn-sm btn-label waves-effect waves-light" onclick="deletee(' . "'" . $result->id . "'" . ')"><i class="ri-delete-bin-line label-icon align-middle fs-16 me-2"></i> Hapus</button>
                                             </div>';
-                    }
+                    // }
 
                     $button .= '</div>';
 
@@ -69,75 +74,100 @@ class RoleController extends Controller
 
     public function add()
     {
-        session()->flash('menu', 'Pengaturan');
+        session()->flash('menu', 'role');
         session()->flash('sub_menu', 'Role');
         session()->flash('title', 'Role');
-        $data['units'] = Unit::orderBy('name')->get();
         $data['menus'] = Menu::with('children')->whereNull('menu_id')->get();
         return view('admin.role-add', $data);
     }
 
     public function create(Request $request)
     {
+        // =========================
+        // 1. VALIDASI INPUT
+        // =========================
+        $request->validate([
+            'name' => 'required|string|max:255|unique:ukes_roles,name'
+        ], [
+            'name.required' => 'Nama role wajib diisi',
+            'name.unique'   => 'Nama role sudah digunakan',
+        ]);
+
         try {
             $id = null;
-            DB::transaction(function () use ($request, &$id) {
-                $name = $request->input("name");
-                $status_data = 0;
-                $status_data = Role::create([
-                    "name" => $name,
-                ]);
-                $id = $status_data->id;
 
-                $menu = Menu::orderBy('name', 'ASC')->get();
-                foreach ($menu as $item) {
+            // =========================
+            // 2. TRANSACTION DATABASE
+            // =========================
+            DB::transaction(function () use ($request, &$id) {
+
+                // Simpan role
+                $role = Role::create([
+                    'name' => $request->input('name')
+                ]);
+
+                $id = $role->id;
+
+                // Ambil seluruh menu
+                $menus = Menu::orderBy('name', 'ASC')->get();
+
+                foreach ($menus as $menu) {
+
                     $data = [
-                        "role_id" => $status_data->id,
-                        "menu_id" => $item->id,
-                        "view_access" => 0,
-                        "add_access" => 0,
-                        "edit_access" => 0,
-                        "delete_access" => 0,
-                        "upload_access" => 0,
+                        'role_id'       => $role->id,
+                        'menu_id'       => $menu->id,
+                        'view_access'   => 0,
+                        'add_access'    => 0,
+                        'edit_access'   => 0,
+                        'delete_access' => 0,
+                        'upload_access' => 0,
                     ];
 
-                    if ($item->has_view) {
-                        if ($request->input("cbView" . $item->id)) {
-                            $data["view_access"] = 1;
-                        }
+                    // View
+                    if ($menu->has_view && $request->has("cbView{$menu->id}")) {
+                        $data['view_access'] = 1;
                     }
 
-                    if ($item->has_add) {
-                        if ($request->input("cbAdd" . $item->id)) {
-                            $data["add_access"] = 1;
-                        }
+                    // Add
+                    if ($menu->has_add && $request->has("cbAdd{$menu->id}")) {
+                        $data['add_access'] = 1;
                     }
 
-                    if ($item->has_edit) {
-                        if ($request->input("cbEdit" . $item->id)) {
-                            $data["edit_access"] = 1;
-                        }
+                    // Edit
+                    if ($menu->has_edit && $request->has("cbEdit{$menu->id}")) {
+                        $data['edit_access'] = 1;
                     }
 
-                    if ($item->has_delete) {
-                        if ($request->input("cbDelete" . $item->id)) {
-                            $data["delete_access"] = 1;
-                        }
+                    // Delete
+                    if ($menu->has_delete && $request->has("cbDelete{$menu->id}")) {
+                        $data['delete_access'] = 1;
                     }
-                    if ($item->has_upload) {
-                        if ($request->input("cbUpload" . $item->id)) {
-                            $data["upload_access"] = 1;
-                        }
+
+                    // Upload
+                    if ($menu->has_upload && $request->has("cbUpload{$menu->id}")) {
+                        $data['upload_access'] = 1;
                     }
 
                     RolePermission::create($data);
                 }
             });
-            return redirect('admin/role/edit/' . $id)->with('success', 'berhasil menambah role');
+
+            // =========================
+            // 3. REDIRECT BERHASIL
+            // =========================
+            return redirect('admin/role/edit/' . $id)
+                ->with('success', 'Berhasil menambah role');
         } catch (\Exception $e) {
-            return redirect()->back()->with('failed', $e->getMessage());
+
+            // =========================
+            // 4. ERROR HANDLING
+            // =========================
+            return redirect()->back()
+                ->withInput()
+                ->with('failed', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
     public function edit(Request $request)
     {
@@ -237,18 +267,22 @@ class RoleController extends Controller
     public function delete(Request $request)
     {
         if (request()->ajax()) {
-            $admin = User::where(['role_id' => $request->id])->get();
-            if (count($admin) > 0) {
-                $message = 'Tidak dapat menghapus data, ada user yang menggunakan role tersebut';
-                $status = FALSE;
-            } else {
-                $data = Role::find($request->id);
-                $data->delete();
-                $message = '';
-                $status = TRUE;
+            try {
+                $admin = User::where(['role_id' => $request->id])->get();
+                if (count($admin) > 0) {
+                    $message = 'Tidak dapat menghapus data, ada user yang menggunakan role tersebut';
+                    $status = FALSE;
+                } else {
+                    RolePermission::where(['role_id' => $request->id])->delete();
+                    $data = Role::find($request->id);
+                    $data->delete();
+                    $message = '';
+                    $status = TRUE;
+                }
+                return response()->json(['status' => $status, 'message' => $message]);
+            } catch (\Exception $e) {
+                return response()->json(['status' => False, 'message' => $e->getMessage()]);
             }
-
-            return response()->json(['status' => $status, 'message' => $message]);
         }
     }
 }

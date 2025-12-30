@@ -147,7 +147,6 @@
     function add() {
         save_method = 'add';
         $('.text-error').empty(); // clear error string
-        $('#user_id').val('').trigger('change');
         $('#form')[0].reset(); // reset form on modals
         $('#btnSave').html(save_text);
         $('#modal-title').text('Tambah Data Baru'); // Set Title to Bootstrap modal title

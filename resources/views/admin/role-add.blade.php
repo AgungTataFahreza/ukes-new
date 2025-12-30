@@ -1,29 +1,20 @@
 @extends('master')
 
-@push('after-style')
-<style>
-    .select2-selection--multiple {
-        height: 55px !important;
-        border-radius: 5px !important;
-        border-color: #B1B1B1 !important;
-    }
-</style>
-@endpush
+@section('title', 'Role')
+@section('menu', 'role')
+@section('menu_parent', 'datapengguna')
 
 @section('content')
-<div class="page-titles">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="javascript:void(0)">Akun</a></li>
-        <li class="breadcrumb-item"><a href="javascript:void(0)">Role</a></li>
-        <li class="breadcrumb-item active"><a href="javascript:void(0)">Tambah</a></li>
-    </ol>
-</div>
-<!-- row -->
 
 <div class="row">
-    <div class="col-lg-12">
+    <div class="col-xl-12">
         <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Tambah Role</h4>
+            </div><!-- end card header -->
+
             <form action="{{ url('admin/role/create') }}" method="POST">
+                {{ csrf_field() }}
                 <div class="card-body">
                     <?php if (session()->has('failed')) { ?>
                         <div class="alert alert-warning solid alert-dismissible fade show">
@@ -33,16 +24,18 @@
                                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
                             </svg>
                             <strong>Warning!</strong> <?php echo session()->get('failed'); ?>.
-                            <button type="button" class="close h-100" data-dismiss="alert" aria-label="Close"><span><i class="mdi mdi-close"></i></span>
+                            <button type="button" class="close h-100 btn" data-dismiss="alert" aria-label="Close"><span><i class="mdi mdi-close"></i></span>
                             </button>
                         </div>
                     <?php } ?>
-                    {{ csrf_field() }}
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
                                 <label>Nama Role</label>
-                                <input type="text" class="form-control" name="name" id="name" required>
+                                <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" required>
+                                @error('name')
+                                <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -87,22 +80,34 @@
                                                                 <td>{{ $sub_menu->name }}</td>
                                                                 <td>
                                                                     <?php if ($sub_menu->has_view) { ?>
-                                                                        <input type="checkbox" checked name="cbView{{ $sub_menu->id }}" onchange="select_c(<?php echo $sub_menu->id ?>);">
+                                                                        <input type="checkbox"
+                                                                            name="cbView{{ $sub_menu->id }}"
+                                                                            {{ old("cbView{$sub_menu->id}", true) ? 'checked' : '' }}
+                                                                            onchange="select_c(<?php echo $sub_menu->id ?>);">
                                                                     <?php } ?>
                                                                 </td>
+
                                                                 <td>
                                                                     <?php if ($sub_menu->has_add) { ?>
-                                                                        <input type="checkbox" checked name="cbAdd{{ $sub_menu->id }}">
+                                                                        <input type="checkbox"
+                                                                            name="cbAdd{{ $sub_menu->id }}"
+                                                                            {{ old("cbAdd{$sub_menu->id}", true) ? 'checked' : '' }}>
                                                                     <?php } ?>
                                                                 </td>
+
                                                                 <td>
                                                                     <?php if ($sub_menu->has_edit) { ?>
-                                                                        <input type="checkbox" checked name="cbEdit{{ $sub_menu->id }}">
+                                                                        <input type="checkbox"
+                                                                            name="cbEdit{{ $sub_menu->id }}"
+                                                                            {{ old("cbEdit{$sub_menu->id}", true) ? 'checked' : '' }}>
                                                                     <?php } ?>
                                                                 </td>
+
                                                                 <td>
                                                                     <?php if ($sub_menu->has_delete) { ?>
-                                                                        <input type="checkbox" checked name="cbDelete{{ $sub_menu->id }}">
+                                                                        <input type="checkbox"
+                                                                            name="cbDelete{{ $sub_menu->id }}"
+                                                                            {{ old("cbDelete{$sub_menu->id}", true) ? 'checked' : '' }}>
                                                                     <?php } ?>
                                                                 </td>
                                                             </tr>
@@ -116,22 +121,34 @@
                                                                 <td>{{ $sub_menu->name }}</td>
                                                                 <td>
                                                                     <?php if ($sub_menu->has_view) { ?>
-                                                                        <input type="checkbox" checked name="cbView{{ $sub_menu->id }}" onchange="select_c(<?php echo $sub_menu->id ?>);">
+                                                                        <input type="checkbox"
+                                                                            name="cbView{{ $sub_menu->id }}"
+                                                                            {{ old("cbView{$sub_menu->id}", true) ? 'checked' : '' }}
+                                                                            onchange="select_c(<?php echo $sub_menu->id ?>);">
                                                                     <?php } ?>
                                                                 </td>
+
                                                                 <td>
                                                                     <?php if ($sub_menu->has_add) { ?>
-                                                                        <input type="checkbox" checked name="cbAdd{{ $sub_menu->id }}">
+                                                                        <input type="checkbox"
+                                                                            name="cbAdd{{ $sub_menu->id }}"
+                                                                            {{ old("cbAdd{$sub_menu->id}", true) ? 'checked' : '' }}>
                                                                     <?php } ?>
                                                                 </td>
+
                                                                 <td>
                                                                     <?php if ($sub_menu->has_edit) { ?>
-                                                                        <input type="checkbox" checked name="cbEdit{{ $sub_menu->id }}">
+                                                                        <input type="checkbox"
+                                                                            name="cbEdit{{ $sub_menu->id }}"
+                                                                            {{ old("cbEdit{$sub_menu->id}", true) ? 'checked' : '' }}>
                                                                     <?php } ?>
                                                                 </td>
+
                                                                 <td>
                                                                     <?php if ($sub_menu->has_delete) { ?>
-                                                                        <input type="checkbox" checked name="cbDelete{{ $sub_menu->id }}">
+                                                                        <input type="checkbox"
+                                                                            name="cbDelete{{ $sub_menu->id }}"
+                                                                            {{ old("cbDelete{$sub_menu->id}", true) ? 'checked' : '' }}>
                                                                     <?php } ?>
                                                                 </td>
                                                             </tr>
@@ -146,22 +163,34 @@
                                                         <td></td>
                                                         <td>
                                                             <?php if ($menu->has_view) { ?>
-                                                                <input type="checkbox" checked name="cbView{{ $menu->id }}" onchange="select_c(<?php echo $menu->id ?>);">
+                                                                <input type="checkbox"
+                                                                    name="cbView{{ $menu->id }}"
+                                                                    {{ old("cbView{$menu->id}", true) ? 'checked' : '' }}
+                                                                    onchange="select_c(<?php echo $menu->id ?>);">
                                                             <?php } ?>
                                                         </td>
+
                                                         <td>
                                                             <?php if ($menu->has_add) { ?>
-                                                                <input type="checkbox" checked name="cbAdd{{ $menu->id }}">
+                                                                <input type="checkbox"
+                                                                    name="cbAdd{{ $menu->id }}"
+                                                                    {{ old("cbAdd{$menu->id}", true) ? 'checked' : '' }}>
                                                             <?php } ?>
                                                         </td>
+
                                                         <td>
                                                             <?php if ($menu->has_edit) { ?>
-                                                                <input type="checkbox" checked name="cbEdit{{ $menu->id }}">
+                                                                <input type="checkbox"
+                                                                    name="cbEdit{{ $menu->id }}"
+                                                                    {{ old("cbEdit{$menu->id}", true) ? 'checked' : '' }}>
                                                             <?php } ?>
                                                         </td>
+
                                                         <td>
                                                             <?php if ($menu->has_delete) { ?>
-                                                                <input type="checkbox" checked name="cbDelete{{ $menu->id }}">
+                                                                <input type="checkbox"
+                                                                    name="cbDelete{{ $menu->id }}"
+                                                                    {{ old("cbDelete{$menu->id}", true) ? 'checked' : '' }}>
                                                             <?php } ?>
                                                         </td>
                                                     </tr>
@@ -188,18 +217,14 @@
                     </div>
                 </div>
             </form>
-        </div>
-    </div><!--end col-->
-</div><!--end row-->
+        </div><!-- end card -->
+    </div><!-- end col -->
+</div><!-- end row -->
 
 @endsection
 
 @push('after-script')
 <script>
-    $(document).ready(function() {
-        $('#unit_id').select2();
-    });
-
     function select_c(id) {
         var checked = $('input:checkbox[name=cbView' + id + ']:checked').val();
         if (!checked) {

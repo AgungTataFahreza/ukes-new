@@ -10,18 +10,24 @@ use Illuminate\Support\Facades\Validator;
 class MenuController extends Controller
 {
     private $key;
+    private $permissions;
 
     public function __construct()
     {
         $this->key = 'Menu';
+        $this->middleware(function ($request, $next) {
+            $this->permissions = store_permissions();
+            return $next($request);
+        });
     }
 
     public function index()
     {
-        session()->flash('menu', 'alumni');
-        session()->flash('title', $this->key);
-        session()->flash('key', $this->key);
+        session()->put('menu', 'menu');
+        session()->put('title', 'Menu');
+        session()->put('key', $this->key);
         $data['menus'] = Menu::whereNull('menu_id')->get();
+        $data['permissions'] = $this->permissions;
         return view('admin.menu', $data);
     }
 
@@ -80,45 +86,45 @@ class MenuController extends Controller
             return datatables()->of($data)
                 ->addColumn('action', function ($data) {
                     $button = ' <div class="d-flex">';
-                    if (can($this->key, 'edit')) {
-                        $button .= '<div class="edit">
-                                                <button class="btn btn-primary shadow btn-sm sharp mr-1" onclick="edit(this,' . "'" . $data['id'] . "'"  . ')"><i class="fa fa-pencil"></i> Edit</button>
+                    // if (can($this->key, 'edit')) {
+                    $button .= '<div class="edit">
+                                            <button type="button" onclick="edit(this,' . "'" . $data['id'] . "'" . ')" style="margin-right:5px;" class="btn btn-warning btn-sm btn-label waves-effect waves-light"><i class="ri-pencil-line label-icon align-middle fs-16 me-2"></i> Edit</button>
                                             </div>';
-                    }
-                    if (can($this->key, 'delete')) {
-                        $button .= '<div class="remove">
-                                                <button class="btn btn-success shadow btn-sm sharp mr-1" onclick="deletee(' . "'" . $data['id'] . "'" . ')"><i class="fa fa-trash"></i> Hapus</button>
+                    // }
+                    // if (can($this->key, 'delete')) {
+                    $button .= '<div class="remove">
+                                                <button type="button" onclick="deletee(' . "'" . $data['id'] . "'" . ')" class="btn btn-danger btn-sm btn-label waves-effect waves-light"><i class="ri-delete-bin-line label-icon align-middle fs-16 me-2"></i> Delete</button>
                                             </div>';
-                    }
+                    // }
                     $button .= '</div>';
                     return $button;
                 })
                 ->editColumn('view', function ($data) {
                     if ($data['has_view'] == 1) {
-                        return '<i class="fa fa-check" style="color:green;"></i>';
+                        return '<i class="ri ri-check-line" style="color:green;"></i>';
                     } else {
-                        return '<i class="fa fa-close" style="color:red;"></i>';
+                        return '<i class="ri ri-close-line" style="color:red;"></i>';
                     }
                 })
                 ->editColumn('add', function ($data) {
                     if ($data['has_add'] == 1) {
-                        return '<i class="fa fa-check" style="color:green;"></i>';
+                        return '<i class="ri ri-check-line" style="color:green;"></i>';
                     } else {
-                        return '<i class="fa fa-close" style="color:red;"></i>';
+                        return '<i class="ri ri-close-line" style="color:red;"></i>';
                     }
                 })
                 ->editColumn('edit', function ($data) {
                     if ($data['has_edit'] == 1) {
-                        return '<i class="fa fa-check" style="color:green;"></i>';
+                        return '<i class="ri ri-check-line" style="color:green;"></i>';
                     } else {
-                        return '<i class="fa fa-close" style="color:red;"></i>';
+                        return '<i class="ri ri-close-line" style="color:red;"></i>';
                     }
                 })
                 ->editColumn('delete', function ($data) {
                     if ($data['has_delete'] == 1) {
-                        return '<i class="fa fa-check" style="color:green;"></i>';
+                        return '<i class="ri ri-check-line" style="color:green;"></i>';
                     } else {
-                        return '<i class="fa fa-close" style="color:red;"></i>';
+                        return '<i class="ri ri-close-line" style="color:red;"></i>';
                     }
                 })
                 ->rawColumns([

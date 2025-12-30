@@ -1,28 +1,18 @@
 @extends('master')
 
-@push('after-style')
-<style>
-    .select2-selection--multiple {
-        height: 55px !important;
-        border-radius: 5px !important;
-        border-color: #B1B1B1 !important;
-    }
-</style>
-@endpush
+@section('title', 'Role')
+@section('menu', 'role')
+@section('menu_parent', 'datapengguna')
 
 @section('content')
-<div class="page-titles">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="javascript:void(0)">Akun</a></li>
-        <li class="breadcrumb-item"><a href="javascript:void(0)">Role</a></li>
-        <li class="breadcrumb-item active"><a href="javascript:void(0)">Edit</a></li>
-    </ol>
-</div>
 <!-- row -->
 
 <div class="row">
     <div class="col-lg-12">
         <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Edit Role</h4>
+            </div><!-- end card header -->
             <form action="{{ url('admin/role/update') }}" method="POST">
                 <div class="card-body">
                     <?php if (session()->has('error')) { ?>
@@ -33,7 +23,7 @@
                                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
                             </svg>
                             <strong>Warning!</strong> <?php echo session()->get('error'); ?>.
-                            <button type="button" class="close h-100" data-dismiss="alert" aria-label="Close"><span><i class="mdi mdi-close"></i></span>
+                            <button type="button" class="close h-100 btn" data-dismiss="alert" aria-label="Close"><span><i class="mdi mdi-close"></i></span>
                             </button>
                         </div>
                     <?php } ?>
@@ -44,7 +34,7 @@
                                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                             </svg>
                             <strong>Success!</strong> <?php echo session()->get('success'); ?>.
-                            <button type="button" class="close h-100" data-dismiss="alert" aria-label="Close"><span><i class="mdi mdi-close"></i></span>
+                            <button type="button" class="close h-100 btn" data-dismiss="alert" aria-label="Close"><span><i class="mdi mdi-close"></i></span>
                             </button>
                         </div>
                     <?php } ?>
@@ -55,6 +45,9 @@
                             <div class="form-group">
                                 <label>Nama Role</label>
                                 <input type="text" class="form-control" name="name" id="name" value="{{ $role->name }}" required>
+                                @error('name')
+                                <small class="text-danger">{{ $message }}</small>
+                                @enderror
                             </div>
                         </div>
                     </div>
