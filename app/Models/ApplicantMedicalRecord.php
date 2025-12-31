@@ -19,6 +19,7 @@ class ApplicantMedicalRecord extends Model
         "umur",
         "tgl_registrasi",
         "tgl_periksa",
+        "status_bayar",
         "tempat_periksa",
         "petugas_registrasi",
         "dokter_id",

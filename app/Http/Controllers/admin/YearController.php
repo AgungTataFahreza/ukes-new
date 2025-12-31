@@ -30,7 +30,6 @@ class YearController extends Controller
         return view('admin.year', $data);
     }
 
-
     public function show(Request $request)
     {
         if (request()->ajax()) {

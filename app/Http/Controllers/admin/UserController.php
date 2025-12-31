@@ -28,57 +28,13 @@ class UserController extends Controller
 
     public function index()
     {
-        session()->flash('menu', 'user');
-        session()->flash('title', 'Akun Pengguna');
-        session()->flash('key', $this->key);
-        $data['roles'] = Role::all();
-        $data['users'] = User::all();
-        $data['internal_positions'] = InternalPosition::all();
-        $data['PTKP'] = PTKP::all();
+        session()->put('menu', 'user');
+        session()->put('title', 'User');
+        session()->put('key', $this->key);
         $data['permissions'] = $this->permissions;
+        $data['roles'] = Role::orderBy('name', 'asc')->get();
         return view('admin.user', $data);
     }
-
-
-    // public function show(Request $request)
-    // {
-    //     if (request()->ajax()) {
-
-    //         $result = User::whereNotNull('username')->get();
-
-    //         return datatables()->of($result)
-    //             ->addColumn('action', function ($result) {
-    //                 $button = ' <div class="gap-2" style="text-align: center;display: inline-flex;">';
-
-    //                 if (can($this->key, 'edit')) {
-    //                     // $button .= '<a href="javascript:void(0)" class="fs-15" onclick="edit(' . "'" . $result->id . "'"  . ')" style="margin-right:5px;"><i class="ri-edit-2-line"></i></a>';
-    //                     $button .= '<div class="edit">
-    //                                             <button class="btn btn-sm btn-info mr-1" onclick="reset_password(' . "'" . $result->id . "'"  . ')"><i class="fa fa-key"></i> Reset</button>
-    //                                         </div>';
-    //                     $button .= '<div class="edit">
-    //                                             <button class="btn btn-sm btn-primary mr-1" onclick="edit(this,' . "'" . $result->id . "'"  . ')"><i class="fa fa-edit"></i> Edit</button>
-    //                                         </div>';
-    //                 }
-    //                 if (can($this->key, 'delete')) {
-    //                     // $button .= '<a href="javascript:void(0);" class="link-success fs-15"><i class="ri-delete-bin-line"></i></a>';
-    //                     $button .= '<div class="remove">
-    //                                             <button class="btn btn-sm btn-success mr-1" onclick="deletee(' . "'" . $result->id . "'" . ')"><i class="fa fa-trash"></i> Hapus</button>
-    //                                         </div>';
-    //                 }
-    //                 $button .= '</div>';
-    //                 return $button;
-    //             })
-    //             ->editColumn('role_name', function ($result) {
-    //                 return $result->role->name;
-    //             })
-    //             ->rawColumns([
-    //                 'action' => 'action',
-    //                 'role_name' => 'role_name',
-    //             ])
-    //             ->addIndexColumn()
-    //             ->make(true);
-    //     }
-    // }
 
     public function show(Request $request)
     {
@@ -95,26 +51,13 @@ class UserController extends Controller
                     });
                 })
                 ->orderColumn('role_name', function ($query, $order) {
-                    $query->leftJoin('logbook_roles', 'logbook_roles.id', '=', 'logbook_users.role_id')
-                        ->orderBy('logbook_roles.name', $order);
+                    $query->leftJoin('ukes_roles', 'ukes_roles.id', '=', 'ukes_users.role_id')
+                        ->orderBy('ukes_roles.name', $order);
                 })
                 ->addColumn('action', function ($result) {
-                    $button = '<div class="gap-2" style="text-align: center; display: inline-flex;">';
-
-                    if (can_access($this->permissions, $this->key, 'edit')) {
-                        $button .= '<div class="edit">
-                                    <button class="btn btn-sm btn-info mr-1" onclick="reset_password(' . "'" . $result->id . "'" . ')"><i class="fa fa-key"></i> Reset</button>
-                                </div>';
-                        $button .= '<div class="edit">
-                                    <button class="btn btn-sm btn-primary mr-1" onclick="edit(this,' . "'" . $result->id . "'" . ')"><i class="fa fa-edit"></i> Edit</button>
-                                </div>';
-                    }
-                    if (can_access($this->permissions, $this->key, 'delete')) {
-                        $button .= '<div class="remove">
-                                    <button class="btn btn-sm btn-success mr-1" onclick="deletee(' . "'" . $result->id . "'" . ')"><i class="fa fa-trash"></i> Hapus</button>
-                                </div>';
-                    }
-                    $button .= '</div>';
+                    $button = '<button type="button" onclick="reset_password(this,' . "'" . $result->id . "'" . ')" style="margin-right:5px;" class="btn btn-info btn-sm btn-label waves-effect waves-light"><i class="ri-key-2-line label-icon align-middle fs-16 me-2"></i> Reset</button>';
+                    $button .= '<button type="button" onclick="edit(this,' . "'" . $result->id . "'" . ')" style="margin-right:5px;" class="btn btn-warning btn-sm btn-label waves-effect waves-light"><i class="ri-pencil-line label-icon align-middle fs-16 me-2"></i> Edit</button>';
+                    $button .= '<button type="button" onclick="deletee(' . "'" . $result->id . "'" . ')" class="btn btn-danger btn-sm btn-label waves-effect waves-light"><i class="ri-delete-bin-line label-icon align-middle fs-16 me-2"></i> Delete</button>';
                     return $button;
                 })
                 ->rawColumns([
@@ -131,19 +74,19 @@ class UserController extends Controller
         if (request()->ajax()) {
             try {
                 $rules = [
-                    'id' => 'required',
+                    'username' => 'required',
+                    'name' => 'required',
                     'role_id' => 'required',
                 ];
 
                 $validator = Validator::make($request->all(), $rules);
                 $validator->after(function ($validator) {
                     $check = User::where([
-                        'id' => request()->id,
+                        'username' => request()->username,
                     ])
-                        ->whereNotNull('username')
                         ->first();
                     if ($check) {
-                        $validator->errors()->add('id', 'Data Sudah Ada');
+                        $validator->errors()->add('username', 'Data Sudah Ada');
                     }
                 });
 
@@ -151,11 +94,12 @@ class UserController extends Controller
                     $message = $validator->errors();
                     $status = FALSE;
                 } else {
-                    $data = User::find($request->id);
-                    $data->role_id = $request->role_id;
-                    $data->username = ($data->user_type_id == 1 ? $data->nip : $data->nik);
-                    $data->password = password_hash(($data->user_type_id == 1 ? $data->nip : $data->nik), PASSWORD_DEFAULT);
-                    $data->save();
+                    User::create([
+                        'role_id' => $request->role_id,
+                        'name' => $request->name,
+                        'username' => $request->username,
+                        'password' => password_hash($request->username, PASSWORD_DEFAULT),
+                    ]);
 
                     $message = '';
                     $status = TRUE;
@@ -186,13 +130,14 @@ class UserController extends Controller
                 $validator = Validator::make($request->all(), $rules);
 
                 $validator->after(function ($validator) {
-                    // $check = User::where([
-                    //     'id' => request()->id,
-                    //     'role_id' => request()->role_id,
-                    // ])->first();
-                    // if ($check) {
-                    //     $validator->errors()->add('', 'Username ini telah digunakan');
-                    // }
+                    $check = User::where([
+                        'username' => request()->username,
+                    ])
+                        ->where('id', '!=', request()->id)
+                        ->first();
+                    if ($check) {
+                        $validator->errors()->add('', 'Username ini telah digunakan');
+                    }
                 });
 
                 if ($validator->fails()) {
@@ -201,6 +146,9 @@ class UserController extends Controller
                 } else {
                     $data = User::find($request->id);
                     $data->role_id = $request->role_id;
+                    $data->name = $request->name;
+                    $data->username = $request->username;
+                    $data->password = password_hash($request->username, PASSWORD_DEFAULT);
                     $data->save();
 
                     $message = '';
@@ -217,14 +165,26 @@ class UserController extends Controller
     public function delete(Request $request)
     {
         if (request()->ajax()) {
-            $data = User::find($request->id);
-            $data->username = "";
-            $data->password = "";
-            $data->save();
-            $message = '';
-            $status = TRUE;
+            try {
+                $data = User::where('id', $request->id)
+                    ->where('id', '!=', auth()->user()->id)
+                    ->first();
 
-            return response()->json(['status' => $status, 'message' => $message]);
+                if (!$data) {
+                    return response()->json(['status' => FALSE, 'message' => 'Data tidak ditemukan atau Anda tidak dapat menghapus diri sendiri.']);
+                }
+
+                $data = User::find($request->id);
+                $data->delete();
+                $message = '';
+                $status = TRUE;
+
+                return response()->json(['status' => $status, 'message' => $message]);
+            } catch (\Exception $e) {
+                $status = FALSE;
+                $message = $e->getMessage();
+                return response()->json(['status' => $status, 'message' => $message]);
+            }
         }
     }
 
@@ -232,7 +192,7 @@ class UserController extends Controller
     {
         if (request()->ajax()) {
             $data = User::find($request->id);
-            $data->password = password_hash(($data->user_type_id == 1 ? $data->nip : $data->nik), PASSWORD_DEFAULT);
+            $data->password = password_hash($data->username, PASSWORD_DEFAULT);
             $data->save();
             $message = '';
             $status = TRUE;

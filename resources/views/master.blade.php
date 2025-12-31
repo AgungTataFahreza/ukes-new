@@ -93,15 +93,15 @@
                                     <img class="rounded-circle header-profile-user" src="{{ asset('assets/images/users/avatar-1.jpg') }}"
                                         alt="Header Avatar">
                                     <span class="text-start ms-xl-2">
-                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">Username Disini nanti</span>
-                                        <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">Nama dari Username disini</span>
+                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ Auth::user()->name }}</span>
+                                        <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">{{ Auth::user()->username }}</span>
                                     </span>
                                 </span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <!-- item-->
-                                <h6 class="dropdown-header">Welcome, Username Disini nanti!</h6>
-                                <a class="dropdown-item" href="logout.php"><i
+                                <h6 class="dropdown-header">Welcome, {{ Auth::user()->name }}!</h6>
+                                <a class="dropdown-item" href="{{ url('logout') }}"><i
                                         class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
                                         class="align-middle" data-key=t-logout>Logout</span></a>
                             </div>
@@ -152,26 +152,27 @@
                                 <i class="ri-dashboard-2-line"></i> <span>DASHBOARD</span>
                             </a>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#datapeserta" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="datapeserta">
+                            <a class="nav-link menu-link {{ $menuParent === 'ujikesehatan' ? '' : 'collapsed' }}"
+                                href="#ujikesehatan"
+                                data-bs-toggle="collapse"
+                                role="button"
+                                aria-expanded="{{ $menuParent === 'ujikesehatan' ? 'true' : 'false' }}"
+                                aria-controls="ujikesehatan">
                                 <i class="ri-hospital-line"></i> <span>UJI KESEHATAN</span>
                             </a>
-                            <div class="collapse menu-dropdown" id="datapeserta">
+                            <div class="collapse menu-dropdown {{ $menuParent === 'ujikesehatan' ? 'show' : '' }}" id="ujikesehatan">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{ url('admin/registration') }}" class="nav-link">Registrasi Peserta</a>
+                                        <a href="{{ url('admin/registration') }}" class="nav-link {{ $menu === 'registration' ? 'active' : '' }}">Registrasi Peserta</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ url('admin/payment') }}" class="nav-link">Update Pembayaran</a>
+                                        <a href="{{ url('admin/medical-form') }}" class="nav-link {{ $menu === 'medical-form' ? 'active' : '' }}">Formulir Uji Kesehatan</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ url('admin/medical-form') }}" class="nav-link">Formulir Uji Kesehatan</a>
+                                        <a href="{{ url('admin/medical-result') }}" class="nav-link {{ $menu === 'medical-result' ? 'active' : '' }}">Data Hasil Pemeriksaan</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ url('admin/medical-result') }}" class="nav-link">Data Hasil Pemeriksaan</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ url('admin/applicant') }}" class="nav-link">Daftar Peserta</a>
+                                        <a href="{{ url('admin/applicant') }}" class="nav-link {{ $menu === 'applicant' ? 'active' : '' }}">Daftar Peserta</a>
                                     </li>
                                 </ul>
                             </div>

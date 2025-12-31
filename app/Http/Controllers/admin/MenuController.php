@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Menu;
+use App\Models\RolePermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -237,6 +238,7 @@ class MenuController extends Controller
     public function delete(Request $request)
     {
         if (request()->ajax()) {
+            RolePermission::where('menu_id', $request->id)->delete();
             $data = Menu::find($request->id);
             $data->delete();
             $message = '';

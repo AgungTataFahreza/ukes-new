@@ -1,14 +1,17 @@
 <?php
 
 use App\Events\TestEvent;
+use App\Http\Controllers\admin\ApplicantController;
 use App\Http\Controllers\admin\AttendanceController;
 use App\Http\Controllers\admin\BehaviorAssessmentController;
 use App\Http\Controllers\admin\BehaviorScoreController;
 use App\Http\Controllers\admin\ChatController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\MedicalFormController;
 use App\Http\Controllers\admin\MenuController;
 use App\Http\Controllers\admin\PeriodController;
+use App\Http\Controllers\admin\RegistrationController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\StudyProgramController;
 use App\Http\Controllers\admin\UserController;
@@ -59,15 +62,15 @@ Route::group(['middleware' => ['auth']], function () {
         // Route::post('/role/update', [RoleController::class, 'update'])->middleware('access:Role,edit');
         // Route::post('/role/delete', [RoleController::class, 'delete'])->middleware('access:Role,delete');
 
-        Route::get('/user', [UserController::class, 'index'])->middleware('access:User,view');
-        Route::post('/user/show', [UserController::class, 'show'])->middleware('access:User,view');
-        Route::post('/user/add', [UserController::class, 'add'])->middleware('access:User,add');
-        Route::post('/user/edit', [UserController::class, 'edit'])->middleware('access:User,edit');
-        Route::post('/user/update', [UserController::class, 'update'])->middleware('access:User,edit');
-        Route::post('/user/delete', [UserController::class, 'delete'])->middleware('access:User,delete');
-        Route::post('/user/reset-password', [UserController::class, 'resetPassword'])->middleware('access:User,edit');
-        Route::post('/user/update-password', [UserController::class, 'updatePassword']);
-        Route::get('/user/get-user', [UserController::class, 'getUsers']);
+        // Route::get('/user', [UserController::class, 'index'])->middleware('access:User,view');
+        // Route::post('/user/show', [UserController::class, 'show'])->middleware('access:User,view');
+        // Route::post('/user/add', [UserController::class, 'add'])->middleware('access:User,add');
+        // Route::post('/user/edit', [UserController::class, 'edit'])->middleware('access:User,edit');
+        // Route::post('/user/update', [UserController::class, 'update'])->middleware('access:User,edit');
+        // Route::post('/user/delete', [UserController::class, 'delete'])->middleware('access:User,delete');
+        // Route::post('/user/reset-password', [UserController::class, 'resetPassword'])->middleware('access:User,edit');
+        // Route::post('/user/update-password', [UserController::class, 'updatePassword']);
+        // Route::get('/user/get-user', [UserController::class, 'getUsers']);
 
         Route::get('/year', [YearController::class, 'index']);
         Route::post('/year/show', [YearController::class, 'show']);
@@ -105,6 +108,35 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/role/edit/{role_id}', [RoleController::class, 'edit']);
         Route::post('/role/update', [RoleController::class, 'update']);
         Route::post('/role/delete', [RoleController::class, 'delete']);
+
+        Route::get('/user', [UserController::class, 'index']);
+        Route::post('/user/show', [UserController::class, 'show']);
+        Route::post('/user/add', [UserController::class, 'add']);
+        Route::post('/user/edit', [UserController::class, 'edit']);
+        Route::post('/user/update', [UserController::class, 'update']);
+        Route::post('/user/delete', [UserController::class, 'delete']);
+        Route::post('/user/reset-password', [UserController::class, 'resetPassword']);
+        Route::post('/user/update-password', [UserController::class, 'updatePassword']);
+        Route::get('/user/get-user', [UserController::class, 'getUsers']);
+
+        Route::get('/applicant', [ApplicantController::class, 'index']);
+        Route::post('/applicant/show', [ApplicantController::class, 'show']);
+        Route::post('/applicant/add', [ApplicantController::class, 'add']);
+        Route::post('/applicant/edit', [ApplicantController::class, 'edit']);
+        Route::post('/applicant/update', [ApplicantController::class, 'update']);
+        Route::post('/applicant/delete', [ApplicantController::class, 'delete']);
+        Route::post('/applicant/import', [ApplicantController::class, 'import']);
+        Route::get('/applicant/export', [ApplicantController::class, 'export']);
+
+        Route::get('/registration', [RegistrationController::class, 'index']);
+        Route::post('/registration/show', [RegistrationController::class, 'show']);
+        Route::post('/registration/edit', [RegistrationController::class, 'edit']);
+        Route::post('/registration/update', [RegistrationController::class, 'update']);
+
+        Route::get('/medical-form', [MedicalFormController::class, 'index']);
+        Route::post('/medical-form/show', [MedicalFormController::class, 'show']);
+        Route::post('/medical-form/edit', [MedicalFormController::class, 'edit']);
+        Route::post('/medical-form/update', [MedicalFormController::class, 'update']);
     });
     Route::get('/logout', [AuthController::class, 'logout']);
 

@@ -143,7 +143,6 @@
         table.ajax.reload(null, false);
     }
 
-
     function add() {
         save_method = 'add';
         $('.text-error').empty(); // clear error string
