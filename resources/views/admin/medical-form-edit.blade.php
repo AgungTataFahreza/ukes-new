@@ -18,8 +18,8 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="nav flex-column nav-pills text-center" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                            <a class="nav-link mb-2 active" id="v-pills-data-peserta-tab" data-bs-toggle="pill" href="#v-pills-data-peserta" role="tab" aria-controls="v-pills-data-peserta" aria-selected="true">Data Peserta</a>
-                            <a class="nav-link mb-2" id="v-pills-pemeriksaan-antropometri-tab" data-bs-toggle="pill" href="#v-pills-pemeriksaan-antropometri" role="tab" aria-controls="v-pills-pemeriksaan-antropometri" aria-selected="false">Pemeriksaan Antropometri</a>
+                            <a class="nav-link mb-2" id="v-pills-data-peserta-tab" data-bs-toggle="pill" href="#v-pills-data-peserta" role="tab" aria-controls="v-pills-data-peserta" aria-selected="true">Data Peserta</a>
+                            <a class="nav-link mb-2 active" id="v-pills-pemeriksaan-antropometri-tab" data-bs-toggle="pill" href="#v-pills-pemeriksaan-antropometri" role="tab" aria-controls="v-pills-pemeriksaan-antropometri" aria-selected="false">Pemeriksaan Antropometri</a>
                             <a class="nav-link mb-2" id="v-pills-pemeriksaan-fisik-tab" data-bs-toggle="pill" href="#v-pills-pemeriksaan-fisik" role="tab" aria-controls="v-pills-pemeriksaan-fisik" aria-selected="false">Pemeriksaan Fisik</a>
                             <a class="nav-link mb-2" id="v-pills-pemeriksaan-fisik-2-tab" data-bs-toggle="pill" href="#v-pills-pemeriksaan-fisik-2" role="tab" aria-controls="v-pills-pemeriksaan-fisik-2" aria-selected="false">Pemeriksaan Fisik 2</a>
                             <a class="nav-link mb-2" id="v-pills-pemeriksaan-gigi-tab" data-bs-toggle="pill" href="#v-pills-pemeriksaan-gigi" role="tab" aria-controls="v-pills-pemeriksaan-gigi" aria-selected="false">Pemeriksaan Gigi</a>
@@ -29,201 +29,208 @@
                     </div><!-- end col -->
                     <div class="col-md-9">
                         <div class="tab-content text-muted mt-4 mt-md-0" id="v-pills-tabContent">
-                            <div class="tab-pane fade show active" id="v-pills-data-peserta" role="tabpanel" aria-labelledby="v-pills-data-peserta-tab">
+                            <div class="tab-pane fade" id="v-pills-data-peserta" role="tabpanel" aria-labelledby="v-pills-data-peserta-tab">
                                 <div class="d-flex mb-2">
                                     <div class="row g-3">
                                         <div class="col-sm-12">
                                             <label for="nomor_peserta" class="form-label">Nomor Peserta</label>
-                                            <input type="text" class="form-control-plaintext"
-                                                id="nomor_peserta" placeholder="Enter name"
-                                                value="420250483" readonly>
+                                            <input type="text" class="form-control-plaintext" id="nomor_peserta" placeholder="Enter name" value="{{ $applicant->nomor_peserta }}" readonly>
                                         </div>
                                         <div class="col-sm-12">
-                                            <label for="nama_lengkap" class="form-label">First
-                                                name</label>
-                                            <input type="text" class="form-control-plaintext"
-                                                id="nama_lengkap" placeholder="Enter name"
-                                                value="GRIYA DINA P. HUTASOIT" readonly>
+                                            <label for="nama" class="form-label">Nama Lengkap</label>
+                                            <input type="text" class="form-control-plaintext" id="nama" placeholder="Enter name" value="{{ $applicant->nama }}" readonly>
                                         </div>
-
-                                        <div class="col-sm-12">
+                                        <!-- <div class="col-sm-12">
                                             <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
                                             <input type="text" class="form-control-plaintext"
                                                 id="tanggal_lahir" placeholder="Enter name"
                                                 value="" readonly>
-                                        </div>
-
+                                        </div> -->
                                         <div class="col-sm-12">
-                                            <label for="nama_prodi" class="form-label">Prodi Lulus</label>
-                                            <input type="text" class="form-control-plaintext"
-                                                id="nama_prodi" placeholder="Enter name"
-                                                value="D3 - Gizi" readonly>
+                                            <label for="study_program_name" class="form-label">Prodi Lulus</label>
+                                            <input type="text" class="form-control-plaintext" id="study_program_name" placeholder=""
+                                                value="{{ $applicant->study_program->name }}" readonly>
                                         </div>
 
                                         <div class="col-sm-12">
                                             <label for="tgl_periksa" class="form-label">Tanggal Periksa</label>
-                                            <input type="text" class="form-control-plaintext"
-                                                id="tgl_periksa" placeholder="Enter name"
-                                                value="" readonly>
+                                            <input type="text" class="form-control-plaintext" id="tgl_periksa" placeholder="" value="{{ ($applicant->tgl_periksa ? date('d-m-Y', strtotime($applicant->tgl_periksa)):'-') }}" readonly>
                                         </div>
 
                                         <div class="col-sm-12">
                                             <label for="tempat_periksa" class="form-label">Tempat Periksa</label>
-                                            <input type="text" class="form-control-plaintext"
-                                                id="tempat_periksa" placeholder="Enter name"
-                                                value="Klinik Pratama Poltekkes Medan" readonly>
+                                            <input type="text" class="form-control-plaintext" id="tempat_periksa" placeholder="" value="{{ $applicant->tempat_periksa }}" readonly>
                                         </div>
 
                                         <div class="col-sm-12">
                                             <label for="nama_petugas_registrasi" class="form-label">Petugas Registrasi</label>
-                                            <input type="text" class="form-control-plaintext"
-                                                id="nama_petugas_registrasi" placeholder="Enter name"
-                                                value="Agung Tata Fahreza" readonly>
+                                            <input type="text" class="form-control-plaintext" id="nama_petugas_registrasi" placeholder="Enter name" value="{{ $applicant->petugas_registrasi->name }}" readonly>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="v-pills-pemeriksaan-antropometri" role="tabpanel" aria-labelledby="v-pills-pemeriksaan-antropometri-tab">
+                            <div class="tab-pane fade show active" id="v-pills-pemeriksaan-antropometri" role="tabpanel" aria-labelledby="v-pills-pemeriksaan-antropometri-tab">
                                 <div class="d-flex mb-2">
-                                    <form action="" method="post" name="fr1" id="fr1">
+                                    <form id="antropometriForm">
+                                        <input type="hidden" name="id" id="id" value="{{ $applicant->id }}">
                                         <p class="text-muted">Pemeriksaan Antropometri</p>
                                         <div class="row g-3">
                                             <div class="col-sm-12">
                                                 <label for="nama_lengkap" class="form-label">Nama</label>
-                                                <input type="text" class="form-control-plaintext"
-                                                    id="nama_lengkap" placeholder="Enter name"
-                                                    value="GRIYA DINA P. HUTASOIT" readonly disabled>
+                                                <input type="text" class="form-control-plaintext" id="nama" placeholder="" value="{{ $applicant->nama }}" readonly disabled>
                                             </div>
                                             <div class="col-sm-12">
                                                 <h6 class="fw-semibold">Dokter</h6>
-                                                <select name="dokter" required="required" class="js-example-basic-single">
-                                                    <option value="dr. Lestari Rahmah, M.KT">dr. Lestari Rahmah, M.KT</option>
-                                                    <option value="dr. Ratna Zahara">dr. Ratna Zahara</option>
-                                                    <option value="dr. Ira Una Muna">dr. Ira Una Muna</option>
+                                                <select name="dokter_id" id="dokter_id" class="dokter_id" required="required">
+                                                    <?php foreach ($dokters as $dokter): ?>
+                                                        <option value="<?= $dokter->id ?>"><?= $dokter->name ?></option>
+                                                    <?php endforeach; ?>
                                                     <option value="Lainnya">Lainnya</option>
                                                 </select>
+                                                <div class="text-danger text-error " id="dokter_id_error">
+                                                    *error
+                                                </div>
                                             </div>
                                             <div class="col-sm-12">
                                                 <h6 class="fw-semibold">Paramedis 1</h6>
-                                                <select name="paramedis1" required="required" class="js-example-basic-single">
-                                                    <option value="Tri Wahyuni, Amd.Kep">Tri Wahyuni, Amd.Kep</option>
-                                                    <option value="Wardati Humaira">Wardati Humaira</option>
-                                                    <option value="Arini Muftih Fadhilla, Amd.Keb">Arini Muftih Fadhilla, Amd.Keb</option>
-                                                    <option value="Irma Rahmadani, Amd.Kes">Irma Rahmadani, Amd.Kes</option>
-                                                    <option value="Sulastri GP Tambunan">Sulastri GP Tambunan</option>
-                                                    <option value="Halimah Tussadiah Lubis">Halimah Tussadiah Lubis</option>
+                                                <select name="paramedis_1_id" id="paramedis_1_id" required="required">
+                                                    <?php foreach ($paramediss as $paramedis): ?>
+                                                        <option value="<?= $paramedis->id ?>"><?= $paramedis->name ?></option>
+                                                    <?php endforeach; ?>
                                                     <option value="Lainnya">Lainnya</option>
                                                 </select>
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <label for="antro" class="form-label">Tekanan Darah</label>
-                                                <div class="row" id="antro">
-                                                    <div class="col-md-4">
-                                                        <input type="number" class="form-control"
-                                                            id="tda" name="tda" placeholder="" required value="0">
-                                                        <div class="invalid-feedback">
-                                                            Sistole value required
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <input type="text" class="form-control-plaintext"
-                                                            value="/" readonly disabled>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <input type="number" class="form-control"
-                                                            id="tdb" name="tdb" placeholder="" required value="0">
-                                                        <div class="invalid-feedback">
-                                                            Diastole value required
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <input type="text" class="form-control-plaintext"
-                                                            value="mmHg" readonly disabled>
-                                                    </div>
+                                                <div class="text-danger text-error " id="paramedis_1_id_error">
+                                                    *error
                                                 </div>
                                             </div>
-                                            <div class="col-sm-12">
+                                            <div class="col-sm-6">
+                                                <label class="form-label">Tekanan Darah</label>
+
+                                                <div class="input-group">
+                                                    <input type="number"
+                                                        class="form-control"
+                                                        id="tekanan_darah_sistolik"
+                                                        name="tekanan_darah_sistolik"
+                                                        placeholder="Sistolik"
+                                                        min="0"
+                                                        required
+                                                        value="">
+
+                                                    <span class="input-group-text">/</span>
+
+                                                    <input type="number"
+                                                        class="form-control"
+                                                        id="tekanan_darah_diastolik"
+                                                        name="tekanan_darah_diastolik"
+                                                        placeholder="Diastolik"
+                                                        min="0"
+                                                        required
+                                                        value="">
+
+                                                    <span class="input-group-text">mmHg</span>
+                                                </div>
+
+                                                <!-- error -->
+                                                <div class="text-danger text-error " id="tekanan_darah_sistolik_error">
+                                                    * Tekanan darah tidak valid
+                                                </div>
+                                                <div class="text-danger text-error " id="tekanan_darah_diastolik_error">
+                                                    * Tekanan darah tidak valid
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6">
                                                 <label for="antro" class="form-label">Nadi</label>
                                                 <div class="row" id="antro">
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-12">
                                                         <input type="number" class="form-control"
-                                                            id="nadi" name="nadi" placeholder="" required value="0">
-                                                        <div class="invalid-feedback">
-                                                            Nadi value required
+                                                            id="nadi" name="nadi" placeholder="" required value="">
+                                                        <div class="text-danger text-error " id="nadi_error">
+                                                            * Nadi tidak valid
                                                         </div>
                                                     </div>
-
                                                 </div>
                                             </div>
-                                            <div class="col-sm-12">
+                                            <div class="col-sm-6">
                                                 <label for="tb" class="form-label">Tinggi Badan</label>
-                                                <div class="row">
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control"
-                                                            id="tb" name="tb" placeholder="" required value="0">
-                                                        <div class="invalid-feedback">
-                                                            Height value required
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <input type="text" class="form-control-plaintext"
-                                                            value="cm" readonly disabled>
-                                                    </div>
+
+                                                <div class="input-group">
+                                                    <input type="number"
+                                                        class="form-control"
+                                                        id="tinggi_badan"
+                                                        name="tinggi_badan"
+                                                        placeholder="Tinggi badan"
+                                                        min="0"
+                                                        required
+                                                        value="">
+
+                                                    <span class="input-group-text">cm</span>
+                                                </div>
+
+                                                <div class="text-danger text-error" id="tinggi_badan_error">
+                                                    *Tinggi badan tidak valid
                                                 </div>
                                             </div>
-                                            <div class="col-sm-12">
+
+                                            <div class="col-sm-6">
                                                 <label for="bb" class="form-label">Berat Badan</label>
-                                                <div class="row">
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control"
-                                                            id="bb" name="bb" placeholder="" required value="0">
-                                                        <div class="invalid-feedback">
-                                                            Weight value required
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <input type="text" class="form-control-plaintext"
-                                                            value="kg" readonly disabled>
-                                                    </div>
+                                                <div class="input-group">
+                                                    <input type="number"
+                                                        class="form-control"
+                                                        id="berat_badan"
+                                                        name="berat_badan"
+                                                        placeholder="Berat badan"
+                                                        min="0"
+                                                        step="0.1"
+                                                        required
+                                                        value="">
+
+                                                    <span class="input-group-text">kg</span>
+                                                </div>
+
+                                                <div class="text-danger text-error" id="berat_badan_error">
+                                                    * Berat badan tidak valid
                                                 </div>
                                             </div>
+
                                             <div class="col-sm-12">
-                                                <label for="antro_normal" class="form-label">Status Normal</label>
-                                                <select name="antro_normal" required="required" class="form-select mb-3" id="antro_normal" aria-label="Default select example">
-                                                    <option value="1">Normal</option>
-                                                    <option value="2">Kelainan</option>
+                                                <label for="status_antropometri" class="form-label">Status Normal</label>
+                                                <select name="status_antropometri" required="required" class="form-select form-control" id="status_antropometri">
+                                                    <option value="Normal">Normal</option>
+                                                    <option value="Kelainan">Kelainan</option>
                                                 </select>
                                             </div>
                                             <div class="col-sm-6">
-                                                <label for="antro_catatan" class="form-label">Catatan</label>
+                                                <label for="catatan_antropometri" class="form-label">Catatan</label>
                                                 <div class="col-md-12">
-                                                    <textarea name="antro_catatan"
-                                                        rows="3" class="form-control" id="antro_catatan"></textarea>
+                                                    <textarea name="catatan_antropometri" rows="3" class="form-control" id="catatan_antropometri"></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
-                                                <label for="antro_keterangan" class="form-label">Keterangan</label>
+                                                <label for="keterangan_antropometri" class="form-label">Keterangan</label>
                                                 <div class="col-md-12">
-                                                    <textarea name="antro_keterangan"
-                                                        rows="3" class="form-control" id="antro_keterangan">													</textarea>
+                                                    <textarea name="keterangan_antropometri"
+                                                        rows="3" class="form-control" id="keterangan_antropometri"></textarea>
                                                 </div>
                                             </div>
 
-                                            <div class="d-flex align-items-start gap-3 mt-4">
-                                                <input type="hidden" name="nomor_peserta" id="nomor_peserta" value="420250483">
-                                                <input type="hidden" name="tab" id="tab" value="1">
-                                                <input type="hidden" name="submitantro" id="submitantro" value="1">
-                                                <button type="submit"
-                                                    class="btn btn-success btn-label right ms-auto nexttab nexttab" form="fr1"><i
-                                                        class="ri-arrow-right-line label-icon "></i>Simpan</button>
+                                            <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                <button type="button"
+                                                    id="btnSaveAntropometri"
+                                                    class="btn btn-success btn-load"
+                                                    onclick="saveAntropometri();">
+                                                    <i class="ri ri-save-line me-1"></i> Simpan
+                                                </button>
                                             </div>
+
                                         </div>
                                     </form>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="v-pills-pemeriksaan-fisik" role="tabpanel" aria-labelledby="v-pills-pemeriksaan-fisik-tab">
                                 <div class="d-flex mb-2">
-                                    <form action="" method="post" name="fr2" id="fr2">
+                                    <form id="fisikForm">
+                                        <input type="hidden" name="id" id="id" value="{{ $applicant->id }}">
                                         <p class="text-muted">Pemeriksaan Fisik</p>
                                         <div class="row g-3">
                                             <div class="row mb-3">
@@ -232,39 +239,36 @@
                                                 </div>
                                                 <div class="col-lg-9">
                                                     <input type="text" class="form-control-plaintext"
-                                                        id="nama_lengkap" placeholder="Enter name"
-                                                        value="GRIYA DINA P. HUTASOIT" readonly disabled>
-
+                                                        id="" placeholder="Enter name"
+                                                        value="{{ $applicant->nama }}" readonly disabled>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
-                                                <div class="col-lg-3">
+                                                <div class="col-sm-12">
                                                     <h6 class="fw-semibold">Dokter</h6>
-                                                </div>
-                                                <div class="col-lg-9">
-                                                    <select name="dokter" required="required" class="js-example-basic-single">
-                                                        <option value="dr. Lestari Rahmah, M.KT">dr. Lestari Rahmah, M.KT</option>
-                                                        <option value="dr. Khairunnisa Bestari">dr. Khairunnisa Bestari</option>
-                                                        <option value="dr. Ratna Zahara">dr. Ratna Zahara</option>
-                                                        <option value="dr. Ira Una Muna">dr. Ira Una Muna</option>
+                                                    <select name="dokter_id" class="dokter_id" required="required">
+                                                        <?php foreach ($dokters as $dokter): ?>
+                                                            <option value="<?= $dokter->id ?>"><?= $dokter->name ?></option>
+                                                        <?php endforeach; ?>
                                                         <option value="Lainnya">Lainnya</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="dokter_id_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
-                                                <div class="col-lg-3">
+                                                <div class="col-sm-12">
                                                     <h6 class="fw-semibold">Paramedis 2</h6>
-                                                </div>
-                                                <div class="col-lg-9">
-                                                    <select name="paramedis2" required="required" class="js-example-basic-single">
-                                                        <option value="Tri Wahyuni, Amd.Kep">Tri Wahyuni, Amd.Kep</option>
-                                                        <option value="Wardati Humaira">Wardati Humaira</option>
-                                                        <option value="Arini Muftih Fadhilla, Amd.Keb">Arini Muftih Fadhilla, Amd.Keb</option>
-                                                        <option value="Irma Rahmadani, Amd.Kes">Irma Rahmadani, Amd.Kes</option>
-                                                        <option value="Sulastri GP Tambunan">Sulastri GP Tambunan</option>
-                                                        <option value="Halimah Tussadiah Lubis">Halimah Tussadiah Lubis</option>
+                                                    <select name="paramedis_2_id" required="required" id="paramedis_2_id">
+                                                        <?php foreach ($paramediss as $paramedis): ?>
+                                                            <option value="<?= $paramedis->id ?>"><?= $paramedis->name ?></option>
+                                                        <?php endforeach; ?>
                                                         <option value="Lainnya">Lainnya</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="paramedis_2_id_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -275,89 +279,109 @@
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="kulit_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_kulit" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="kulit_normal" required="required" class="form-select mb-3" id="kulit_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_kulit" required="required" class="form-select mb-3" id="status_kulit">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="status_kulit_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="kulit_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_kulit" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="kulit_catatan"
-                                                        rows="3" class="form-control" id="kulit_catatan"></textarea>
+                                                    <textarea name="catatan_kulit" rows="3" class="form-control" id="catatan_kulit"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_kulit_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="kulit_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_kulit" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="kulit_keterangan"
-                                                        rows="3" class="form-control" id="kulit_keterangan"></textarea>
+                                                    <textarea name="keterangan_kulit" rows="3" class="form-control" id="keterangan_kulit"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_kulit_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
-
                                             <div class="border mt-3 border-line"></div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <p class="text-muted">Pemeriksaan Mata</p>
                                         </div>
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="mata_normal" class="form-label">Status Normal Mata</label>
+                                                    <label for="status_mata" class="form-label">Status Normal Mata</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="mata_normal" required="required" class="form-select mb-3" id="mata_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_mata" required="required" class="form-select mb-3" id="status_mata" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="status_mata_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="mata_visus" class="form-label">Visus</label>
+                                                    <label for="visus" class="form-label">Visus</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <input type="text" class="form-control" id="mata_visus" name="mata_visus"
+                                                    <input type="text" class="form-control" id="visus" name="visus"
                                                         placeholder="visus" value="">
+                                                    <div class="text-danger text-error " id="visus_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="mata_butawarna" class="form-label">Buta Warna</label>
+                                                    <label for="buta_warna" class="form-label">Buta Warna</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="mata_butawarna" required="required" class="form-select mb-3" id="mata_butawarna" aria-label="Default select example">
+                                                    <select name="buta_warna" required="required" class="form-select mb-3" id="buta_warna" aria-label="Default select example">
                                                         <option value="Normal">Normal</option>
                                                         <option value="Parsial">Parsial</option>
                                                         <option value="Total">Total</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="buta_warna_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="mata_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_mata" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="mata_catatan"
-                                                        rows="3" class="form-control" id="mata_catatan"></textarea>
+                                                    <textarea name="catatan_mata"
+                                                        rows="3" class="form-control" id="catatan_mata"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_mata_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="mata_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_mata" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="mata_keterangan"
-                                                        rows="3" class="form-control" id="mata_keterangan"></textarea>
+                                                    <textarea name="keterangan_mata"
+                                                        rows="3" class="form-control" id="keterangan_mata"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_mata_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="border mt-3 border-line"></div>
@@ -369,13 +393,16 @@
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="telinga_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_telinga" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="telinga_normal" required="required" class="form-select mb-3" id="telinga_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="telinga_normal" required="required" class="form-select mb-3" id="status_telinga" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="status_telinga_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -385,6 +412,9 @@
                                                 <div class="col-lg-9">
                                                     <input type="text" class="form-control" id="telinga_kiri" name="telinga_kiri"
                                                         placeholder="keterangan telinga kiri" value="">
+                                                    <div class="text-danger text-error " id="telinga_kiri_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -394,134 +424,159 @@
                                                 <div class="col-lg-9">
                                                     <input type="text" class="form-control" id="telinga_kanan" name="telinga_kanan"
                                                         placeholder="keterangan telinga kanan" value="">
+                                                    <div class="text-danger text-error " id="telinga_kanan_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="telinga_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_telinga" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="telinga_catatan"
-                                                        rows="3" class="form-control" id="telinga_catatan"></textarea>
+                                                    <textarea name="catatan_telinga"
+                                                        rows="3" class="form-control" id="catatan_telinga"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_telinga_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="telinga_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_telinga" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="telinga_keterangan"
-                                                        rows="3" class="form-control" id="telinga_keterangan"></textarea>
+                                                    <textarea name="keterangan_telinga"
+                                                        rows="3" class="form-control" id="keterangan_telinga"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_telinga_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
-
-
                                             <div class="border mt-3 border-line"></div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <p class="text-muted">Pemeriksaan Hidung</p>
                                         </div>
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="hidung_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_hidung" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="hidung_normal" required="required" class="form-select mb-3" id="hidung_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_hidung" required="required" class="form-select mb-3" id="status_hidung" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="status_hidung_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="hidung_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_hidung" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="hidung_catatan"
-                                                        rows="3" class="form-control" id="hidung_catatan"></textarea>
+                                                    <textarea name="catatan_hidung"
+                                                        rows="3" class="form-control" id="catatan_hidung"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_hidung_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="hidung_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_hidung" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="hidung_keterangan"
-                                                        rows="3" class="form-control" id="hidung_keterangan"></textarea>
+                                                    <textarea name="keterangan_hidung"
+                                                        rows="3" class="form-control" id="keterangan_hidung"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_hidung_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="border mt-3 border-line"></div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <p class="text-muted">Pemeriksaan Lidah</p>
                                         </div>
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="lidah_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_lidah" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="lidah_normal" required="required" class="form-select mb-3" id="lidah_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_lidah" required="required" class="form-select mb-3" id="status_lidah" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="lidah_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_lidah" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="lidah_catatan"
-                                                        rows="3" class="form-control" id="lidah_catatan"></textarea>
+                                                    <textarea name="catatan_lidah"
+                                                        rows="3" class="form-control" id="catatan_lidah"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_lidah_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="lidah_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_lidah" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="lidah_keterangan"
-                                                        rows="3" class="form-control" id="lidah_keterangan"></textarea>
+                                                    <textarea name="keterangan_lidah"
+                                                        rows="3" class="form-control" id="keterangan_lidah"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_lidah_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="border mt-3 border-line"></div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <p class="text-muted">Pemeriksaan Pharynx</p>
                                         </div>
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="pharynx_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_pharynx" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="pharynx_normal" required="required" class="form-select mb-3" id="pharynx_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_pharynx" required="required" class="form-select mb-3" id="status_pharynx" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="pharynx_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_pharynx" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="pharynx_catatan"
-                                                        rows="3" class="form-control" id="pharynx_catatan"></textarea>
+                                                    <textarea name="catatan_pharynx"
+                                                        rows="3" class="form-control" id="catatan_pharynx"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_pharynx_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="pharynx_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_pharynx" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="pharynx_keterangan"
-                                                        rows="3" class="form-control" id="pharynx_keterangan"></textarea>
+                                                    <textarea name="keterangan_pharynx"
+                                                        rows="3" class="form-control" id="keterangan_pharynx"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_pharynx_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="border mt-3 border-line"></div>
@@ -533,54 +588,56 @@
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="tonsil_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_tonsil" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="tonsil_normal" required="required" class="form-select mb-3" id="tonsil_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_tonsil" required="required" class="form-select mb-3" id="status_tonsil" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="tonsil_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_tonsil" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="tonsil_catatan"
-                                                        rows="3" class="form-control" id="tonsil_catatan"></textarea>
+                                                    <textarea name="catatan_tonsil"
+                                                        rows="3" class="form-control" id="catatan_tonsil"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_tonsil_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="tonsil_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_tonsil" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="tonsil_keterangan"
-                                                        rows="3" class="form-control" id="tonsil_keterangan"></textarea>
+                                                    <textarea name="keterangan_tonsil"
+                                                        rows="3" class="form-control" id="keterangan_tonsil"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_tonsil_error">
+                                                        *error
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                    <button type="button"
+                                                        id="btnSaveFisik"
+                                                        class="btn btn-success btn-load"
+                                                        onclick="saveFisik();">
+                                                        <i class="ri ri-save-line me-1"></i> Simpan
+                                                    </button>
                                                 </div>
                                             </div>
 
-                                        </div>
-                                        <div class="row g-3">
-
-                                            <div class="row mb-3">
-                                                <div class="d-flex align-items-start gap-3 mt-4">
-                                                    <input type="hidden" name="nomor_peserta" id="nomor_peserta" value="420250483">
-                                                    <input type="hidden" name="tab" id="tab" value="2">
-                                                    <input type="hidden" name="submitfisik" id="submitfisik" value="1">
-                                                    <button type="submit"
-                                                        class="btn btn-success btn-label right ms-auto nexttab nexttab" form="fr2"><i
-                                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Simpan</button>
-                                                </div>
-                                            </div>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="v-pills-pemeriksaan-fisik-2" role="tabpanel" aria-labelledby="v-pills-pemeriksaan-fisik-2-tab">
                                 <div class="d-flex mb-2">
-                                    <form action="" method="post" name="fr3" id="fr3">
+                                    <form id="fisik2Form">
+                                        <input type="hidden" name="id" id="id" value="{{ $applicant->id }}">
                                         <p class="text-muted">Pemeriksaan Fisik 2</p>
                                         <div class="row g-3">
                                             <div class="row mb-3">
@@ -589,39 +646,36 @@
                                                 </div>
                                                 <div class="col-lg-9">
                                                     <input type="text" class="form-control-plaintext"
-                                                        id="nama_lengkap" placeholder="Enter name"
-                                                        value="GRIYA DINA P. HUTASOIT" readonly disabled>
-
+                                                        id="" placeholder="Enter name"
+                                                        value="{{ $applicant->nama }}" readonly disabled>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
-                                                <div class="col-lg-3">
+                                                <div class="col-sm-12">
                                                     <h6 class="fw-semibold">Dokter</h6>
-                                                </div>
-                                                <div class="col-lg-9">
-                                                    <select name="dokter" required="required" class="js-example-basic-single">
-                                                        <option value="dr. Lestari Rahmah, M.KT">dr. Lestari Rahmah, M.KT</option>
-                                                        <option value="dr. Khairunnisa Bestari">dr. Khairunnisa Bestari</option>
-                                                        <option value="dr. Ratna Zahara">dr. Ratna Zahara</option>
-                                                        <option value="dr. Ira Una Muna">dr. Ira Una Muna</option>
+                                                    <select name="dokter_id" class="dokter_id" required="required">
+                                                        <?php foreach ($dokters as $dokter): ?>
+                                                            <option value="<?= $dokter->id ?>"><?= $dokter->name ?></option>
+                                                        <?php endforeach; ?>
                                                         <option value="Lainnya">Lainnya</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="dokter_id_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
-                                                <div class="col-lg-3">
+                                                <div class="col-sm-12">
                                                     <h6 class="fw-semibold">Paramedis 3</h6>
-                                                </div>
-                                                <div class="col-lg-9">
-                                                    <select name="paramedis3" required="required" class="js-example-basic-single">
-                                                        <option value="Tri Wahyuni, Amd.Kep">Tri Wahyuni, Amd.Kep</option>
-                                                        <option value="Wardati Humaira">Wardati Humaira</option>
-                                                        <option value="Arini Muftih Fadhilla, Amd.Keb">Arini Muftih Fadhilla, Amd.Keb</option>
-                                                        <option value="Irma Rahmadani, Amd.Kes">Irma Rahmadani, Amd.Kes</option>
-                                                        <option value="Sulastri GP Tambunan">Sulastri GP Tambunan</option>
-                                                        <option value="Halimah Tussadiah Lubis">Halimah Tussadiah Lubis</option>
+                                                    <select name="paramedis_3_id" required="required" id="paramedis_3_id">
+                                                        <?php foreach ($paramediss as $paramedis): ?>
+                                                            <option value="<?= $paramedis->id ?>"><?= $paramedis->name ?></option>
+                                                        <?php endforeach; ?>
                                                         <option value="Lainnya">Lainnya</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="paramedis_3_id_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -632,238 +686,277 @@
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="thyroid_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_thyroid" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="thyroid_normal" required="required" class="form-select mb-3" id="thyroid_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_thyroid" required="required" class="form-select mb-3" id="status_thyroid" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="status_thyroid_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="thyroid_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_thyroid" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="thyroid_catatan"
-                                                        rows="3" class="form-control" id="thyroid_catatan"></textarea>
+                                                    <textarea name="catatan_thyroid"
+                                                        rows="3" class="form-control" id="catatan_thyroid"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_thyroid_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="thyroid_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_thyroid" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="thyroid_keterangan"
-                                                        rows="3" class="form-control" id="thyroid_keterangan"></textarea>
+                                                    <textarea name="keterangan_thyroid"
+                                                        rows="3" class="form-control" id="keterangan_thyroid"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_thyroid_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
-
                                             <div class="border mt-3 border-line"></div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <p class="text-muted">Pemeriksaan Jantung</p>
                                         </div>
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="jantung_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_jantung" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="jantung_normal" required="required" class="form-select mb-3" id="jantung_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_jantung" required="required" class="form-select mb-3" id="status_jantung" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
                                                 </div>
                                             </div>
 
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="jantung_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_jantung" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="jantung_catatan"
-                                                        rows="3" class="form-control" id="jantung_catatan"></textarea>
+                                                    <textarea name="catatan_jantung"
+                                                        rows="3" class="form-control" id="catatan_jantung"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_jantung_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="jantung_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_jantung" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="jantung_keterangan"
-                                                        rows="3" class="form-control" id="jantung_keterangan"></textarea>
+                                                    <textarea name="keterangan_jantung"
+                                                        rows="3" class="form-control" id="keterangan_jantung"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_jantung_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="border mt-3 border-line"></div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <p class="text-muted">Pemeriksaan Paru-Paru</p>
                                         </div>
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="paru_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_paru_paru" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="paru_normal" required="required" class="form-select mb-3" id="paru_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_paru_paru" required="required" class="form-select mb-3" id="status_paru_paru" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="paru_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_paru_paru" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="paru_catatan"
-                                                        rows="3" class="form-control" id="paru_catatan"></textarea>
+                                                    <textarea name="catatan_paru_paru"
+                                                        rows="3" class="form-control" id="catatan_paru_paru"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_paru_paru_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="paru_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_paru_paru" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="paru_keterangan"
-                                                        rows="3" class="form-control" id="paru_keterangan"></textarea>
+                                                    <textarea name="keterangan_paru_paru"
+                                                        rows="3" class="form-control" id="keterangan_paru_paru"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_paru_paru_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
-
-
                                             <div class="border mt-3 border-line"></div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <p class="text-muted">Pemeriksaan Abdomen</p>
                                         </div>
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="abdomen_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_abdomen" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="abdomen_normal" required="required" class="form-select mb-3" id="abdomen_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_abdomen" required="required" class="form-select mb-3" id="status_abdomen" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="abdomen_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_abdomen" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="abdomen_catatan"
-                                                        rows="3" class="form-control" id="abdomen_catatan"></textarea>
+                                                    <textarea name="catatan_abdomen"
+                                                        rows="3" class="form-control" id="catatan_abdomen"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_abdomen_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="abdomen_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_abdomen" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="abdomen_keterangan"
-                                                        rows="3" class="form-control" id="abdomen_keterangan"></textarea>
+                                                    <textarea name="keterangan_abdomen"
+                                                        rows="3" class="form-control" id="keterangan_abdomen"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_abdomen_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="border mt-3 border-line"></div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <p class="text-muted">Pemeriksaan Refleks</p>
                                         </div>
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="refleks_pupil" class="form-label">Refleks Pupil</label>
+                                                    <label for="status_refleks_pupil" class="form-label">Refleks Pupil</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="refleks_pupil" required="required" class="form-select mb-3" id="refleks_pupil" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_refleks_pupil" required="required" class="form-select mb-3" id="status_refleks_pupil" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="status_refleks_pupil_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="refleks_patela" class="form-label">Refleks Patela</label>
+                                                    <label for="status_refleks_patela" class="form-label">Refleks Patela</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="refleks_patela" required="required" class="form-select mb-3" id="refleks_patela" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_refleks_patela" required="required" class="form-select mb-3" id="status_refleks_patela" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="status_refleks_patela_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="refleks_achiles" class="form-label">Refleks Achiles</label>
+                                                    <label for="status_refleks_achiles" class="form-label">Refleks Achiles</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="refleks_achiles" required="required" class="form-select mb-3" id="refleks_achiles" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_refleks_achiles" required="required" class="form-select mb-3" id="status_refleks_achiles" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="status_refleks_achiles_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="refleks_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_refleks" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="refleks_catatan"
-                                                        rows="3" class="form-control" id="refleks_catatan"></textarea>
+                                                    <textarea name="catatan_refleks"
+                                                        rows="3" class="form-control" id="catatan_refleks"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_refleks_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="refleks_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_refleks" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="refleks_keterangan"
-                                                        rows="3" class="form-control" id="refleks_keterangan"></textarea>
+                                                    <textarea name="keterangan_refleks"
+                                                        rows="3" class="form-control" id="keterangan_refleks"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_refleks_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="border mt-3 border-line"></div>
                                         </div>
-
-
                                         <div class="row mb-3">
                                             <p class="text-muted">Pemeriksaan Thorax</p>
                                         </div>
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="thorax_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_thorax" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="thorax_normal" required="required" class="form-select mb-3" id="thorax_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_thorax" required="required" class="form-select mb-3" id="status_thorax" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="thorax_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_thorax" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="thorax_catatan"
-                                                        rows="3" class="form-control" id="thorax_catatan"></textarea>
+                                                    <textarea name="catatan_thorax"
+                                                        rows="3" class="form-control" id="catatan_thorax"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_thorax_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="thorax_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_thorax" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="thorax_keterangan"
-                                                        rows="3" class="form-control" id="thorax_keterangan"></textarea>
+                                                    <textarea name="keterangan_thorax"
+                                                        rows="3" class="form-control" id="keterangan_thorax"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_thorax_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="border mt-3 border-line"></div>
@@ -875,45 +968,45 @@
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="bicara_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_kemampuan_bicara" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="bicara_normal" required="required" class="form-select mb-3" id="bicara_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_kemampuan_bicara" required="required" class="form-select mb-3" id="status_kemampuan_bicara" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="bicara_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_kemampuan_bicara" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="bicara_catatan"
-                                                        rows="3" class="form-control" id="bicara_catatan"></textarea>
+                                                    <textarea name="catatan_kemampuan_bicara"
+                                                        rows="3" class="form-control" id="catatan_kemampuan_bicara"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_kemampuan_bicara_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="bicara_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_kemampuan_bicara" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="bicara_keterangan"
-                                                        rows="3" class="form-control" id="bicara_keterangan"></textarea>
+                                                    <textarea name="keterangan_kemampuan_bicara"
+                                                        rows="3" class="form-control" id="keterangan_kemampuan_bicara"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_kemampuan_bicara_error">
+                                                        *error
+                                                    </div>
                                                 </div>
-                                            </div>
-
-                                        </div>
-                                        <div class="row g-3">
-
-                                            <div class="row mb-3">
-                                                <div class="d-flex align-items-start gap-3 mt-4">
-                                                    <input type="hidden" name="nomor_peserta" id="nomor_peserta" value="420250483">
-                                                    <input type="hidden" name="tab" id="tab" value="3">
-                                                    <input type="hidden" name="submitfisik2" id="submitfisik2" value="1">
-                                                    <button type="submit"
-                                                        class="btn btn-success btn-label right ms-auto nexttab nexttab" form="fr3"><i
-                                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Simpan</button>
+                                                <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                    <button type="button"
+                                                        id="btnSaveFisik2"
+                                                        class="btn btn-success btn-load"
+                                                        onclick="saveFisik2();">
+                                                        <i class="ri ri-save-line me-1"></i> Simpan
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -922,7 +1015,8 @@
                             </div>
                             <div class="tab-pane fade" id="v-pills-pemeriksaan-gigi" role="tabpanel" aria-labelledby="v-pills-pemeriksaan-gigi-tab">
                                 <div class="d-flex mb-2">
-                                    <form action="" method="post" name="fr4" id="fr4">
+                                    <form id="gigiForm">
+                                        <input type="hidden" name="id" id="id" value="{{ $applicant->id }}">
                                         <p class="text-muted">Pemeriksaan Gigi</p>
                                         <div class="row g-3">
                                             <div class="row mb-3">
@@ -931,9 +1025,8 @@
                                                 </div>
                                                 <div class="col-lg-9">
                                                     <input type="text" class="form-control-plaintext"
-                                                        id="nama_lengkap" placeholder="Enter name"
-                                                        value="GRIYA DINA P. HUTASOIT" readonly disabled>
-
+                                                        id="nama" placeholder="Enter name"
+                                                        value="{{ $applicant->nama }}" readonly disabled>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -941,10 +1034,15 @@
                                                     <h6 class="fw-semibold">Dokter Gigi</h6>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="dokter_gigi" required="required" class="js-example-basic-single">
-                                                        <option value="drg.Bestari Aflah">drg.Bestari Aflah</option>
+                                                    <select name="dokter_gigi_id" id="dokter_gigi_id" required="required" class="js-example-basic-single">
+                                                        <?php foreach ($dokter_gigis as $dokter): ?>
+                                                            <option value="<?= $dokter->id ?>"><?= $dokter->name ?></option>
+                                                        <?php endforeach; ?>
                                                         <option value="Lainnya">Lainnya</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="dokter_gigi_id_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -952,65 +1050,72 @@
                                                     <h6 class="fw-semibold">Perawat Gigi</h6>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="perawat_gigi" required="required" class="js-example-basic-single">
-                                                        <option value="Tri Wahyuni, Amd.Kep">Tri Wahyuni, Amd.Kep</option>
-                                                        <option value="Wardati Humaira">Wardati Humaira</option>
-                                                        <option value="Arini Muftih Fadhilla, Amd.Keb">Arini Muftih Fadhilla, Amd.Keb</option>
-                                                        <option value="Irma Rahmadani, Amd.Kes">Irma Rahmadani, Amd.Kes</option>
-                                                        <option value="Sulastri GP Tambunan">Sulastri GP Tambunan</option>
-                                                        <option value="Halimah Tussadiah Lubis">Halimah Tussadiah Lubis</option>
+                                                    <select name="perawat_gigi_id" id="perawat_gigi_id" required="required" class="js-example-basic-single">
+                                                        <?php foreach ($perawat_gigis as $perawat): ?>
+                                                            <option value="<?= $perawat->id ?>"><?= $perawat->name ?></option>
+                                                        <?php endforeach; ?>
                                                         <option value="Lainnya">Lainnya</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="perawat_gigi_id_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="row mb-3">
                                             <p class="text-muted">Pemeriksaan Gigi</p>
                                         </div>
                                         <div class="row g-3">
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="gigi_normal" class="form-label">Status Normal</label>
+                                                    <label for="status_gigi" class="form-label">Status Normal</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <select name="gigi_normal" required="required" class="form-select mb-3" id="gigi_normal" aria-label="Default select example">
-                                                        <option value="1">Normal</option>
-                                                        <option value="2">Kelainan</option>
+                                                    <select name="status_gigi" required="required" class="form-select mb-3" id="status_gigi" aria-label="Default select example">
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Kelainan">Kelainan</option>
                                                     </select>
+                                                    <div class="text-danger text-error " id="status_gigi_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="gigi_catatan" class="form-label">Catatan</label>
+                                                    <label for="catatan_gigi" class="form-label">Catatan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="gigi_catatan"
-                                                        rows="3" class="form-control" id="gigi_catatan"></textarea>
+                                                    <textarea name="catatan_gigi"
+                                                        rows="3" class="form-control" id="catatan_gigi"></textarea>
+                                                    <div class="text-danger text-error " id="catatan_gigi_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-lg-3">
-                                                    <label for="gigi_keterangan" class="form-label">Keterangan</label>
+                                                    <label for="keterangan_gigi" class="form-label">Keterangan</label>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="gigi_keterangan"
-                                                        rows="3" class="form-control" id="gigi_keterangan"></textarea>
+                                                    <textarea name="keterangan_gigi"
+                                                        rows="3" class="form-control" id="keterangan_gigi"></textarea>
+                                                    <div class="text-danger text-error " id="keterangan_gigi_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
-
                                             <div class="border mt-3 border-line"></div>
                                         </div>
-
-
                                         <div class="row mb-3">
-                                            <div class="d-flex align-items-start gap-3 mt-4">
-                                                <input type="hidden" name="nomor_peserta" id="nomor_peserta" value="420250483">
-                                                <input type="hidden" name="tab" id="tab" value="4">
-                                                <input type="hidden" name="submitgigi" id="submitgigi" value="1">
-                                                <button type="submit"
-                                                    class="btn btn-success btn-label right ms-auto nexttab nexttab" form="fr4"><i
-                                                        class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Simpan</button>
+                                            <div class="col">
+                                                <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                    <button type="button"
+                                                        id="btnSaveGigi"
+                                                        class="btn btn-success btn-load"
+                                                        onclick="saveGigi();">
+                                                        <i class="ri ri-save-line me-1"></i> Simpan
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
@@ -1018,51 +1123,55 @@
                             </div>
                             <div class="tab-pane fade" id="v-pills-pemeriksaan-narkoba" role="tabpanel" aria-labelledby="v-pills-pemeriksaan-narkoba-tab">
                                 <div class="d-flex mb-2">
-                                    <form action="" method="post" name="fr5" id="fr5">
+                                    <form id="narkobaForm">
+                                        <input type="hidden" name="id" id="id" value="{{ $applicant->id }}">
                                         <div class="row mb-3">
                                             <div class="col-lg-3">
                                                 <h6 class="fw-semibold">Petugas Narkoba</h6>
                                             </div>
                                             <div class="col-lg-9">
-                                                <select name="petugas_narkoba" required="required" class="js-example-basic-single">
-                                                    <option value="Tania Regita">Tania Regita</option>
+                                                <select name="petugas_narkoba_id" id="petugas_narkoba_id" required="required" class="js-example-basic-single">
+                                                    <?php foreach ($petugas_narkobas as $petugas): ?>
+                                                        <option value="<?= $petugas->id ?>"><?= $petugas->name ?></option>
+                                                    <?php endforeach; ?>
                                                     <option value="Lainnya">Lainnya</option>
                                                 </select>
+                                                <div class="text-danger text-error " id="petugas_narkoba_id_error">
+                                                    *error
+                                                </div>
                                             </div>
                                         </div>
                                         <p class="text-muted">Pemeriksaan Narkoba</p>
                                         <div class="row g-3">
-
                                             <div class="col-sm-6">
                                                 <label for="antro_keterangan" class="form-label">AMP : Amphetamines (Amfetamin)</label>
                                                 <div class="col-md-12">
                                                     <div class="form-check mb-2">
-                                                        <input class="form-check-input" type="radio" name="narkoba_amp" id="narkoba_amp1" value="0" checked>
-                                                        <label class="form-check-label" for="narkoba_amp1">
+                                                        <input class="form-check-input" type="radio" name="amp" id="narkoba_amp0" value="Negatif" checked>
+                                                        <label class="form-check-label" for="narkoba_amp0">
                                                             Negatif
                                                         </label>
                                                     </div>
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="narkoba_amp" id="narkoba_amp2" value="1">
-                                                        <label class="form-check-label" for="narkoba_amp2">
+                                                        <input class="form-check-input" type="radio" name="amp" id="narkoba_amp1" value="Positif">
+                                                        <label class="form-check-label" for="narkoba_amp1">
                                                             Positif
                                                         </label>
                                                     </div>
-
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
                                                 <label for="antro_keterangan" class="form-label">MOP: Morphine (Morfina)</label>
                                                 <div class="col-md-12">
                                                     <div class="form-check mb-2">
-                                                        <input class="form-check-input" type="radio" name="narkoba_mop" id="narkoba_mop1" value="0" checked>
-                                                        <label class="form-check-label" for="narkoba_mop1">
+                                                        <input class="form-check-input" type="radio" name="mop" id="narkoba_mop0" value="Negatif" checked>
+                                                        <label class="form-check-label" for="narkoba_mop0">
                                                             Negatif
                                                         </label>
                                                     </div>
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="narkoba_mop" id="narkoba_mop2" value="1">
-                                                        <label class="form-check-label" for="narkoba_mop2">
+                                                        <input class="form-check-input" type="radio" name="mop" id="narkoba_mop1" value="Positif">
+                                                        <label class="form-check-label" for="narkoba_mop1">
                                                             Positif
                                                         </label>
                                                     </div>
@@ -1072,26 +1181,31 @@
                                                 <label for="narkoba_" class="form-label">THC: Tetrahydrocannabinol (Tetrahidrokannabinol)</label>
                                                 <div class="col-md-12">
                                                     <div class="form-check mb-2">
-                                                        <input class="form-check-input" type="radio" name="narkoba_thc" id="narkoba_thc1" value="0" checked>
-                                                        <label class="form-check-label" for="narkoba_thc1">
+                                                        <input class="form-check-input" type="radio" name="thc" id="thc0" value="Negatif" checked>
+                                                        <label class="form-check-label" for="thc0">
                                                             Negatif
                                                         </label>
                                                     </div>
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="narkoba_thc" id="narkoba_thc2" value="1">
-                                                        <label class="form-check-label" for="narkoba_thc2">
+                                                        <input class="form-check-input" type="radio" name="thc" id="thc1" value="Positif">
+                                                        <label class="form-check-label" for="thc1">
                                                             Positif
                                                         </label>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="d-flex align-items-start gap-3 mt-4">
-                                                <input type="hidden" name="nomor_peserta" id="nomor_peserta" value="420250483">
-                                                <input type="hidden" name="tab" id="tab" value="5">
-                                                <input type="hidden" name="submitnarkoba" id="submitnarkoba" value="1">
-                                                <button type="submit"
-                                                    class="btn btn-success btn-label right ms-auto nexttab nexttab" form="fr5"><i
-                                                        class="ri-arrow-right-line label-icon "></i>Simpan</button>
+
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col">
+                                                <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                    <button type="button"
+                                                        id="btnSaveNarkoba"
+                                                        class="btn btn-success btn-load"
+                                                        onclick="saveNarkoba();">
+                                                        <i class="ri ri-save-line me-1"></i> Simpan
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
@@ -1134,15 +1248,21 @@
                                                     <span class="text-muted">mengikuti pendidikan pada institusi yang dituju.</span>
                                                 </div>
                                             </div>
+                                            <div class="col-sm-12">
+                                                <div class="alert alert-success" role="alert">
+                                                    <strong> Yey! Everything worked! </strong> A simple <b>success alert</b> —check it out!
+                                                </div>
 
+                                                <div class="alert alert-danger" role="alert">
+                                                    <strong> Yey! Everything worked! </strong> A simple <b>danger alert</b> —check it out!
+                                                </div>
+                                            </div>
                                             <div class="d-flex align-items-start gap-3 mt-4">
                                                 <input type="hidden" name="nomor_peserta" id="nomor_peserta" value="420250483">
                                                 <input type="hidden" name="tab" id="tab" value="5">
                                                 <input type="hidden" name="submitakhir" id="submitakhir" value="1">
                                                 <input type="hidden" id="nama_lengkap" name="nama_lengkap" value="GRIYA DINA P. HUTASOIT">
-                                                <button type="submit"
-                                                    class="btn btn-success btn-label right ms-auto nexttab nexttab" form="fr6"><i
-                                                        class="ri-arrow-right-line label-icon "></i>Simpan</button>
+                                                <button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab" form="fr6"><i class="ri-arrow-right-line label-icon "></i>Simpan</button>
                                             </div>
                                         </div>
                                     </form>
@@ -1167,73 +1287,120 @@
 
     var table;
 
-    $(document).ready(function() {});
+    $(document).ready(function() {
+        $('#paramedis_1_id').select2();
+        $('#paramedis_2_id').select2();
+        $('#paramedis_3_id').select2();
+        $('#dokter_gigi_id').select2();
+        $('#perawat_gigi_id').select2();
+        $('#petugas_narkoba_id').select2();
+        $('.dokter_id').select2();
+        $('.text-error').text('');
+        loadData();
+    });
 
-    function reload_table() {
-        table.ajax.reload(null, false);
+    function loadData() {
+        $.ajax({
+            url: "{{ url('/admin/medical-form/get/'.$applicant->id) }}",
+            type: "GET",
+            dataType: "JSON",
+            success: function(data) {
+                console.log(data);
+                //ANTROPOMETRI
+                if (data.dokter != "") {
+                    $('.dokter_id').val(data.dokter_id).trigger('change');
+                }
+                if (data.paramedis_1 != "") {
+                    $('#paramedis_1_id').val(data.paramedis_1_id).trigger('change');
+                }
+
+                if (data.paramedis_2 != "") {
+                    $('#paramedis_2_id').val(data.paramedis_2_id).trigger('change');
+                }
+
+                if (data.paramedis_3 != "") {
+                    $('#paramedis_3_id').val(data.paramedis_3_id).trigger('change');
+                }
+
+                if (data.dokter_gigi != "") {
+                    $('#dokter_gigi_id').val(data.dokter_gigi_id).trigger('change');
+                }
+
+                if (data.perawat_gigi != "") {
+                    $('#perawat_gigi_id').val(data.perawat_gigi_id).trigger('change');
+                }
+
+                if (data.petugas_narkoba != "") {
+                    $('#petugas_narkoba_id').val(data.petugas_narkoba_id).trigger('change');
+                }
+
+                // $('#paramedis_1_id').val(data.paramedis_1_id).trigger('change');
+                // $('#paramedis_2_id').val(data.paramedis_2_id).trigger('change');
+                // $('#paramedis_3_id').val(data.paramedis_3_id).trigger('change');
+                // $('#dokter_gigi_id').val(data.dokter_gigi_id).trigger('change');
+                // $('#perawat_gigi_id').val(data.perawat_gigi_id).trigger('change');
+
+                const exclude = ['dokter_id', 'paramedis_1_id', 'paramedis_2_id', 'paramedis_3_id',
+                    'dokter_gigi_id', 'perawat_gigi_id', 'petugas_narkoba_id'
+                ];
+
+                $.each(data, function(key, value) {
+                    if (exclude.includes(key)) return;
+
+                    const el = $('#' + key);
+                    if (el.length) {
+                        el.val(value);
+                    }
+                });
+
+                if (data.amp !== undefined) {
+                    $('input[name="amp"][value="' + data.amp + '"]').prop('checked', true);
+                }
+                if (data.mop !== undefined) {
+                    $('input[name="mop"][value="' + data.mop + '"]').prop('checked', true);
+                }
+                if (data.thc !== undefined) {
+                    $('input[name="thc"][value="' + data.thc + '"]').prop('checked', true);
+                }
+
+                // $('#lingkar_kepala').val(data.lingkar_kepala);
+                // $('#lingkar_perut').val(data.lingkar_perut);
+                // $('#imt').val(data.imt);
+                // $('#status_gizi').val(data.status_gizi);
+                // $('#antropometri_keterangan').val(data.keterangan);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // alert('Error adding / update data');
+                // showAlert("Error!", textStatus, "error");
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+                // $('#btnSave').attr('disabled', false); //set button enable 
+            }
+        });
     }
 
-    function showFilter() {
-        $('#filter_modal').modal('show');
+    function moveTab(tabFrom, tabTo) {
+        $('#v-pills-' + tabFrom + '-tab').removeClass('active');
+        $('#v-pills-' + tabFrom).removeClass('show active');
+        $('#v-pills-' + tabTo + '-tab').addClass('active');
+        $('#v-pills-' + tabTo).addClass('show active');
     }
 
-    function filter() {
-        $('#btnFilter').html(loading_animation); //change button text
-        $('#btnFilter').attr('disabled', true); //set button disable 
-
-        $('#filter_modal').modal('hide');
-        $('#btnFilter').html('<i class="ri ri-save-line me-1"></i> Filter');
-        $('#btnFilter').attr('disabled', false); //set button enable 
-        reload_table();
-    }
-
-    function add() {
-        save_method = 'add';
+    function saveAntropometri() {
         $('.text-error').empty(); // clear error string
-        $('#form')[0].reset(); // reset form on modals
-        $('#btnSave').html(save_text);
-        $('#modal-title').text('Tambah Data Baru'); // Set Title to Bootstrap modal title
-        $('#modal_form').modal('show'); // show bootstrap modal
-    }
+        $('#btnSaveAntropometri').html(loading_animation); //change button text
+        $('#btnSaveAntropometri').attr('disabled', true); //set button disable 
 
-    function add_import() {
-        $('.text-error').empty(); // clear error string
-        $('#import_form')[0].reset(); // reset form on modals
-        $('#btnImport').html(save_text);
-        $('#import_modal').modal('show'); // show bootstrap modal
-    }
-
-    function save() {
-        $('.text-error').empty(); // clear error string
-        $('#btnSave').html(loading_animation); //change button text
-        $('#btnSave').attr('disabled', true); //set button disable 
-        var url;
-
-        if (save_method == 'add') {
-            url = "{{ url('/admin/medical-form/add') }}";
-        } else {
-            url = "{{ url('/admin/medical-form/update') }}";
-        }
-
-        var formData = new FormData($('#form')[0]);
+        var formData = new FormData($('#antropometriForm')[0]);
         formData.append("_token", "{{ csrf_token() }}");
 
         formData.forEach((value, key) => {
             console.log(key, value);
         });
 
-        // var checkbox1Value = formData.get('has_view');
-        // var checkbox2Value = formData.get('has_add');
-        // var checkbox3Value = formData.get('has_edit');
-        // var checkbox4Value = formData.get('has_delete');
-
-        // console.log(checkbox1Value); // Output: "option1" (if checked)
-        // console.log(checkbox2Value); // Output: "option2" (if checked)
-        // console.log(checkbox3Value);
-        // console.log(checkbox4Value);
-
         $.ajax({
-            url: url,
+            url: "{{ url('/admin/medical-form/update-antropometri') }}",
             type: "POST",
             data: formData,
             dataType: "JSON",
@@ -1244,32 +1411,17 @@
                 if (data.status) //if success close modal and reload ajax table
                 {
                     var text = data.message;
-                    // if (save_method == 'add') {
-                    //     text = 'Data Berhasil Ditambahkan';
-                    // } else {
-                    //     text = 'Data Berhasil Diperbaharui';
-                    // }
-
-                    // toastr.success(text);
-                    // swal("Berhasil!", text, "success");
-                    showAlert("Berhasil", text, "success");
-                    // notification('success', 'Success', text);
-                    $('#modal_form').modal('hide');
-                    reload_table();
+                    toast("Berhasil! " + text, "success", 3000);
+                    loadData();
+                    moveTab('pemeriksaan-antropometri', 'pemeriksaan-fisik');
                 } else {
                     console.log(data.message);
                     for (const [key, value] of Object.entries(data.message)) {
                         $('#' + key + '_error').html('*' + value);
                     }
-
-                    if (save_method == 'add') {
-                        $('#btnSave').html(save_text);
-                    } else {
-                        $('#btnSave').html(update_text);
-                    }
                 }
-
-                $('#btnSave').attr('disabled', false); //set button enable 
+                $('#btnSaveAntropometri').html(save_text);
+                $('#btnSaveAntropometri').attr('disabled', false); //set button enable 
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 // alert('Error adding / update data');
@@ -1282,21 +1434,23 @@
         });
     }
 
-    function save_import() {
+    function saveFisik() {
         $('.text-error').empty(); // clear error string
-        $('#btnImport').html(loading_animation); //change button text
-        $('#btnImport').attr('disabled', true); //set button disable 
-        var url;
+        $('#btnSaveFisik').html(loading_animation); //change button text
+        $('#btnSaveFisik').attr('disabled', true); //set button disable 
 
-        var formData = new FormData($('#import_form')[0]);
+        var formData = new FormData($('#fisikForm')[0]);
         formData.append("_token", "{{ csrf_token() }}");
-        formData.append("period", $('#period').val());
-        formData.append("study_program", $('#study_program').val());
+
+        formData.forEach((value, key) => {
+            console.log(key, value);
+        });
 
         $.ajax({
-            url: "{{ url('admin/applicant/import') }}",
+            url: "{{ url('/admin/medical-form/update-fisik') }}",
             type: "POST",
             data: formData,
+            dataType: "JSON",
             processData: false,
             contentType: false,
             success: function(data) {
@@ -1304,32 +1458,160 @@
                 if (data.status) //if success close modal and reload ajax table
                 {
                     var text = data.message;
-                    console.log('tes');
-                    // if (save_method == 'add') {
-                    //     text = 'Data Berhasil Ditambahkan';
-                    // } else {
-                    //     text = 'Data Berhasil Diperbaharui';
-                    // }
-
-                    // toastr.success(text);
-                    showAlert("Berhasil!", text, "success");
-                    // notification('success', 'Success', text);
-                    $('#import_modal').modal('hide');
-                    reload_table();
+                    toast("Berhasil! " + text, "success", 3000);
+                    loadData();
+                    moveTab('pemeriksaan-fisik', 'pemeriksaan-fisik-2');
                 } else {
                     console.log(data.message);
                     for (const [key, value] of Object.entries(data.message)) {
                         $('#' + key + '_error').html('*' + value);
                     }
-
-                    $('#btnImport').html(save_text);
                 }
-
-                $('#btnImport').attr('disabled', false); //set button enable 
+                $('#btnSaveFisik').html(save_text);
+                $('#btnSaveFisik').attr('disabled', false); //set button enable 
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                $('#btnImport').html(save_text);
-                $('#btnImport').attr('disabled', false); //set button enable 
+                // alert('Error adding / update data');
+                showAlert("Error!", textStatus, "error");
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+                // $('#btnSave').attr('disabled', false); //set button enable 
+            }
+        });
+    }
+
+    function saveFisik2() {
+        $('.text-error').empty(); // clear error string
+        $('#btnSaveFisik2').html(loading_animation); //change button text
+        $('#btnSaveFisik2').attr('disabled', true); //set button disable 
+
+        var formData = new FormData($('#fisik2Form')[0]);
+        formData.append("_token", "{{ csrf_token() }}");
+
+        formData.forEach((value, key) => {
+            console.log(key, value);
+        });
+
+        $.ajax({
+            url: "{{ url('/admin/medical-form/update-fisik-2') }}",
+            type: "POST",
+            data: formData,
+            dataType: "JSON",
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                console.log(data);
+                if (data.status) //if success close modal and reload ajax table
+                {
+                    var text = data.message;
+                    toast("Berhasil! " + text, "success", 3000);
+                    loadData();
+                    moveTab('pemeriksaan-fisik-2', 'pemeriksaan-gigi');
+                } else {
+                    console.log(data.message);
+                    for (const [key, value] of Object.entries(data.message)) {
+                        $('#' + key + '_error').html('*' + value);
+                    }
+                }
+                $('#btnSaveFisik2').html(save_text);
+                $('#btnSaveFisik2').attr('disabled', false); //set button enable 
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // alert('Error adding / update data');
+                showAlert("Error!", textStatus, "error");
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+                // $('#btnSave').attr('disabled', false); //set button enable 
+            }
+        });
+    }
+
+    function saveGigi() {
+        $('.text-error').empty(); // clear error string
+        $('#btnSaveGigi').html(loading_animation); //change button text
+        $('#btnSaveGigi').attr('disabled', true); //set button disable 
+
+        var formData = new FormData($('#gigiForm')[0]);
+        formData.append("_token", "{{ csrf_token() }}");
+
+        formData.forEach((value, key) => {
+            console.log(key, value);
+        });
+
+        $.ajax({
+            url: "{{ url('/admin/medical-form/update-gigi') }}",
+            type: "POST",
+            data: formData,
+            dataType: "JSON",
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                console.log(data);
+                if (data.status) //if success close modal and reload ajax table
+                {
+                    var text = data.message;
+                    toast("Berhasil! " + text, "success", 3000);
+                    loadData();
+                    moveTab('pemeriksaan-gigi', 'pemeriksaan-narkoba');
+                } else {
+                    console.log(data.message);
+                    for (const [key, value] of Object.entries(data.message)) {
+                        $('#' + key + '_error').html('*' + value);
+                    }
+                }
+                $('#btnSaveGigi').html(save_text);
+                $('#btnSaveGigi').attr('disabled', false); //set button enable 
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // alert('Error adding / update data');
+                showAlert("Error!", textStatus, "error");
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+                // $('#btnSave').attr('disabled', false); //set button enable 
+            }
+        });
+    }
+
+    function saveNarkoba() {
+        $('.text-error').empty(); // clear error string
+        $('#btnSaveNarkoba').html(loading_animation); //change button text
+        $('#btnSaveNarkoba').attr('disabled', true); //set button disable 
+
+        var formData = new FormData($('#narkobaForm')[0]);
+        formData.append("_token", "{{ csrf_token() }}");
+
+        formData.forEach((value, key) => {
+            console.log(key, value);
+        });
+
+        $.ajax({
+            url: "{{ url('/admin/medical-form/update-narkoba') }}",
+            type: "POST",
+            data: formData,
+            dataType: "JSON",
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                console.log(data);
+                if (data.status) //if success close modal and reload ajax table
+                {
+                    var text = data.message;
+                    toast("Berhasil! " + text, "success", 3000);
+                    loadData();
+                    moveTab('pemeriksaan-narkoba', 'kesimpulan');
+                } else {
+                    console.log(data.message);
+                    for (const [key, value] of Object.entries(data.message)) {
+                        $('#' + key + '_error').html('*' + value);
+                    }
+                }
+                $('#btnSaveNarkoba').html(save_text);
+                $('#btnSaveNarkoba').attr('disabled', false); //set button enable 
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
                 // alert('Error adding / update data');
                 showAlert("Error!", textStatus, "error");
                 console.log(jqXHR);

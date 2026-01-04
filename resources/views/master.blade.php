@@ -248,6 +248,13 @@
             </div>
             <div class="sidebar-background"></div>
         </div>
+
+        <div id="globalAlert"
+            class="alert alert-dismissible fade d-none position-fixed top-0 end-0 m-3"
+            style="z-index:1055;">
+            <span id="globalAlertText"></span>
+        </div>
+
         <!-- Left Sidebar End -->
         <!-- Vertical Overlay-->
         <div class="vertical-overlay"></div>
@@ -315,11 +322,10 @@
         <!-- prismjs plugin -->
         <script src="{{ asset('assets/libs/prismjs/prism.js') }}"></script>
         <!--select2 cdn-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
         <!-- form wizard init -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
         <!--datatable js-->
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
@@ -343,6 +349,20 @@
                     buttonsStyling: false,
                     showCloseButton: true
                 });
+            }
+
+            function toast(message, type = 'success', duration = 3000) {
+                const alert = $('#globalAlert');
+
+                alert
+                    .removeClass('d-none alert-success alert-danger alert-warning alert-info')
+                    .addClass('alert-' + type + ' show');
+
+                $('#globalAlertText').text(message);
+
+                setTimeout(() => {
+                    alert.removeClass('show');
+                }, duration);
             }
         </script>
         @stack('after-script')

@@ -21,7 +21,7 @@ class ApplicantMedicalRecord extends Model
         "tgl_periksa",
         "status_bayar",
         "tempat_periksa",
-        "petugas_registrasi",
+        "petugas_registrasi_id",
         "dokter_id",
         "paramedis_1_id",
         "tinggi_badan",
@@ -50,7 +50,7 @@ class ApplicantMedicalRecord extends Model
         "catatan_hidung",
         "keterangan_hidung",
         "status_lidah",
-        "fisik_lidah",
+        "catatan_lidah",
         "keterangan_lidah",
         "status_pharynx",
         "catatan_pharynx",
@@ -104,6 +104,11 @@ class ApplicantMedicalRecord extends Model
     public function period()
     {
         return $this->belongsTo(Period::class, 'period_id');
+    }
+
+    public function petugas_registrasi()
+    {
+        return $this->belongsTo(User::class, 'petugas_registrasi_id');
     }
 
     public function dokter()

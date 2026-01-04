@@ -157,6 +157,7 @@ class RegistrationController extends Controller
                     $data->umur = $request->umur;
                     $data->status_bayar = $request->has('status_bayar') ? 1 : 0;
                     $data->nomor_antrian = $request->nomor_antrian;
+                    $data->petugas_registrasi = auth()->user()->id;
                     $data->save();
 
                     $message = 'Data Berhasil Diperbaharui';

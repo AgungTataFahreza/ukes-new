@@ -136,7 +136,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/medical-form', [MedicalFormController::class, 'index']);
         Route::post('/medical-form/show', [MedicalFormController::class, 'show']);
         Route::get('/medical-form/edit/{id}', [MedicalFormController::class, 'edit']);
-        Route::post('/medical-form/update', [MedicalFormController::class, 'update']);
+        Route::get('/medical-form/get/{id}', [MedicalFormController::class, 'get']);
+        Route::post('/medical-form/update-antropometri', [MedicalFormController::class, 'updateAntropometri']);
+        Route::post('/medical-form/update-fisik', [MedicalFormController::class, 'updateFisik']);
+        Route::post('/medical-form/update-fisik-2', [MedicalFormController::class, 'updateFisik2']);
+        Route::post('/medical-form/update-gigi', [MedicalFormController::class, 'updateGigi']);
+        Route::post('/medical-form/update-narkoba', [MedicalFormController::class, 'updateNarkoba']);
     });
     Route::get('/logout', [AuthController::class, 'logout']);
 
