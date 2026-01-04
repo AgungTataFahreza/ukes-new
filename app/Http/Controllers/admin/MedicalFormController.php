@@ -40,7 +40,7 @@ class MedicalFormController extends Controller
 
             $period_id = $request->period_id;
             $study_program_id = $request->study_program_id;
-            $query = ApplicantMedicalRecord::with('period', 'study_program');
+            $query = ApplicantMedicalRecord::with('period', 'study_program')->where('tgl_registrasi', '!=', null);
 
             if ($period_id) {
                 $query->where('period_id', $period_id);
@@ -53,7 +53,7 @@ class MedicalFormController extends Controller
 
             return datatables()->of($result)
                 ->addColumn('action', function ($result) {
-                    $button = '<button type="button" onclick="edit(this,' . "'" . $result->id . "'" . ')" style="margin-right:5px;" class="btn btn-warning btn-sm btn-label waves-effect waves-light"><i class="ri-pencil-line label-icon align-middle fs-16 me-2"></i> Edit</button>';
+                    $button = '<a href="' . url('admin/medical-form/edit/' . $result->id) . '" target="_blank" style="margin-right:5px;" class="btn btn-success btn-sm btn-label waves-effect waves-light"><i class="ri-file-list-line label-icon align-middle fs-16 me-2"></i> Periksa</a>';
                     return $button;
                 })
                 ->addColumn('period_name', function ($result) {
@@ -65,11 +65,18 @@ class MedicalFormController extends Controller
                 ->editColumn('jenis_kelamin', function ($result) {
                     return $result->jenis_kelamin == 'L' ? '<span class="badge bg-primary"> Laki-laki</span>' : '<span class="badge bg-danger"> Perempuan</span>';
                 })
+                ->editColumn('tgl_registrasi', function ($result) {
+                    return date('d-m-Y', strtotime($result->tgl_registrasi));
+                })
+                ->addColumn('status', function ($result) {
+                    return $result->rekomendasi ? '<span class="badge badge-label bg-success"><i class="mdi mdi-circle-medium"></i> Selesai</span>' : '';
+                })
                 ->rawColumns([
                     'action' => 'action',
                     'period_name' => 'period_name',
                     'study_program_name' => 'study_program_name',
                     'jenis_kelamin' => 'jenis_kelamin',
+                    'status' => 'status',
                 ])
                 ->addIndexColumn()
                 ->make(true);
@@ -78,10 +85,14 @@ class MedicalFormController extends Controller
 
     public function edit(Request $request)
     {
-        if (request()->ajax()) {
-            $result = ApplicantMedicalRecord::find($request->id);
-            return response()->json($result);
-        }
+        session()->put('menu', 'medical-form');
+        session()->put('title', 'Formulir Uji Kesehatan');
+        session()->put('key', $this->key);
+        $data['permissions'] = $this->permissions;
+        $data['study_programs'] = StudyProgram::orderBy('name', 'asc')->get();
+        $data['periods'] = Period::orderBy('name', 'desc')->get();
+        $data['applicant'] = ApplicantMedicalRecord::find($request->id);
+        return view('admin.medical-form-edit', $data);
     }
 
     public function update(Request $request)

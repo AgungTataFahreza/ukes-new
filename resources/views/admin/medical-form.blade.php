@@ -37,7 +37,9 @@
                             <th scope="col">Nama</th>
                             <th scope="col">Jenis Kelamin</th>
                             <th scope="col">Prodi</th>
+                            <th scope="col">Tanggal Registrasi</th>
                             <th scope="col">Action</th>
+                            <th scope="col">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -321,9 +323,15 @@
                     data: 'study_program_name'
                 },
                 {
+                    data: 'tgl_registrasi'
+                },
+                {
                     data: 'action',
                     orderable: false,
                     searchable: false
+                },
+                {
+                    data: 'status',
                 }
             ],
 

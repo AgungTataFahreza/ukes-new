@@ -135,7 +135,7 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/medical-form', [MedicalFormController::class, 'index']);
         Route::post('/medical-form/show', [MedicalFormController::class, 'show']);
-        Route::post('/medical-form/edit', [MedicalFormController::class, 'edit']);
+        Route::get('/medical-form/edit/{id}', [MedicalFormController::class, 'edit']);
         Route::post('/medical-form/update', [MedicalFormController::class, 'update']);
     });
     Route::get('/logout', [AuthController::class, 'logout']);
