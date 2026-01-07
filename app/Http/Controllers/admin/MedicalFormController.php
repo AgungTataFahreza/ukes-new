@@ -367,10 +367,41 @@ class MedicalFormController extends Controller
         }
     }
 
-    public function cekKesimpulan(Request $request)
+    public function updateKesimpulan(Request $request)
     {
         if (request()->ajax()) {
             try {
+                $rules = [
+                    "kesimpulan" => "required",
+                ];
+                $validator = Validator::make($request->all(), $rules);
+
+                $validator->after(function ($validator) use ($request) {
+                    $check = ApplicantMedicalRecord::find(request()->id);
+                    if ($check->tinggi_badan == null || $check->buta_warna == null) {
+                        $validator->errors()->add('kesimpulan', 'Lengkapi data antropometri dan fisik terlebih dahulu');
+                    }
+                    $data = $this->cekKesimpulan($request);
+
+                    if (request()->cek == "false" && $data['kesimpulan'] != $request->rekomendasi) {
+                        $validator->errors()->add('result', 'Hasil kesimpulan tidak sesuai. Silahkan cek kembali');
+                    }
+                });
+
+                if ($validator->fails()) {
+                    $message = $validator->errors();
+                    $status = FALSE;
+                } else {
+                    $this->updateTanggalPeriksa($request->id);
+                    $data = ApplicantMedicalRecord::find($request->id);
+                    $data->kesimpulan = $request->kesimpulan;
+                    $data->rekomendasi = $request->rekomendasi;
+                    $data->riwayat_penyakit = ifEmptyInput($request->riwayat_penyakit);
+                    $data->save();
+
+                    $message = 'Data Berhasil Diperbaharui';
+                    $status = TRUE;
+                }
             } catch (\Exception $e) {
                 $status = FALSE;
                 $message = $e->getMessage();
@@ -378,6 +409,177 @@ class MedicalFormController extends Controller
             return response()->json(['status' => $status, 'message' => $message]);
         }
     }
+
+    public function getKesimpulan(Request $request)
+    {
+        if ($request->ajax()) {
+            try {
+                $result = $this->cekKesimpulan($request);
+                return response()->json($result);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $e->getMessage()
+                ]);
+            }
+        }
+    }
+
+    public function cekKesimpulan(Request $request)
+    {
+        $data = ApplicantMedicalRecord::findOrFail($request->id);
+
+        // Kelompok Program Studi
+        $keperawatanIds = [10, 11, 12, 13, 14, 15];
+        $kebidananIds   = [5, 6, 7, 8, 9];
+
+        // Default nilai
+        $status          = false;
+        $hasil           = 'TIDAK LULUS';
+        $kesimpulan      = 'Tidak Dapat';
+        $alasan          = '';
+        $alasan_singkat  = '';
+        $parameter       = [];
+
+        /*
+            |--------------------------------------------------------------------------
+            | RULE 1 : BUTA WARNA (SYARAT MUTLAK)
+            |--------------------------------------------------------------------------
+            */
+        if (in_array($data->buta_warna, ['Parsial', 'Total'])) {
+
+            $status         = false;
+            $hasil          = 'TIDAK LULUS';
+            $kesimpulan     = 'Tidak Dapat';
+            $alasan_singkat = 'Buta warna';
+            $alasan         = 'Tidak lulus karena calon mahasiswa mengalami buta warna '
+                . strtolower($data->buta_warna)
+                . ', sedangkan uji buta warna merupakan persyaratan mutlak untuk seluruh program studi.';
+
+            $parameter = [
+                'buta_warna' => $data->buta_warna
+            ];
+        } else {
+
+            /*
+                |--------------------------------------------------------------------------
+                | RULE 2 : PROGRAM STUDI KEPERAWATAN
+                |--------------------------------------------------------------------------
+                */
+            if (in_array($data->study_program_id, $keperawatanIds)) {
+
+                if ($data->jenis_kelamin === 'L') {
+
+                    $parameter = [
+                        'program_studi' => $data->study_program->name,
+                        'jenis_kelamin' => 'Laki-laki',
+                        'syarat_tinggi' => '≥ 155 cm',
+                        'tinggi_badan'  => $data->tinggi_badan . ' cm'
+                    ];
+
+                    if ($data->tinggi_badan >= 155) {
+                        $status         = true;
+                        $hasil          = 'LULUS';
+                        $kesimpulan     = 'Dapat';
+                        $alasan_singkat = 'Memenuhi syarat tinggi';
+                        $alasan         = 'Lulus karena calon mahasiswa program studi Keperawatan berjenis kelamin laki-laki dengan tinggi badan memenuhi syarat minimal 155 cm.';
+                    } else {
+                        $status         = false;
+                        $hasil          = 'TIDAK LULUS';
+                        $kesimpulan     = 'Tidak Dapat';
+                        $alasan_singkat = 'Tinggi Badan Kurang, ' . $data->tinggi_badan . ' cm';
+                        $alasan         = 'Tidak lulus karena tinggi badan calon mahasiswa program studi Keperawatan berjenis kelamin laki-laki di bawah syarat minimal 155 cm.';
+                    }
+                } elseif ($data->jenis_kelamin === 'P') {
+
+                    $parameter = [
+                        'program_studi' => $data->study_program->name,
+                        'jenis_kelamin' => 'Perempuan',
+                        'syarat_tinggi' => '≥ 150 cm',
+                        'tinggi_badan'  => $data->tinggi_badan . ' cm'
+                    ];
+
+                    if ($data->tinggi_badan >= 150) {
+                        $status         = true;
+                        $hasil          = 'LULUS';
+                        $kesimpulan     = 'Dapat';
+                        $alasan_singkat = 'Memenuhi syarat tinggi';
+                        $alasan         = 'Lulus karena calon mahasiswa program studi Keperawatan berjenis kelamin perempuan dengan tinggi badan memenuhi syarat minimal 150 cm.';
+                    } else {
+                        $status         = false;
+                        $hasil          = 'TIDAK LULUS';
+                        $kesimpulan     = 'Tidak Dapat';
+                        $alasan_singkat = 'Tinggi Badan Kurang, ' . $data->tinggi_badan . ' cm';
+                        $alasan         = 'Tidak lulus karena tinggi badan calon mahasiswa program studi Keperawatan berjenis kelamin perempuan di bawah syarat minimal 150 cm.';
+                    }
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | RULE 3 : PROGRAM STUDI KEBIDANAN
+                |--------------------------------------------------------------------------
+                */
+            } elseif (in_array($data->study_program_id, $kebidananIds)) {
+
+                $parameter = [
+                    'program_studi' => $data->study_program->name,
+                    'syarat_tinggi' => '≥ 150 cm',
+                    'tinggi_badan'  => $data->tinggi_badan . ' cm'
+                ];
+
+                if ($data->tinggi_badan >= 150) {
+                    $status         = true;
+                    $hasil          = 'LULUS';
+                    $kesimpulan     = 'Dapat';
+                    $alasan_singkat = 'Memenuhi syarat tinggi';
+                    $alasan         = 'Lulus karena calon mahasiswa program studi Kebidanan memenuhi syarat tinggi badan minimal 150 cm.';
+                } else {
+                    $status         = false;
+                    $hasil          = 'TIDAK LULUS';
+                    $kesimpulan     = 'Tidak Dapat';
+                    $alasan_singkat = 'Tinggi Badan Kurang, ' . $data->tinggi_badan . ' cm';
+                    $alasan         = 'Tidak lulus karena tinggi badan calon mahasiswa program studi Kebidanan berada di bawah syarat minimal 150 cm.';
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | RULE 4 : PROGRAM STUDI SELAIN KEPERAWATAN & KEBIDANAN
+                |--------------------------------------------------------------------------
+                */
+            } else {
+
+                $parameter = [
+                    'program_studi' => $data->study_program->name,
+                    'syarat_tinggi' => '≥ 145 cm',
+                    'tinggi_badan'  => $data->tinggi_badan . ' cm'
+                ];
+
+                if ($data->tinggi_badan >= 145) {
+                    $status         = true;
+                    $hasil          = 'LULUS';
+                    $kesimpulan     = 'Dapat';
+                    $alasan_singkat = 'Memenuhi syarat tinggi';
+                    $alasan         = 'Lulus karena calon mahasiswa memenuhi syarat tinggi badan minimal 145 cm sesuai ketentuan program studi.';
+                } else {
+                    $status         = false;
+                    $hasil          = 'TIDAK LULUS';
+                    $kesimpulan     = 'Tidak Dapat';
+                    $alasan_singkat = 'Tinggi Badan Kurang, ' . $data->tinggi_badan . ' cm';
+                    $alasan         = 'Tidak lulus karena tinggi badan calon mahasiswa berada di bawah syarat minimal 145 cm.';
+                }
+            }
+        }
+
+        return [
+            'status'          => $status,
+            'hasil'           => $hasil,
+            'kesimpulan'      => $kesimpulan,
+            'alasan'          => $alasan,
+            'alasan_singkat'  => $alasan_singkat,
+            'parameter'       => $parameter
+        ];
+    }
+
 
     public function get(Request $request)
     {

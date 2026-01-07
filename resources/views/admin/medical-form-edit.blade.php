@@ -1213,14 +1213,18 @@
                             </div>
                             <div class="tab-pane fade" id="v-pills-kesimpulan" role="tabpanel" aria-labelledby="v-pills-kesimpulan-tab">
                                 <div class="d-flex mb-2">
-                                    <form action="index.php?app=daftar_pemeriksaan" method="post" name="fr6" id="fr6">
+                                    <form id="kesimpulanForm">
+                                        <input type="hidden" name="id" id="id" value="{{ $applicant->id }}">
                                         <p class="text-muted">Hasil Akhir</p>
                                         <div class="row g-3">
                                             <div class="col-sm-6">
-                                                <label for="catatan_riwayat_penyakit" class="form-label">Riwayat Penyakit</label>
+                                                <label for="riwayat_penyakit" class="form-label">Riwayat Penyakit</label>
                                                 <div class="col-md-12">
                                                     <textarea name="catatan_riwayat_penyakit"
-                                                        rows="3" class="form-control" id="catatan_riwayat_penyakit"></textarea>
+                                                        rows="3" class="form-control" id="riwayat_penyakit"></textarea>
+                                                    <div class="text-danger text-error " id="riwayat_penyakit_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
@@ -1228,19 +1232,22 @@
                                                 <div class="col-md-12">
                                                     <textarea name="kesimpulan"
                                                         rows="3" class="form-control" id="kesimpulan"></textarea>
+                                                    <div class="text-danger text-error " id="kesimpulan_error">
+                                                        *error
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
                                                 <label for="rekomendasi" class="form-label">Rekomendasi</label>
                                                 <div class="col-md-12">
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="rekomendasi" id="rekomendasi2" value="0">
+                                                        <input class="form-check-input" type="radio" name="rekomendasi" id="rekomendasi2" value="Tidak Dapat">
                                                         <label class="form-check-label" for="rekomendasi2">
                                                             Tidak Dapat
                                                         </label>
                                                     </div>
                                                     <div class="form-check mb-2">
-                                                        <input class="form-check-input" type="radio" name="rekomendasi" id="rekomendasi1" value="1" checked>
+                                                        <input class="form-check-input" type="radio" name="rekomendasi" id="rekomendasi1" value="Dapat">
                                                         <label class="form-check-label" for="rekomendasi1">
                                                             Dapat
                                                         </label>
@@ -1249,20 +1256,30 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-12">
-                                                <div class="alert alert-success" role="alert">
-                                                    <strong> Yey! Everything worked! </strong> A simple <b>success alert</b> —check it out!
+                                                <div class="alert alert-success" id="success-alert" role="alert">
+                                                    <h5 class="alert-heading mb-2">✅ <span id="success-title"></span></h5>
+                                                    <p id="success-message" class="mb-2"></p>
+                                                    <hr>
+                                                    <ul id="success-parameter" class="mb-0"></ul>
                                                 </div>
 
-                                                <div class="alert alert-danger" role="alert">
-                                                    <strong> Yey! Everything worked! </strong> A simple <b>danger alert</b> —check it out!
+                                                <div class="alert alert-danger" id="danger-alert" role="alert">
+                                                    <h5 class="alert-heading mb-2">❌ <span id="danger-title"></span></h5>
+                                                    <p id="danger-message" class="mb-2"></p>
+                                                    <hr>
+                                                    <ul id="danger-parameter" class="mb-0"></ul>
                                                 </div>
+
                                             </div>
-                                            <div class="d-flex align-items-start gap-3 mt-4">
-                                                <input type="hidden" name="nomor_peserta" id="nomor_peserta" value="420250483">
-                                                <input type="hidden" name="tab" id="tab" value="5">
-                                                <input type="hidden" name="submitakhir" id="submitakhir" value="1">
-                                                <input type="hidden" id="nama_lengkap" name="nama_lengkap" value="GRIYA DINA P. HUTASOIT">
-                                                <button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab" form="fr6"><i class="ri-arrow-right-line label-icon "></i>Simpan</button>
+                                            <div class="col">
+                                                <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                    <button type="button"
+                                                        id="btnSaveKesimpulan"
+                                                        class="btn btn-success btn-load"
+                                                        onclick="saveKesimpulan();">
+                                                        <i class="ri ri-save-line me-1"></i> Simpan
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
@@ -1296,10 +1313,14 @@
         $('#petugas_narkoba_id').select2();
         $('.dokter_id').select2();
         $('.text-error').text('');
+        $('#success-alert').hide();
+        $('#danger-alert').hide();
         loadData();
     });
 
     function loadData() {
+        $('#success-alert').hide();
+        $('#danger-alert').hide();
         $.ajax({
             url: "{{ url('/admin/medical-form/get/'.$applicant->id) }}",
             type: "GET",
@@ -1363,6 +1384,13 @@
                     $('input[name="thc"][value="' + data.thc + '"]').prop('checked', true);
                 }
 
+                $('input[name="rekomendasi"]').prop('checked', false);
+                $('input[name="rekomendasi"][value="' + data.rekomendasi + '"]').prop('checked', true);
+
+                if (data.tinggi_badan !== undefined && data.buta_warna !== undefined && data.rekomendasi == undefined) {
+                    cekKesimpulan(data.id);
+                }
+
                 // $('#lingkar_kepala').val(data.lingkar_kepala);
                 // $('#lingkar_perut').val(data.lingkar_perut);
                 // $('#imt').val(data.imt);
@@ -1376,6 +1404,83 @@
                 console.log(textStatus);
                 console.log(errorThrown);
                 // $('#btnSave').attr('disabled', false); //set button enable 
+            }
+        });
+    }
+
+    function cekKesimpulan(id) {
+        $.ajax({
+            url: "{{ url('/admin/medical-form/get-kesimpulan') }}",
+            type: "POST",
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "id": id
+            },
+            dataType: "JSON",
+            success: function(data) {
+                console.log(data);
+
+
+                // Tentukan alert berdasarkan status
+                let alertBox, titleEl, messageEl, paramEl;
+                $('#kesimpulan').val(data.kesimpulan);
+
+                $('input[name="rekomendasi"]').prop('checked', false);
+                if (data.kesimpulan) {
+                    $('input[name="rekomendasi"][value="' + data.kesimpulan + '"]').prop('checked', true);
+                }
+
+                if (data.status === true) {
+                    alertBox = $('#success-alert');
+                    titleEl = $('#success-title');
+                    messageEl = $('#success-message');
+                    paramEl = $('#success-parameter');
+                    $('#success-alert').show();
+                } else {
+                    alertBox = $('#danger-alert');
+                    titleEl = $('#danger-title');
+                    messageEl = $('#danger-message');
+                    paramEl = $('#danger-parameter');
+                    $('#danger-alert').show();
+                    $('#kesimpulan').val(data.kesimpulan + " (" + data.alasan_singkat + ")");
+                }
+
+                // Isi judul (hasil + kesimpulan)
+                titleEl.text(data.hasil + ' — ' + data.kesimpulan);
+
+                // Isi alasan
+                messageEl.text(data.alasan || data.message);
+
+                // Isi parameter
+                paramEl.empty();
+                if (data.parameter) {
+                    $.each(data.parameter, function(key, value) {
+                        const label = key.replace(/_/g, ' ').toUpperCase();
+                        paramEl.append(
+                            `<li><strong>${label}</strong>: ${value}</li>`
+                        );
+                    });
+                }
+
+
+                // Set radio sesuai kesimpulan
+
+
+
+                // Tampilkan alert dengan efek halus
+                // alertBox.removeClass('d-none').hide().fadeIn(300);
+
+                // // Optional: auto scroll ke alert
+                // $('html, body').animate({
+                //     scrollTop: alertBox.offset().top - 120
+                // }, 400);
+
+
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
             }
         });
     }
@@ -1610,6 +1715,76 @@
                 }
                 $('#btnSaveNarkoba').html(save_text);
                 $('#btnSaveNarkoba').attr('disabled', false); //set button enable 
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // alert('Error adding / update data');
+                showAlert("Error!", textStatus, "error");
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+                // $('#btnSave').attr('disabled', false); //set button enable 
+            }
+        });
+    }
+
+    function saveKesimpulan(cek = false) {
+        $('.text-error').empty(); // clear error string
+        $('#btnSaveKesimpulan').html(loading_animation); //change button text
+        $('#btnSaveKesimpulan').attr('disabled', true); //set button disable 
+
+        var formData = new FormData($('#kesimpulanForm')[0]);
+        formData.append("_token", "{{ csrf_token() }}");
+        formData.append("cek", cek);
+
+        formData.forEach((value, key) => {
+            console.log(key, value);
+        });
+
+        $.ajax({
+            url: "{{ url('/admin/medical-form/update-kesimpulan') }}",
+            type: "POST",
+            data: formData,
+            dataType: "JSON",
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                console.log(data);
+                if (data.status) //if success close modal and reload ajax table
+                {
+                    var text = data.message;
+                    toast("Berhasil! " + text, "success", 3000);
+                    loadData();
+                } else {
+                    //saya mau  result tadi dibaca disini, apakah result ada
+                    console.log(data.message);
+                    for (const [key, value] of Object.entries(data.message)) {
+                        $('#' + key + '_error').html('*' + value);
+                    }
+
+                    if ('result' in data.message) {
+                        // console.log("Ada result di message");
+                        Swal.fire({
+                            title: "",
+                            icon: 'question',
+                            text: "Yakin Ingin Menyimpan Data ? " + data.message.result,
+                            type: "info",
+                            showCancelButton: !0,
+                            confirmButtonText: "Ya",
+                            cancelButtonText: "Tidak",
+                            reverseButtons: !0
+                        }).then(function(e) {
+                            if (e.value === true) {
+                                saveKesimpulan(true);
+                            } else {
+                                e.dismiss;
+                            }
+                        }, function(dismiss) {
+                            return false;
+                        })
+                    }
+                }
+                $('#btnSaveKesimpulan').html(save_text);
+                $('#btnSaveKesimpulan').attr('disabled', false); //set button enable 
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 // alert('Error adding / update data');

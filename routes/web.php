@@ -142,6 +142,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/medical-form/update-fisik-2', [MedicalFormController::class, 'updateFisik2']);
         Route::post('/medical-form/update-gigi', [MedicalFormController::class, 'updateGigi']);
         Route::post('/medical-form/update-narkoba', [MedicalFormController::class, 'updateNarkoba']);
+        Route::post('/medical-form/update-kesimpulan', [MedicalFormController::class, 'updateKesimpulan']);
+        Route::post('/medical-form/get-kesimpulan', [MedicalFormController::class, 'getKesimpulan']);
     });
     Route::get('/logout', [AuthController::class, 'logout']);
 
