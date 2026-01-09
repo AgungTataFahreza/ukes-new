@@ -9,6 +9,7 @@ use App\Http\Controllers\admin\ChatController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\MedicalFormController;
+use App\Http\Controllers\admin\MedicalResultController;
 use App\Http\Controllers\admin\MenuController;
 use App\Http\Controllers\admin\PeriodController;
 use App\Http\Controllers\admin\RegistrationController;
@@ -144,6 +145,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/medical-form/update-narkoba', [MedicalFormController::class, 'updateNarkoba']);
         Route::post('/medical-form/update-kesimpulan', [MedicalFormController::class, 'updateKesimpulan']);
         Route::post('/medical-form/get-kesimpulan', [MedicalFormController::class, 'getKesimpulan']);
+
+        Route::get('/medical-result', [MedicalResultController::class, 'index']);
+        Route::post('/medical-result/show', [MedicalResultController::class, 'show']);
     });
     Route::get('/logout', [AuthController::class, 'logout']);
 

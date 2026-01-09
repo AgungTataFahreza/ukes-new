@@ -36,6 +36,7 @@
                             <th scope="col">No Peserta</th>
                             <th scope="col">Nama</th>
                             <th scope="col">Jenis Kelamin</th>
+                            <th scope="col">Tanggal Lahir</th>
                             <th scope="col">Prodi</th>
                             <th scope="col">Action</th>
                         </tr>
@@ -117,6 +118,15 @@
                                 <option value="P">Perempuan</option>
                             </select>
                             <div class="text-danger text-error" id="jenis_kelamin_error">
+                                *error
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-lg">
+                            <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                            <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" placeholder="Tanggal Lahir">
+                            <div class="text-danger text-error" id="tanggal_lahir_error">
                                 *error
                             </div>
                         </div>
@@ -316,6 +326,9 @@
                 },
                 {
                     data: 'jenis_kelamin'
+                },
+                {
+                    data: 'umur'
                 },
                 {
                     data: 'study_program_name'

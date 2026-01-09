@@ -4,35 +4,41 @@ namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class ApplicantExport implements FromArray, WithHeadings
+class ApplicantExport implements FromArray, WithHeadings, WithColumnFormatting
 {
-    // Data kosong yang akan menjadi template
     public function array(): array
     {
         return [
-            // Ini bisa berisi contoh data, atau bisa dibiarkan kosong untuk template
+            [
+                '',
+                '',
+                'yyyy-mm-dd',
+                'L = Laki-laki, P = Perempuan',
+            ]
         ];
     }
 
-    // Header kolom yang akan muncul di template Excel
     public function headings(): array
     {
         return [
-            'nomor_peserta',             // Kolom untuk nomor_peserta
-            'nama',  // Kolom untuk nama
+            'nomor_peserta',
+            'nama',
+            'tanggal_lahir',
             'jenis_kelamin',
-            // Tambahkan kolom lain sesuai dengan kebutuhan absensi
         ];
     }
 
-    // Mapping data agar kolom NIP diformat sebagai teks
-    public function map($row): array
+    // 🔥 INI KUNCINYA
+    public function columnFormats(): array
     {
         return [
-            \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING, // nomor_peserta diformat sebagai teks
-            $row[1], // nama
-            $row[2], // jenis_kelamin
+            'A' => NumberFormat::FORMAT_TEXT, // nomor_peserta
+            'B' => NumberFormat::FORMAT_TEXT, // nama
+            'C' => NumberFormat::FORMAT_TEXT, // tanggal_lahir
+            'D' => NumberFormat::FORMAT_TEXT, // jenis_kelamin
         ];
     }
 }

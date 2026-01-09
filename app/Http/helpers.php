@@ -158,3 +158,21 @@ if (!function_exists('ifEmptySelect')) {
         return empty($value) ? 'Normal' : $value;
     }
 }
+
+if (!function_exists('hitungUmur')) {
+    function hitungUmur($tanggal_lahir)
+    {
+        if (empty($tanggal_lahir)) {
+            return null;
+        }
+
+        try {
+            $lahir = new DateTime($tanggal_lahir);
+            $hari_ini = new DateTime('today');
+
+            return $hari_ini->diff($lahir)->y;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+}

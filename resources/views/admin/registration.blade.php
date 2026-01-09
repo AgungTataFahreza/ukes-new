@@ -71,13 +71,6 @@
                         <input type="text" id="nama" class="form-control" value="" readonly>
                     </div>
                     <div class="mb-3">
-                        <label for="umur" class="form-label">Usia (thn)</label>
-                        <input type="text" id="umur" name="umur" class="form-control" placeholder="Usia" required />
-                        <div class="text-danger text-error" id="tempat_periksa_error">
-                            *error
-                        </div>
-                    </div>
-                    <div class="mb-3">
                         <label for="tempat_periksa" class="form-label">Tempat Periksa</label>
                         <input type="text" id="tempat_periksa" name="tempat_periksa" class="form-control" value="" required placeholder="Klinik Pratama Poltekkes Medan">
                         <div class="text-danger text-error" id="tempat_periksa_error">

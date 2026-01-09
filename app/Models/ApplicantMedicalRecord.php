@@ -16,7 +16,7 @@ class ApplicantMedicalRecord extends Model
         "nama",
         "jenis_kelamin",
         "study_program_id",
-        "umur",
+        "tanggal_lahir",
         "tgl_registrasi",
         "tgl_periksa",
         "status_bayar",

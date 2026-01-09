@@ -68,11 +68,15 @@ class ApplicantController extends Controller
                 ->editColumn('jenis_kelamin', function ($result) {
                     return $result->jenis_kelamin == 'L' ? '<span class="badge bg-primary"> Laki-laki</span>' : '<span class="badge bg-danger"> Perempuan</span>';
                 })
+                ->addColumn('umur', function ($result) {
+                    return date('d-m-Y', strtotime($result->tanggal_lahir)) . ' (' . hitungUmur($result->tanggal_lahir) . ' Tahun)';
+                })
                 ->rawColumns([
                     'action' => 'action',
                     'period_name' => 'period_name',
                     'study_program_name' => 'study_program_name',
                     'jenis_kelamin' => 'jenis_kelamin',
+                    'umur' => 'umur',
                 ])
                 ->addIndexColumn()
                 ->make(true);
@@ -89,6 +93,7 @@ class ApplicantController extends Controller
                     "nomor_peserta" => 'required',
                     "nama" => 'required',
                     "jenis_kelamin" => 'required',
+                    'tanggal_lahir' => 'required',
                 ];
 
                 $validator = Validator::make($request->all(), $rules);
@@ -112,6 +117,7 @@ class ApplicantController extends Controller
                         "nomor_peserta" => $request->nomor_peserta,
                         "period_id" => $request->period_id,
                         "study_program_id" => $request->study_program_id,
+                        "tanggal_lahir" => $request->tanggal_lahir,
                     ]);
 
                     $message = 'Data Berhasil Ditambahkan';
@@ -144,6 +150,7 @@ class ApplicantController extends Controller
                     "period_id" => 'required',
                     "study_program_id" => 'required',
                     "jenis_kelamin" => 'required',
+                    "tanggal_lahir" => 'required',
                 ];
                 $validator = Validator::make($request->all(), $rules);
 
@@ -168,6 +175,7 @@ class ApplicantController extends Controller
                     $data->nomor_peserta = $request->nomor_peserta;
                     $data->period_id = $request->period_id;
                     $data->study_program_id = $request->study_program_id;
+                    $data->tanggal_lahir = $request->tanggal_lahir;
                     $data->save();
 
                     $message = 'Data Berhasil Diperbaharui';

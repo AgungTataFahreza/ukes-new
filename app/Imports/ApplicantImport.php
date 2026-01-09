@@ -22,26 +22,41 @@ class ApplicantImport implements ToCollection, WithHeadingRow
     public function collection(Collection $rows)
     {
         foreach ($rows as $row) {
-            // Ambil NIP dan status kehadiran berdasarkan header kolom di Excel
+
+            // Skip baris keterangan / kosong
+            if (
+                empty($row['nomor_peserta']) ||
+                strtolower($row['tanggal_lahir']) === 'yyyy-mm-dd' ||
+                str_contains(strtolower($row['jenis_kelamin']), 'laki')
+            ) {
+                continue;
+            }
+
             $nomor_peserta = $row['nomor_peserta'];
             $nama = $row['nama'];
-            $jenis_kelamin = $row['jenis_kelamin'];
-            // Cari id berdasarkan NIP dari tabel Pegawai
+            $tanggal_lahir = $row['tanggal_lahir'];
+            $jenis_kelamin = strtoupper($row['jenis_kelamin']);
+
+            // Validasi jenis kelamin
+            if (!in_array($jenis_kelamin, ['L', 'P'])) {
+                continue;
+            }
+
             $peserta = ApplicantMedicalRecord::where('nomor_peserta', $nomor_peserta)->first();
 
             if ($peserta) {
-                // Jika sudah ada, update data kehadiran
                 $peserta->update([
-                    "nama" => $nama,
-                    "jenis_kelamin" => $jenis_kelamin,
-                    "period_id" => $this->period_id,
-                    "study_program_id" => $this->study_program_id,
+                    'nama' => $nama,
+                    'tanggal_lahir' => $tanggal_lahir,
+                    'jenis_kelamin' => $jenis_kelamin,
+                    'period_id' => $this->period_id,
+                    'study_program_id' => $this->study_program_id,
                 ]);
             } else {
-                // Jika belum ada, buat entri baru
                 ApplicantMedicalRecord::create([
                     'nomor_peserta' => $nomor_peserta,
                     'nama' => $nama,
+                    'tanggal_lahir' => $tanggal_lahir,
                     'jenis_kelamin' => $jenis_kelamin,
                     'period_id' => $this->period_id,
                     'study_program_id' => $this->study_program_id,
@@ -50,20 +65,11 @@ class ApplicantImport implements ToCollection, WithHeadingRow
         }
     }
 
+
     public function array(): array
     {
         return [
             // Ini bisa berisi contoh data, atau bisa dibiarkan kosong untuk template
         ];
     }
-
-    // Header kolom yang akan muncul di template Excel
-    // public function headings(): array
-    // {
-    //     return [
-    //         'NIP',             // Kolom untuk NIP
-    //         'Status Kehadiran'  // Kolom untuk Status Kehadiran
-    //         // Tambahkan kolom lain sesuai dengan kebutuhan absensi
-    //     ];
-    // }
 }

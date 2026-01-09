@@ -154,10 +154,9 @@ class RegistrationController extends Controller
                     $data = ApplicantMedicalRecord::find($request->id);
                     $data->tgl_registrasi = $request->tgl_registrasi;
                     $data->tempat_periksa = $request->tempat_periksa ? $request->tempat_periksa : "Klinik Pratama Poltekkes Medan";
-                    $data->umur = $request->umur;
                     $data->status_bayar = $request->has('status_bayar') ? 1 : 0;
                     $data->nomor_antrian = $request->nomor_antrian;
-                    $data->petugas_registrasi = auth()->user()->id;
+                    $data->petugas_registrasi_id = auth()->user()->id;
                     $data->save();
 
                     $message = 'Data Berhasil Diperbaharui';
