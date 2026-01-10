@@ -5,6 +5,7 @@
 @section('menu_parent', 'ujikesehatan')
 
 @section('content')
+<?php $key_ = session()->get('key') ?>
 
 <div class="row">
     <div class="col-xl-12">
@@ -213,16 +214,16 @@
                                                         rows="3" class="form-control" id="keterangan_antropometri"></textarea>
                                                 </div>
                                             </div>
-
-                                            <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
-                                                <button type="button"
-                                                    id="btnSaveAntropometri"
-                                                    class="btn btn-success btn-load"
-                                                    onclick="saveAntropometri();">
-                                                    <i class="ri ri-save-line me-1"></i> Simpan
-                                                </button>
-                                            </div>
-
+                                            <?php if (can_access($permissions, $key_, 'edit')) { ?>
+                                                <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                    <button type="button"
+                                                        id="btnSaveAntropometri"
+                                                        class="btn btn-success btn-load"
+                                                        onclick="saveAntropometri();">
+                                                        <i class="ri ri-save-line me-1"></i> Simpan
+                                                    </button>
+                                                </div>
+                                            <?php } ?>
                                         </div>
                                     </form>
                                 </div>
@@ -620,14 +621,16 @@
                                                         *error
                                                     </div>
                                                 </div>
-                                                <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
-                                                    <button type="button"
-                                                        id="btnSaveFisik"
-                                                        class="btn btn-success btn-load"
-                                                        onclick="saveFisik();">
-                                                        <i class="ri ri-save-line me-1"></i> Simpan
-                                                    </button>
-                                                </div>
+                                                <?php if (can_access($permissions, $key_, 'edit')) { ?>
+                                                    <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                        <button type="button"
+                                                            id="btnSaveFisik"
+                                                            class="btn btn-success btn-load"
+                                                            onclick="saveFisik();">
+                                                            <i class="ri ri-save-line me-1"></i> Simpan
+                                                        </button>
+                                                    </div>
+                                                <?php } ?>
                                             </div>
 
                                         </div>
@@ -1000,14 +1003,16 @@
                                                         *error
                                                     </div>
                                                 </div>
-                                                <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
-                                                    <button type="button"
-                                                        id="btnSaveFisik2"
-                                                        class="btn btn-success btn-load"
-                                                        onclick="saveFisik2();">
-                                                        <i class="ri ri-save-line me-1"></i> Simpan
-                                                    </button>
-                                                </div>
+                                                <?php if (can_access($permissions, $key_, 'edit')) { ?>
+                                                    <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                        <button type="button"
+                                                            id="btnSaveFisik2"
+                                                            class="btn btn-success btn-load"
+                                                            onclick="saveFisik2();">
+                                                            <i class="ri ri-save-line me-1"></i> Simpan
+                                                        </button>
+                                                    </div>
+                                                <?php } ?>
                                             </div>
                                         </div>
                                     </form>
@@ -1108,14 +1113,16 @@
                                         </div>
                                         <div class="row mb-3">
                                             <div class="col">
-                                                <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
-                                                    <button type="button"
-                                                        id="btnSaveGigi"
-                                                        class="btn btn-success btn-load"
-                                                        onclick="saveGigi();">
-                                                        <i class="ri ri-save-line me-1"></i> Simpan
-                                                    </button>
-                                                </div>
+                                                <?php if (can_access($permissions, $key_, 'edit')) { ?>
+                                                    <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                        <button type="button"
+                                                            id="btnSaveGigi"
+                                                            class="btn btn-success btn-load"
+                                                            onclick="saveGigi();">
+                                                            <i class="ri ri-save-line me-1"></i> Simpan
+                                                        </button>
+                                                    </div>
+                                                <?php } ?>
                                             </div>
                                         </div>
                                     </form>
@@ -1198,14 +1205,16 @@
                                         </div>
                                         <div class="row mb-3">
                                             <div class="col">
-                                                <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
-                                                    <button type="button"
-                                                        id="btnSaveNarkoba"
-                                                        class="btn btn-success btn-load"
-                                                        onclick="saveNarkoba();">
-                                                        <i class="ri ri-save-line me-1"></i> Simpan
-                                                    </button>
-                                                </div>
+                                                <?php if (can_access($permissions, $key_, 'edit')) { ?>
+                                                    <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                        <button type="button"
+                                                            id="btnSaveNarkoba"
+                                                            class="btn btn-success btn-load"
+                                                            onclick="saveNarkoba();">
+                                                            <i class="ri ri-save-line me-1"></i> Simpan
+                                                        </button>
+                                                    </div>
+                                                <?php } ?>
                                             </div>
                                         </div>
                                     </form>
@@ -1272,14 +1281,16 @@
 
                                             </div>
                                             <div class="col">
-                                                <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
-                                                    <button type="button"
-                                                        id="btnSaveKesimpulan"
-                                                        class="btn btn-success btn-load"
-                                                        onclick="saveKesimpulan();">
-                                                        <i class="ri ri-save-line me-1"></i> Simpan
-                                                    </button>
-                                                </div>
+                                                <?php if (can_access($permissions, $key_, 'edit')) { ?>
+                                                    <div class="d-flex align-items-end justify-content-end gap-3 mt-4">
+                                                        <button type="button"
+                                                            id="btnSaveKesimpulan"
+                                                            class="btn btn-success btn-load"
+                                                            onclick="saveKesimpulan();">
+                                                            <i class="ri ri-save-line me-1"></i> Simpan
+                                                        </button>
+                                                    </div>
+                                                <?php } ?>
                                             </div>
                                         </div>
                                     </form>
@@ -1461,21 +1472,6 @@
                         );
                     });
                 }
-
-
-                // Set radio sesuai kesimpulan
-
-
-
-                // Tampilkan alert dengan efek halus
-                // alertBox.removeClass('d-none').hide().fadeIn(300);
-
-                // // Optional: auto scroll ke alert
-                // $('html, body').animate({
-                //     scrollTop: alertBox.offset().top - 120
-                // }, 400);
-
-
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR);
@@ -1491,310 +1487,312 @@
         $('#v-pills-' + tabTo + '-tab').addClass('active');
         $('#v-pills-' + tabTo).addClass('show active');
     }
+    <?php if (can_access($permissions, $key_, 'edit')) { ?>
 
-    function saveAntropometri() {
-        $('.text-error').empty(); // clear error string
-        $('#btnSaveAntropometri').html(loading_animation); //change button text
-        $('#btnSaveAntropometri').attr('disabled', true); //set button disable 
+        function saveAntropometri() {
+            $('.text-error').empty(); // clear error string
+            $('#btnSaveAntropometri').html(loading_animation); //change button text
+            $('#btnSaveAntropometri').attr('disabled', true); //set button disable 
 
-        var formData = new FormData($('#antropometriForm')[0]);
-        formData.append("_token", "{{ csrf_token() }}");
+            var formData = new FormData($('#antropometriForm')[0]);
+            formData.append("_token", "{{ csrf_token() }}");
 
-        formData.forEach((value, key) => {
-            console.log(key, value);
-        });
+            formData.forEach((value, key) => {
+                console.log(key, value);
+            });
 
-        $.ajax({
-            url: "{{ url('/admin/medical-form/update-antropometri') }}",
-            type: "POST",
-            data: formData,
-            dataType: "JSON",
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                console.log(data);
-                if (data.status) //if success close modal and reload ajax table
-                {
-                    var text = data.message;
-                    toast("Berhasil! " + text, "success", 3000);
-                    loadData();
-                    moveTab('pemeriksaan-antropometri', 'pemeriksaan-fisik');
-                } else {
-                    console.log(data.message);
-                    for (const [key, value] of Object.entries(data.message)) {
-                        $('#' + key + '_error').html('*' + value);
+            $.ajax({
+                url: "{{ url('/admin/medical-form/update-antropometri') }}",
+                type: "POST",
+                data: formData,
+                dataType: "JSON",
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    console.log(data);
+                    if (data.status) //if success close modal and reload ajax table
+                    {
+                        var text = data.message;
+                        toast("Berhasil! " + text, "success", 3000);
+                        loadData();
+                        moveTab('pemeriksaan-antropometri', 'pemeriksaan-fisik');
+                    } else {
+                        console.log(data.message);
+                        for (const [key, value] of Object.entries(data.message)) {
+                            $('#' + key + '_error').html('*' + value);
+                        }
                     }
+                    $('#btnSaveAntropometri').html(save_text);
+                    $('#btnSaveAntropometri').attr('disabled', false); //set button enable 
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // alert('Error adding / update data');
+                    showAlert("Error!", textStatus, "error");
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    // $('#btnSave').attr('disabled', false); //set button enable 
                 }
-                $('#btnSaveAntropometri').html(save_text);
-                $('#btnSaveAntropometri').attr('disabled', false); //set button enable 
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // alert('Error adding / update data');
-                showAlert("Error!", textStatus, "error");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                // $('#btnSave').attr('disabled', false); //set button enable 
-            }
-        });
-    }
+            });
+        }
 
-    function saveFisik() {
-        $('.text-error').empty(); // clear error string
-        $('#btnSaveFisik').html(loading_animation); //change button text
-        $('#btnSaveFisik').attr('disabled', true); //set button disable 
+        function saveFisik() {
+            $('.text-error').empty(); // clear error string
+            $('#btnSaveFisik').html(loading_animation); //change button text
+            $('#btnSaveFisik').attr('disabled', true); //set button disable 
 
-        var formData = new FormData($('#fisikForm')[0]);
-        formData.append("_token", "{{ csrf_token() }}");
+            var formData = new FormData($('#fisikForm')[0]);
+            formData.append("_token", "{{ csrf_token() }}");
 
-        formData.forEach((value, key) => {
-            console.log(key, value);
-        });
+            formData.forEach((value, key) => {
+                console.log(key, value);
+            });
 
-        $.ajax({
-            url: "{{ url('/admin/medical-form/update-fisik') }}",
-            type: "POST",
-            data: formData,
-            dataType: "JSON",
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                console.log(data);
-                if (data.status) //if success close modal and reload ajax table
-                {
-                    var text = data.message;
-                    toast("Berhasil! " + text, "success", 3000);
-                    loadData();
-                    moveTab('pemeriksaan-fisik', 'pemeriksaan-fisik-2');
-                } else {
-                    console.log(data.message);
-                    for (const [key, value] of Object.entries(data.message)) {
-                        $('#' + key + '_error').html('*' + value);
+            $.ajax({
+                url: "{{ url('/admin/medical-form/update-fisik') }}",
+                type: "POST",
+                data: formData,
+                dataType: "JSON",
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    console.log(data);
+                    if (data.status) //if success close modal and reload ajax table
+                    {
+                        var text = data.message;
+                        toast("Berhasil! " + text, "success", 3000);
+                        loadData();
+                        moveTab('pemeriksaan-fisik', 'pemeriksaan-fisik-2');
+                    } else {
+                        console.log(data.message);
+                        for (const [key, value] of Object.entries(data.message)) {
+                            $('#' + key + '_error').html('*' + value);
+                        }
                     }
+                    $('#btnSaveFisik').html(save_text);
+                    $('#btnSaveFisik').attr('disabled', false); //set button enable 
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // alert('Error adding / update data');
+                    showAlert("Error!", textStatus, "error");
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    // $('#btnSave').attr('disabled', false); //set button enable 
                 }
-                $('#btnSaveFisik').html(save_text);
-                $('#btnSaveFisik').attr('disabled', false); //set button enable 
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // alert('Error adding / update data');
-                showAlert("Error!", textStatus, "error");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                // $('#btnSave').attr('disabled', false); //set button enable 
-            }
-        });
-    }
+            });
+        }
 
-    function saveFisik2() {
-        $('.text-error').empty(); // clear error string
-        $('#btnSaveFisik2').html(loading_animation); //change button text
-        $('#btnSaveFisik2').attr('disabled', true); //set button disable 
+        function saveFisik2() {
+            $('.text-error').empty(); // clear error string
+            $('#btnSaveFisik2').html(loading_animation); //change button text
+            $('#btnSaveFisik2').attr('disabled', true); //set button disable 
 
-        var formData = new FormData($('#fisik2Form')[0]);
-        formData.append("_token", "{{ csrf_token() }}");
+            var formData = new FormData($('#fisik2Form')[0]);
+            formData.append("_token", "{{ csrf_token() }}");
 
-        formData.forEach((value, key) => {
-            console.log(key, value);
-        });
+            formData.forEach((value, key) => {
+                console.log(key, value);
+            });
 
-        $.ajax({
-            url: "{{ url('/admin/medical-form/update-fisik-2') }}",
-            type: "POST",
-            data: formData,
-            dataType: "JSON",
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                console.log(data);
-                if (data.status) //if success close modal and reload ajax table
-                {
-                    var text = data.message;
-                    toast("Berhasil! " + text, "success", 3000);
-                    loadData();
-                    moveTab('pemeriksaan-fisik-2', 'pemeriksaan-gigi');
-                } else {
-                    console.log(data.message);
-                    for (const [key, value] of Object.entries(data.message)) {
-                        $('#' + key + '_error').html('*' + value);
+            $.ajax({
+                url: "{{ url('/admin/medical-form/update-fisik-2') }}",
+                type: "POST",
+                data: formData,
+                dataType: "JSON",
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    console.log(data);
+                    if (data.status) //if success close modal and reload ajax table
+                    {
+                        var text = data.message;
+                        toast("Berhasil! " + text, "success", 3000);
+                        loadData();
+                        moveTab('pemeriksaan-fisik-2', 'pemeriksaan-gigi');
+                    } else {
+                        console.log(data.message);
+                        for (const [key, value] of Object.entries(data.message)) {
+                            $('#' + key + '_error').html('*' + value);
+                        }
                     }
+                    $('#btnSaveFisik2').html(save_text);
+                    $('#btnSaveFisik2').attr('disabled', false); //set button enable 
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // alert('Error adding / update data');
+                    showAlert("Error!", textStatus, "error");
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    // $('#btnSave').attr('disabled', false); //set button enable 
                 }
-                $('#btnSaveFisik2').html(save_text);
-                $('#btnSaveFisik2').attr('disabled', false); //set button enable 
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // alert('Error adding / update data');
-                showAlert("Error!", textStatus, "error");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                // $('#btnSave').attr('disabled', false); //set button enable 
-            }
-        });
-    }
+            });
+        }
 
-    function saveGigi() {
-        $('.text-error').empty(); // clear error string
-        $('#btnSaveGigi').html(loading_animation); //change button text
-        $('#btnSaveGigi').attr('disabled', true); //set button disable 
+        function saveGigi() {
+            $('.text-error').empty(); // clear error string
+            $('#btnSaveGigi').html(loading_animation); //change button text
+            $('#btnSaveGigi').attr('disabled', true); //set button disable 
 
-        var formData = new FormData($('#gigiForm')[0]);
-        formData.append("_token", "{{ csrf_token() }}");
+            var formData = new FormData($('#gigiForm')[0]);
+            formData.append("_token", "{{ csrf_token() }}");
 
-        formData.forEach((value, key) => {
-            console.log(key, value);
-        });
+            formData.forEach((value, key) => {
+                console.log(key, value);
+            });
 
-        $.ajax({
-            url: "{{ url('/admin/medical-form/update-gigi') }}",
-            type: "POST",
-            data: formData,
-            dataType: "JSON",
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                console.log(data);
-                if (data.status) //if success close modal and reload ajax table
-                {
-                    var text = data.message;
-                    toast("Berhasil! " + text, "success", 3000);
-                    loadData();
-                    moveTab('pemeriksaan-gigi', 'pemeriksaan-narkoba');
-                } else {
-                    console.log(data.message);
-                    for (const [key, value] of Object.entries(data.message)) {
-                        $('#' + key + '_error').html('*' + value);
+            $.ajax({
+                url: "{{ url('/admin/medical-form/update-gigi') }}",
+                type: "POST",
+                data: formData,
+                dataType: "JSON",
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    console.log(data);
+                    if (data.status) //if success close modal and reload ajax table
+                    {
+                        var text = data.message;
+                        toast("Berhasil! " + text, "success", 3000);
+                        loadData();
+                        moveTab('pemeriksaan-gigi', 'pemeriksaan-narkoba');
+                    } else {
+                        console.log(data.message);
+                        for (const [key, value] of Object.entries(data.message)) {
+                            $('#' + key + '_error').html('*' + value);
+                        }
                     }
+                    $('#btnSaveGigi').html(save_text);
+                    $('#btnSaveGigi').attr('disabled', false); //set button enable 
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // alert('Error adding / update data');
+                    showAlert("Error!", textStatus, "error");
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    // $('#btnSave').attr('disabled', false); //set button enable 
                 }
-                $('#btnSaveGigi').html(save_text);
-                $('#btnSaveGigi').attr('disabled', false); //set button enable 
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // alert('Error adding / update data');
-                showAlert("Error!", textStatus, "error");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                // $('#btnSave').attr('disabled', false); //set button enable 
-            }
-        });
-    }
+            });
+        }
 
-    function saveNarkoba() {
-        $('.text-error').empty(); // clear error string
-        $('#btnSaveNarkoba').html(loading_animation); //change button text
-        $('#btnSaveNarkoba').attr('disabled', true); //set button disable 
+        function saveNarkoba() {
+            $('.text-error').empty(); // clear error string
+            $('#btnSaveNarkoba').html(loading_animation); //change button text
+            $('#btnSaveNarkoba').attr('disabled', true); //set button disable 
 
-        var formData = new FormData($('#narkobaForm')[0]);
-        formData.append("_token", "{{ csrf_token() }}");
+            var formData = new FormData($('#narkobaForm')[0]);
+            formData.append("_token", "{{ csrf_token() }}");
 
-        formData.forEach((value, key) => {
-            console.log(key, value);
-        });
+            formData.forEach((value, key) => {
+                console.log(key, value);
+            });
 
-        $.ajax({
-            url: "{{ url('/admin/medical-form/update-narkoba') }}",
-            type: "POST",
-            data: formData,
-            dataType: "JSON",
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                console.log(data);
-                if (data.status) //if success close modal and reload ajax table
-                {
-                    var text = data.message;
-                    toast("Berhasil! " + text, "success", 3000);
-                    loadData();
-                    moveTab('pemeriksaan-narkoba', 'kesimpulan');
-                } else {
-                    console.log(data.message);
-                    for (const [key, value] of Object.entries(data.message)) {
-                        $('#' + key + '_error').html('*' + value);
+            $.ajax({
+                url: "{{ url('/admin/medical-form/update-narkoba') }}",
+                type: "POST",
+                data: formData,
+                dataType: "JSON",
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    console.log(data);
+                    if (data.status) //if success close modal and reload ajax table
+                    {
+                        var text = data.message;
+                        toast("Berhasil! " + text, "success", 3000);
+                        loadData();
+                        moveTab('pemeriksaan-narkoba', 'kesimpulan');
+                    } else {
+                        console.log(data.message);
+                        for (const [key, value] of Object.entries(data.message)) {
+                            $('#' + key + '_error').html('*' + value);
+                        }
                     }
+                    $('#btnSaveNarkoba').html(save_text);
+                    $('#btnSaveNarkoba').attr('disabled', false); //set button enable 
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // alert('Error adding / update data');
+                    showAlert("Error!", textStatus, "error");
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    // $('#btnSave').attr('disabled', false); //set button enable 
                 }
-                $('#btnSaveNarkoba').html(save_text);
-                $('#btnSaveNarkoba').attr('disabled', false); //set button enable 
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // alert('Error adding / update data');
-                showAlert("Error!", textStatus, "error");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                // $('#btnSave').attr('disabled', false); //set button enable 
-            }
-        });
-    }
+            });
+        }
 
-    function saveKesimpulan(cek = false) {
-        $('.text-error').empty(); // clear error string
-        $('#btnSaveKesimpulan').html(loading_animation); //change button text
-        $('#btnSaveKesimpulan').attr('disabled', true); //set button disable 
+        function saveKesimpulan(cek = false) {
+            $('.text-error').empty(); // clear error string
+            $('#btnSaveKesimpulan').html(loading_animation); //change button text
+            $('#btnSaveKesimpulan').attr('disabled', true); //set button disable 
 
-        var formData = new FormData($('#kesimpulanForm')[0]);
-        formData.append("_token", "{{ csrf_token() }}");
-        formData.append("cek", cek);
+            var formData = new FormData($('#kesimpulanForm')[0]);
+            formData.append("_token", "{{ csrf_token() }}");
+            formData.append("cek", cek);
 
-        formData.forEach((value, key) => {
-            console.log(key, value);
-        });
+            formData.forEach((value, key) => {
+                console.log(key, value);
+            });
 
-        $.ajax({
-            url: "{{ url('/admin/medical-form/update-kesimpulan') }}",
-            type: "POST",
-            data: formData,
-            dataType: "JSON",
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                console.log(data);
-                if (data.status) //if success close modal and reload ajax table
-                {
-                    var text = data.message;
-                    toast("Berhasil! " + text, "success", 3000);
-                    loadData();
-                } else {
-                    //saya mau  result tadi dibaca disini, apakah result ada
-                    console.log(data.message);
-                    for (const [key, value] of Object.entries(data.message)) {
-                        $('#' + key + '_error').html('*' + value);
+            $.ajax({
+                url: "{{ url('/admin/medical-form/update-kesimpulan') }}",
+                type: "POST",
+                data: formData,
+                dataType: "JSON",
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    console.log(data);
+                    if (data.status) //if success close modal and reload ajax table
+                    {
+                        var text = data.message;
+                        toast("Berhasil! " + text, "success", 3000);
+                        loadData();
+                    } else {
+                        //saya mau  result tadi dibaca disini, apakah result ada
+                        console.log(data.message);
+                        for (const [key, value] of Object.entries(data.message)) {
+                            $('#' + key + '_error').html('*' + value);
+                        }
+
+                        if ('result' in data.message) {
+                            // console.log("Ada result di message");
+                            Swal.fire({
+                                title: "",
+                                icon: 'question',
+                                text: "Yakin Ingin Menyimpan Data ? " + data.message.result,
+                                type: "info",
+                                showCancelButton: !0,
+                                confirmButtonText: "Ya",
+                                cancelButtonText: "Tidak",
+                                reverseButtons: !0
+                            }).then(function(e) {
+                                if (e.value === true) {
+                                    saveKesimpulan(true);
+                                } else {
+                                    e.dismiss;
+                                }
+                            }, function(dismiss) {
+                                return false;
+                            })
+                        }
                     }
-
-                    if ('result' in data.message) {
-                        // console.log("Ada result di message");
-                        Swal.fire({
-                            title: "",
-                            icon: 'question',
-                            text: "Yakin Ingin Menyimpan Data ? " + data.message.result,
-                            type: "info",
-                            showCancelButton: !0,
-                            confirmButtonText: "Ya",
-                            cancelButtonText: "Tidak",
-                            reverseButtons: !0
-                        }).then(function(e) {
-                            if (e.value === true) {
-                                saveKesimpulan(true);
-                            } else {
-                                e.dismiss;
-                            }
-                        }, function(dismiss) {
-                            return false;
-                        })
-                    }
+                    $('#btnSaveKesimpulan').html(save_text);
+                    $('#btnSaveKesimpulan').attr('disabled', false); //set button enable 
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // alert('Error adding / update data');
+                    showAlert("Error!", textStatus, "error");
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    // $('#btnSave').attr('disabled', false); //set button enable 
                 }
-                $('#btnSaveKesimpulan').html(save_text);
-                $('#btnSaveKesimpulan').attr('disabled', false); //set button enable 
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // alert('Error adding / update data');
-                showAlert("Error!", textStatus, "error");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                // $('#btnSave').attr('disabled', false); //set button enable 
-            }
-        });
-    }
+            });
+        }
+    <?php } ?>
 </script>
 @endpush

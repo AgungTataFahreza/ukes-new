@@ -43,17 +43,16 @@ class RoleController extends Controller
                 ->addColumn('action', function ($result) {
                     $button = ' <div class="d-flex">';
 
-                    // if (can($this->key, 'edit')) {
-                    $button .= '<div class="edit">
+                    if (can_access($this->permissions, $this->key, 'edit')) {
+                        $button .= '<div class="edit">
                                                 <a href="' . url('admin/role/edit/' . $result->id) . '" style="margin-right:5px;" class="btn btn-warning btn-sm btn-label waves-effect waves-light"><i class="ri-pencil-line label-icon align-middle fs-16 me-2"></i> Edit</a>
                                             </div>';
-                    // }
-
-                    // if (can($this->key, 'delete')) {
-                    $button .= '<div class="remove">
+                    }
+                    if (can_access($this->permissions, $this->key, 'delete')) {
+                        $button .= '<div class="remove">
                                                 <button class="btn btn-danger btn-sm btn-label waves-effect waves-light" onclick="deletee(' . "'" . $result->id . "'" . ')"><i class="ri-delete-bin-line label-icon align-middle fs-16 me-2"></i> Hapus</button>
                                             </div>';
-                    // }
+                    }
 
                     $button .= '</div>';
 

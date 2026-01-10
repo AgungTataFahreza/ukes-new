@@ -5,18 +5,21 @@
 @section('menu_parent', 'datapengguna')
 
 @section('content')
+<?php $key_ = session()->get('key') ?>
 
 <div class="row">
     <div class="col-xl-12">
         <div class="card">
             <div class="card-header align-items-center d-flex">
                 <h4 class="card-title mb-0 flex-grow-1">Tahun</h4>
-                <div class="flex-shrink-0">
-                    <a href="{{ url('admin/role/add') }}" class="btn btn-rounded btn-info">
-                        <i class="ri-file-add-line label-icon align-middle rounded-pill fs-16 me-2"></i>
-                        Tambah
-                    </a>
-                </div>
+                <?php if (can_access($permissions, $key_, 'add')) { ?>
+                    <div class="flex-shrink-0">
+                        <a href="{{ url('admin/role/add') }}" class="btn btn-rounded btn-info">
+                            <i class="ri-file-add-line label-icon align-middle rounded-pill fs-16 me-2"></i>
+                            Tambah
+                        </a>
+                    </div>
+                <?php } ?>
             </div><!-- end card header -->
 
             <div class="card-body">
@@ -26,7 +29,9 @@
                             <th scope="col">No</th>
                             <th scope="col">Nama</th>
                             <th scope="col">Jumlah Pengguna</th>
-                            <th scope="col">Action</th>
+                            <?php if (can_access($permissions, $key_, 'edit') || can_access($permissions, $key_, 'delete')) { ?>
+                                <th scope="col">Action</th>
+                            <?php } ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,10 +90,11 @@
                     data: 'total_user',
                     name: 'total_user'
                 },
-                {
-                    data: 'action',
-                    name: 'action'
-                }
+                <?php if (can_access($permissions, $key_, 'edit') || can_access($permissions, $key_, 'delete')) { ?> {
+                        data: 'action',
+                        name: 'action'
+                    }
+                <?php } ?>
             ],
             order: [
                 [1, 'asc']
@@ -100,45 +106,47 @@
         table.ajax.reload(null, false); //reload datatable ajax 
     }
 
+    <?php if (can_access($permissions, $key_, 'delete')) { ?>
 
-    function deletee(id) {
-        Swal.fire({
-            title: "",
-            icon: 'question',
-            text: "Yakin Ingin Menghapus Data ?",
-            type: "warning",
-            showCancelButton: !0,
-            confirmButtonText: "Ya, Hapus!",
-            cancelButtonText: "Tidak, Batal!",
-            reverseButtons: !0
-        }).then(function(e) {
-            if (e.value === true) {
-                $.ajax({
-                    url: "{{ url('/admin/role/delete') }}",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {
-                        "id": id,
-                        "_token": "{{ csrf_token() }}",
-                    },
-                    success: function(results) {
-                        showAlert("Berhasil!", "Berhasil Menghapus Data", "success");
-                        reload_table();
+        function deletee(id) {
+            Swal.fire({
+                title: "",
+                icon: 'question',
+                text: "Yakin Ingin Menghapus Data ?",
+                type: "warning",
+                showCancelButton: !0,
+                confirmButtonText: "Ya, Hapus!",
+                cancelButtonText: "Tidak, Batal!",
+                reverseButtons: !0
+            }).then(function(e) {
+                if (e.value === true) {
+                    $.ajax({
+                        url: "{{ url('/admin/role/delete') }}",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {
+                            "id": id,
+                            "_token": "{{ csrf_token() }}",
+                        },
+                        success: function(results) {
+                            showAlert("Berhasil!", "Berhasil Menghapus Data", "success");
+                            reload_table();
 
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.log(jqXHR);
-                        console.log(textStatus);
-                        console.log(errorThrown);
-                        showAlert("Error!", textStatus, "error");
-                    }
-                });
-            } else {
-                e.dismiss;
-            }
-        }, function(dismiss) {
-            return false;
-        })
-    }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.log(jqXHR);
+                            console.log(textStatus);
+                            console.log(errorThrown);
+                            showAlert("Error!", textStatus, "error");
+                        }
+                    });
+                } else {
+                    e.dismiss;
+                }
+            }, function(dismiss) {
+                return false;
+            })
+        }
+    <?php } ?>
 </script>
 @endpush

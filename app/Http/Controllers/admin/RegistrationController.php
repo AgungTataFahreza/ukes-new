@@ -62,7 +62,10 @@ class RegistrationController extends Controller
 
             return datatables()->of($result)
                 ->addColumn('action', function ($result) {
-                    $button = '<button type="button" onclick="edit(this,' . "'" . $result->id . "'" . ')" style="margin-right:5px;" class="btn btn-success btn-sm btn-label waves-effect waves-light"><i class="ri-file-list-line label-icon align-middle fs-16 me-2"></i> Daftar</button>';
+                    $button = '';
+                    if (can_access($this->permissions, $this->key, 'edit')) {
+                        $button .= '<button type="button" onclick="edit(this,' . "'" . $result->id . "'" . ')" style="margin-right:5px;" class="btn btn-success btn-sm btn-label waves-effect waves-light"><i class="ri-file-list-line label-icon align-middle fs-16 me-2"></i> Daftar</button>';
+                    }
                     return $button;
                 })
                 ->addColumn('period_name', function ($result) {

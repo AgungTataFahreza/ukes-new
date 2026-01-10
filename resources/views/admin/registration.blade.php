@@ -5,6 +5,7 @@
 @section('menu_parent', 'ujikesehatan')
 
 @section('content')
+<?php $key_ = session()->get('key') ?>
 
 <div class="row">
     <div class="col-xl-12">
@@ -42,7 +43,9 @@
                             <th scope="col">Status Lulus</th>
                             <th scope="col">Status Registrasi</th>
                             <th scope="col">Status Bayar</th>
-                            <th scope="col">Action</th>
+                            <?php if (can_access($permissions, $key_, 'edit')) { ?>
+                                <th scope="col">Action</th>
+                            <?php } ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,136 +56,71 @@
     </div><!-- end col -->
 </div><!-- end row -->
 
-<div id="modal_form" class="modal fade" tabindex="-1" aria-labelledby="modalFormLabel" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- HEADER -->
-            <div class="modal-header">
-                <h5 class="modal-title" id="modal-title">Registrasi Peserta</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<?php if (can_access($permissions, $key_, 'edit')) { ?>
+    <div id="modal_form" class="modal fade" tabindex="-1" aria-labelledby="modalFormLabel" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- HEADER -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">Registrasi Peserta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- FORM -->
+                <form id="form">
+                    <input type="hidden" name="id" id="id">
+                    <!-- BODY -->
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nama" class="form-label">Nama Lengkap</label>
+                            <input type="text" id="nama" class="form-control" value="" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tempat_periksa" class="form-label">Tempat Periksa</label>
+                            <input type="text" id="tempat_periksa" name="tempat_periksa" class="form-control" value="" required placeholder="Klinik Pratama Poltekkes Medan">
+                            <div class="text-danger text-error" id="tempat_periksa_error">
+                                *error
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="date-field" class="form-label">Tanggal Daftar</label>
+                            <input type="date" class="form-control" id="tgl_registrasi" name="tgl_registrasi" required>
+                            <div class="text-danger text-error" id="tgl_registrasi_error">
+                                *error
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="no-urut" class="form-label">Nomor Antri Pasien</label>
+                            <input type="text" id="nomor_antrian" name="nomor_antrian" class="form-control"
+                                placeholder="000" required />
+                            <div class="text-danger text-error" id="nomor_antrian_error">
+                                *error
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bayar" class="form-label">Status Bayar</label>
+                            <div class="form-control">
+                                <input class="form-check-input" type="checkbox" id="status_bayar" name="status_bayar" value="1">
+                                <label class="form-check-label" for="status_bayar"> Bayar Reg, Uji Kes, Narkoba
+                            </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                        <button type="button" id="btnSave" class="btn btn-success btn-load" onclick="save();">
+                            <i class="ri ri-save-line me-1"></i> Simpan
+                        </button>
+                    </div>
+                </form>
             </div>
-            <!-- FORM -->
-            <form id="form">
-                <input type="hidden" name="id" id="id">
-                <!-- BODY -->
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="nama" class="form-label">Nama Lengkap</label>
-                        <input type="text" id="nama" class="form-control" value="" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tempat_periksa" class="form-label">Tempat Periksa</label>
-                        <input type="text" id="tempat_periksa" name="tempat_periksa" class="form-control" value="" required placeholder="Klinik Pratama Poltekkes Medan">
-                        <div class="text-danger text-error" id="tempat_periksa_error">
-                            *error
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="date-field" class="form-label">Tanggal Daftar</label>
-                        <input type="date" class="form-control" id="tgl_registrasi" name="tgl_registrasi" required>
-                        <div class="text-danger text-error" id="tgl_registrasi_error">
-                            *error
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="no-urut" class="form-label">Nomor Antri Pasien</label>
-                        <input type="text" id="nomor_antrian" name="nomor_antrian" class="form-control"
-                            placeholder="000" required />
-                        <div class="text-danger text-error" id="nomor_antrian_error">
-                            *error
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="bayar" class="form-label">Status Bayar</label>
-                        <div class="form-control">
-                            <input class="form-check-input" type="checkbox" id="status_bayar" name="status_bayar" value="1">
-                            <label class="form-check-label" for="status_bayar"> Bayar Reg, Uji Kes, Narkoba
-                        </div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- FOOTER -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                        Close
-                    </button>
-                    <button type="button" id="btnSave" class="btn btn-success btn-load" onclick="save();">
-                        <i class="ri ri-save-line me-1"></i> Simpan
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
-
-<div id="import_modal" class="modal fade" tabindex="-1" aria-labelledby="modalFormLabel" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- HEADER -->
-            <div class="modal-header">
-                <h5 class="modal-title" id="modal-title">Import Data</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <!-- FORM -->
-            <form id="import_form">
-                <!-- BODY -->
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-lg">
-                            <label for="period" class="form-label">Periode</label>
-                            <select name="period" id="period" class="form-control">
-                                <option value="">Pilih Periode</option>
-                                @foreach($periods as $period)
-                                <option value="{{ $period->id }}" {{ ($period->is_active? 'selected' : '') }}>{{ $period->name }} {{ $period->year->name }}</option>
-                                @endforeach
-                            </select>
-                            <div class="text-danger text-error" id="period_error">
-                                *error
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-lg">
-                            <label for="study_program" class="form-label">Program Studi</label>
-                            <select name="study_program" id="study_program" class="form-control">
-                                <option value="">Pilih Program Studi</option>
-                                @foreach($study_programs as $study_program)
-                                <option value="{{ $study_program->id }}">{{ $study_program->name }}</option>
-                                @endforeach
-                            </select>
-                            <div class="text-danger text-error" id="study_program_error">
-                                *error
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-lg">
-                            <label for="file" class="form-label">File Excel</label>
-                            <input type="file" name="file" id="file" class="form-control">
-                            <div class="text-danger text-error" id="file_error">
-                                *error
-                            </div>
-                            <br>
-                            <a href="{{ url('admin/applicant/export') }}" class="btn btn-success btn-sm"><i class="ri-download-line"></i> Download Format</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FOOTER -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                        Close
-                    </button>
-                    <button type="button" id="btnImport" class="btn btn-success btn-load" onclick="save_import();">
-                        <i class="ri ri-save-line me-1"></i> Simpan
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<?php } ?>
 
 <div id="filter_modal" class="modal fade" tabindex="-1" aria-labelledby="modalFormLabel" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
     <div class="modal-dialog">
@@ -328,11 +266,12 @@
                 {
                     data: 'status_bayar'
                 },
-                {
-                    data: 'action',
-                    orderable: false,
-                    searchable: false
-                }
+                <?php if (can_access($permissions, $key_, 'edit')) { ?> {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+                <?php } ?>
             ],
 
             order: [
@@ -358,193 +297,121 @@
         $('#btnFilter').attr('disabled', false); //set button enable 
         reload_table();
     }
+    <?php if (can_access($permissions, $key_, 'edit')) { ?>
 
-    function add() {
-        save_method = 'add';
-        $('.text-error').empty(); // clear error string
-        $('#form')[0].reset(); // reset form on modals
-        $('#btnSave').html(save_text);
-        $('#modal-title').text('Tambah Data Baru'); // Set Title to Bootstrap modal title
-        $('#modal_form').modal('show'); // show bootstrap modal
-    }
+        function save() {
+            $('.text-error').empty(); // clear error string
+            $('#btnSave').html(loading_animation); //change button text
+            $('#btnSave').attr('disabled', true); //set button disable 
+            var url;
 
-    function add_import() {
-        $('.text-error').empty(); // clear error string
-        $('#import_form')[0].reset(); // reset form on modals
-        $('#btnImport').html(save_text);
-        $('#import_modal').modal('show'); // show bootstrap modal
-    }
+            if (save_method == 'add') {
+                url = "{{ url('/admin/registration/add') }}";
+            } else {
+                url = "{{ url('/admin/registration/update') }}";
+            }
 
-    function save() {
-        $('.text-error').empty(); // clear error string
-        $('#btnSave').html(loading_animation); //change button text
-        $('#btnSave').attr('disabled', true); //set button disable 
-        var url;
+            var formData = new FormData($('#form')[0]);
+            formData.append("_token", "{{ csrf_token() }}");
 
-        if (save_method == 'add') {
-            url = "{{ url('/admin/registration/add') }}";
-        } else {
-            url = "{{ url('/admin/registration/update') }}";
+            formData.forEach((value, key) => {
+                console.log(key, value);
+            });
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                dataType: "JSON",
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    console.log(data);
+                    if (data.status) //if success close modal and reload ajax table
+                    {
+                        var text = data.message;
+                        // if (save_method == 'add') {
+                        //     text = 'Data Berhasil Ditambahkan';
+                        // } else {
+                        //     text = 'Data Berhasil Diperbaharui';
+                        // }
+
+                        // toastr.success(text);
+                        // swal("Berhasil!", text, "success");
+                        showAlert("Berhasil", text, "success");
+                        // notification('success', 'Success', text);
+                        $('#modal_form').modal('hide');
+                        reload_table();
+                    } else {
+                        console.log(data.message);
+                        for (const [key, value] of Object.entries(data.message)) {
+                            $('#' + key + '_error').html('*' + value);
+                        }
+
+                        if (save_method == 'add') {
+                            $('#btnSave').html(save_text);
+                        } else {
+                            $('#btnSave').html(update_text);
+                        }
+                    }
+
+                    $('#btnSave').attr('disabled', false); //set button enable 
+                    $('#btnSave').html(save_text);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // alert('Error adding / update data');
+                    showAlert("Error!", textStatus, "error");
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    $('#btnSave').html(save_text);
+                    $('#btnSave').attr('disabled', false); //set button enable 
+                }
+            });
         }
 
-        var formData = new FormData($('#form')[0]);
-        formData.append("_token", "{{ csrf_token() }}");
+        function edit(element, id) {
+            save_method = 'update';
+            $('.text-error').empty();
+            $('#form')[0].reset(); // reset form on modals
+            $(element).html(edit_loading_animation);
+            //Ajax Load data from ajax
+            $.ajax({
+                url: "{{ url('/admin/registration/edit') }}",
+                type: "POST",
+                data: {
+                    "id": id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                dataType: "JSON",
+                success: function(data) {
+                    console.log(data);
+                    for (const [key, value] of Object.entries(data)) {
+                        const el = $('#' + key);
 
-        formData.forEach((value, key) => {
-            console.log(key, value);
-        });
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: formData,
-            dataType: "JSON",
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                console.log(data);
-                if (data.status) //if success close modal and reload ajax table
-                {
-                    var text = data.message;
-                    // if (save_method == 'add') {
-                    //     text = 'Data Berhasil Ditambahkan';
-                    // } else {
-                    //     text = 'Data Berhasil Diperbaharui';
-                    // }
-
-                    // toastr.success(text);
-                    // swal("Berhasil!", text, "success");
-                    showAlert("Berhasil", text, "success");
-                    // notification('success', 'Success', text);
-                    $('#modal_form').modal('hide');
-                    reload_table();
-                } else {
-                    console.log(data.message);
-                    for (const [key, value] of Object.entries(data.message)) {
-                        $('#' + key + '_error').html('*' + value);
+                        if (el.attr('type') === 'checkbox') {
+                            el.prop('checked', value == 1);
+                        } else {
+                            el.val(value);
+                        }
                     }
+                    // $('#user_id').val(data.user_id).trigger('change');
+                    $(element).html('<i class="ri ri-file-list-line label-icon align-middle fs-16 me-2"></i> Daftar');
 
-                    if (save_method == 'add') {
-                        $('#btnSave').html(save_text);
-                    } else {
-                        $('#btnSave').html(update_text);
-                    }
+                    // $('#btnSave').html(update_text); // Set Title to Bootstrap modal title
+                    $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+                    $('#modal-title').text('Registrasi Peserta'); // Set title to Bootstrap modal title
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // alert('Error get data from ajax');
+                    $(element).html('<i class="ri ri-file-list-line label-icon align-middle fs-16 me-2"></i> Daftar');
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    showAlert("Error!", textStatus, "error");
                 }
-
-                $('#btnSave').attr('disabled', false); //set button enable 
-                $('#btnSave').html(save_text);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // alert('Error adding / update data');
-                showAlert("Error!", textStatus, "error");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                $('#btnSave').html(save_text);
-                $('#btnSave').attr('disabled', false); //set button enable 
-            }
-        });
-    }
-
-    function save_import() {
-        $('.text-error').empty(); // clear error string
-        $('#btnImport').html(loading_animation); //change button text
-        $('#btnImport').attr('disabled', true); //set button disable 
-        var url;
-
-        var formData = new FormData($('#import_form')[0]);
-        formData.append("_token", "{{ csrf_token() }}");
-        formData.append("period", $('#period').val());
-        formData.append("study_program", $('#study_program').val());
-
-        $.ajax({
-            url: "{{ url('admin/registration/import') }}",
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                console.log(data);
-                if (data.status) //if success close modal and reload ajax table
-                {
-                    var text = data.message;
-                    console.log('tes');
-                    // if (save_method == 'add') {
-                    //     text = 'Data Berhasil Ditambahkan';
-                    // } else {
-                    //     text = 'Data Berhasil Diperbaharui';
-                    // }
-
-                    // toastr.success(text);
-                    showAlert("Berhasil!", text, "success");
-                    // notification('success', 'Success', text);
-                    $('#import_modal').modal('hide');
-                    reload_table();
-                } else {
-                    console.log(data.message);
-                    for (const [key, value] of Object.entries(data.message)) {
-                        $('#' + key + '_error').html('*' + value);
-                    }
-
-                    $('#btnImport').html(save_text);
-                }
-
-                $('#btnImport').attr('disabled', false); //set button enable 
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                $('#btnImport').html(save_text);
-                $('#btnImport').attr('disabled', false); //set button enable 
-                // alert('Error adding / update data');
-                showAlert("Error!", textStatus, "error");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                // $('#btnSave').attr('disabled', false); //set button enable 
-            }
-        });
-    }
-
-    function edit(element, id) {
-        save_method = 'update';
-        $('.text-error').empty();
-        $('#form')[0].reset(); // reset form on modals
-        $(element).html(edit_loading_animation);
-        //Ajax Load data from ajax
-        $.ajax({
-            url: "{{ url('/admin/registration/edit') }}",
-            type: "POST",
-            data: {
-                "id": id,
-                "_token": "{{ csrf_token() }}",
-            },
-            dataType: "JSON",
-            success: function(data) {
-                console.log(data);
-                for (const [key, value] of Object.entries(data)) {
-                    const el = $('#' + key);
-
-                    if (el.attr('type') === 'checkbox') {
-                        el.prop('checked', value == 1);
-                    } else {
-                        el.val(value);
-                    }
-                }
-                // $('#user_id').val(data.user_id).trigger('change');
-                $(element).html('<i class="ri ri-file-list-line label-icon align-middle fs-16 me-2"></i> Daftar');
-
-                // $('#btnSave').html(update_text); // Set Title to Bootstrap modal title
-                $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
-                $('#modal-title').text('Registrasi Peserta'); // Set title to Bootstrap modal title
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // alert('Error get data from ajax');
-                $(element).html('<i class="ri ri-file-list-line label-icon align-middle fs-16 me-2"></i> Daftar');
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                showAlert("Error!", textStatus, "error");
-            }
-        });
-    }
+            });
+        }
+    <?php } ?>
 </script>
 @endpush

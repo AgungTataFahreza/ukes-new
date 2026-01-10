@@ -55,9 +55,14 @@ class UserController extends Controller
                         ->orderBy('ukes_roles.name', $order);
                 })
                 ->addColumn('action', function ($result) {
-                    $button = '<button type="button" onclick="reset_password(this,' . "'" . $result->id . "'" . ')" style="margin-right:5px;" class="btn btn-info btn-sm btn-label waves-effect waves-light"><i class="ri-key-2-line label-icon align-middle fs-16 me-2"></i> Reset</button>';
-                    $button .= '<button type="button" onclick="edit(this,' . "'" . $result->id . "'" . ')" style="margin-right:5px;" class="btn btn-warning btn-sm btn-label waves-effect waves-light"><i class="ri-pencil-line label-icon align-middle fs-16 me-2"></i> Edit</button>';
-                    $button .= '<button type="button" onclick="deletee(' . "'" . $result->id . "'" . ')" class="btn btn-danger btn-sm btn-label waves-effect waves-light"><i class="ri-delete-bin-line label-icon align-middle fs-16 me-2"></i> Delete</button>';
+                    $button = '';
+                    if (can_access($this->permissions, $this->key, 'edit')) {
+                        $button .= '<button type="button" onclick="reset_password(this,' . "'" . $result->id . "'" . ')" style="margin-right:5px;" class="btn btn-info btn-sm btn-label waves-effect waves-light"><i class="ri-key-2-line label-icon align-middle fs-16 me-2"></i> Reset</button>';
+                        $button .= '<button type="button" onclick="edit(this,' . "'" . $result->id . "'" . ')" style="margin-right:5px;" class="btn btn-warning btn-sm btn-label waves-effect waves-light"><i class="ri-pencil-line label-icon align-middle fs-16 me-2"></i> Edit</button>';
+                    }
+                    if (can_access($this->permissions, $this->key, 'delete')) {
+                        $button .= '<button type="button" onclick="deletee(' . "'" . $result->id . "'" . ')" class="btn btn-danger btn-sm btn-label waves-effect waves-light"><i class="ri-delete-bin-line label-icon align-middle fs-16 me-2"></i> Delete</button>';
+                    }
                     return $button;
                 })
                 ->rawColumns([

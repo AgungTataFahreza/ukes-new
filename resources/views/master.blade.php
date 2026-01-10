@@ -139,6 +139,7 @@
             @php
             $menu = trim($__env->yieldContent('menu'));
             $menuParent = trim($__env->yieldContent('menu_parent'));
+            $permissions = store_permissions();
             @endphp
             <div id="scrollbar">
                 <div class="container-fluid">
@@ -151,97 +152,121 @@
                                 aria-expanded="false" aria-controls="sidebarDashboards">
                                 <i class="ri-dashboard-2-line"></i> <span>DASHBOARD</span>
                             </a>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link {{ $menuParent === 'ujikesehatan' ? '' : 'collapsed' }}"
-                                href="#ujikesehatan"
-                                data-bs-toggle="collapse"
-                                role="button"
-                                aria-expanded="{{ $menuParent === 'ujikesehatan' ? 'true' : 'false' }}"
-                                aria-controls="ujikesehatan">
-                                <i class="ri-hospital-line"></i> <span>UJI KESEHATAN</span>
-                            </a>
-                            <div class="collapse menu-dropdown {{ $menuParent === 'ujikesehatan' ? 'show' : '' }}" id="ujikesehatan">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ url('admin/registration') }}" class="nav-link {{ $menu === 'registration' ? 'active' : '' }}">Registrasi Peserta</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ url('admin/medical-form') }}" class="nav-link {{ $menu === 'medical-form' ? 'active' : '' }}">Formulir Uji Kesehatan</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ url('admin/medical-result') }}" class="nav-link {{ $menu === 'medical-result' ? 'active' : '' }}">Data Hasil Pemeriksaan</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ url('admin/applicant') }}" class="nav-link {{ $menu === 'applicant' ? 'active' : '' }}">Daftar Peserta</a>
-                                    </li>
-                                </ul>
-                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link {{ $menuParent === 'datapengguna' ? '' : 'collapsed' }}"
-                                href="#datapengguna"
-                                data-bs-toggle="collapse"
-                                role="button"
-                                aria-expanded="{{ $menuParent === 'datapengguna' ? 'true' : 'false' }}"
-                                aria-controls="datapengguna">
-                                <i class="ri-user-2-line"></i>
-                                <span>PENGGUNA</span>
-                            </a>
-                            <div class="collapse menu-dropdown {{ $menuParent === 'datapengguna' ? 'show' : '' }}" id="datapengguna">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ url('admin/user') }}" class="nav-link {{ $menu === 'user' ? 'active' : '' }}">User</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ url('admin/role') }}" class="nav-link {{ $menu === 'role' ? 'active' : '' }}">Role</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link {{ $menuParent === 'datapelengkap' ? '' : 'collapsed' }}"
-                                href="#datapelengkap"
-                                data-bs-toggle="collapse"
-                                role="button"
-                                aria-expanded="{{ $menuParent === 'datapelengkap' ? 'true' : 'false' }}"
-                                aria-controls="datapelengkap">
-                                <i class="ri-apps-2-line"></i>
-                                <span>DATA PELENGKAP</span>
-                            </a>
+                        <?php if (can_parent_access("Uji Kesehatan")) { ?>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ $menuParent === 'ujikesehatan' ? '' : 'collapsed' }}"
+                                    href="#ujikesehatan"
+                                    data-bs-toggle="collapse"
+                                    role="button"
+                                    aria-expanded="{{ $menuParent === 'ujikesehatan' ? 'true' : 'false' }}"
+                                    aria-controls="ujikesehatan">
+                                    <i class="ri-hospital-line"></i> <span>UJI KESEHATAN</span>
+                                </a>
+                                <div class="collapse menu-dropdown {{ $menuParent === 'ujikesehatan' ? 'show' : '' }}" id="ujikesehatan">
+                                    <ul class="nav nav-sm flex-column">
+                                        <?php if (can_access($permissions, "Registrasi Peserta", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/registration') }}" class="nav-link {{ $menu === 'registration' ? 'active' : '' }}">Registrasi Peserta</a>
+                                            </li>
+                                        <?php } ?>
+                                        <?php if (can_access($permissions, "Formulir Uji Kesehatan", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/medical-form') }}" class="nav-link {{ $menu === 'medical-form' ? 'active' : '' }}">Formulir Uji Kesehatan</a>
+                                            </li>
+                                        <?php } ?>
+                                        <?php if (can_access($permissions, "Data Hasil Pemeriksaan", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/medical-result') }}" class="nav-link {{ $menu === 'medical-result' ? 'active' : '' }}">Data Hasil Pemeriksaan</a>
+                                            </li>
+                                        <?php } ?>
+                                        <?php if (can_access($permissions, "Daftar Peserta", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/applicant') }}" class="nav-link {{ $menu === 'applicant' ? 'active' : '' }}">Daftar Peserta</a>
+                                            </li>
+                                        <?php } ?>
+                                    </ul>
+                                </div>
+                            </li>
+                        <?php } ?>
+                        <?php if (can_parent_access("Pengguna")) { ?>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ $menuParent === 'datapengguna' ? '' : 'collapsed' }}"
+                                    href="#datapengguna"
+                                    data-bs-toggle="collapse"
+                                    role="button"
+                                    aria-expanded="{{ $menuParent === 'datapengguna' ? 'true' : 'false' }}"
+                                    aria-controls="datapengguna">
+                                    <i class="ri-user-2-line"></i>
+                                    <span>PENGGUNA</span>
+                                </a>
+                                <div class="collapse menu-dropdown {{ $menuParent === 'datapengguna' ? 'show' : '' }}" id="datapengguna">
+                                    <ul class="nav nav-sm flex-column">
+                                        <?php if (can_access($permissions, "User", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/user') }}" class="nav-link {{ $menu === 'user' ? 'active' : '' }}">User</a>
+                                            </li>
+                                        <?php } ?>
+                                        <?php if (can_access($permissions, "Role", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/role') }}" class="nav-link {{ $menu === 'role' ? 'active' : '' }}">Role</a>
+                                            </li>
+                                        <?php } ?>
+                                    </ul>
+                                </div>
+                            </li>
+                        <?php } ?>
+                        <?php if (can_parent_access("Data Pelengkap")) { ?>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ $menuParent === 'datapelengkap' ? '' : 'collapsed' }}"
+                                    href="#datapelengkap"
+                                    data-bs-toggle="collapse"
+                                    role="button"
+                                    aria-expanded="{{ $menuParent === 'datapelengkap' ? 'true' : 'false' }}"
+                                    aria-controls="datapelengkap">
+                                    <i class="ri-apps-2-line"></i>
+                                    <span>DATA PELENGKAP</span>
+                                </a>
 
-                            <div class="collapse menu-dropdown {{ $menuParent === 'datapelengkap' ? 'show' : '' }}"
-                                id="datapelengkap">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ url('admin/period') }}"
-                                            class="nav-link {{ $menu === 'period' ? 'active' : '' }}">
-                                            Periode
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a href="{{ url('admin/year') }}"
-                                            class="nav-link {{ $menu === 'year' ? 'active' : '' }}">
-                                            Tahun
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a href="{{ url('admin/menu') }}"
-                                            class="nav-link {{ $menu === 'menu' ? 'active' : '' }}">
-                                            Menu
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a href="{{ url('admin/study-program') }}"
-                                            class="nav-link {{ $menu === 'study-program' ? 'active' : '' }}">
-                                            Program Studi
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                                <div class="collapse menu-dropdown {{ $menuParent === 'datapelengkap' ? 'show' : '' }}"
+                                    id="datapelengkap">
+                                    <ul class="nav nav-sm flex-column">
+                                        <?php if (can_access($permissions, "Periode", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/period') }}"
+                                                    class="nav-link {{ $menu === 'period' ? 'active' : '' }}">
+                                                    Periode
+                                                </a>
+                                            </li>
+                                        <?php } ?>
+                                        <?php if (can_access($permissions, "Tahun", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/year') }}"
+                                                    class="nav-link {{ $menu === 'year' ? 'active' : '' }}">
+                                                    Tahun
+                                                </a>
+                                            </li>
+                                        <?php } ?>
+                                        <?php if (can_access($permissions, "Menu", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/menu') }}"
+                                                    class="nav-link {{ $menu === 'menu' ? 'active' : '' }}">
+                                                    Menu
+                                                </a>
+                                            </li>
+                                        <?php } ?>
+                                        <?php if (can_access($permissions, "Program Studi", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/study-program') }}"
+                                                    class="nav-link {{ $menu === 'study-program' ? 'active' : '' }}">
+                                                    Program Studi
+                                                </a>
+                                            </li>
+                                        <?php } ?>
+                                    </ul>
+                                </div>
+                            </li>
+                        <?php } ?>
                     </ul>
                 </div>
                 <!-- Sidebar -->

@@ -87,16 +87,16 @@ class MenuController extends Controller
             return datatables()->of($data)
                 ->addColumn('action', function ($data) {
                     $button = ' <div class="d-flex">';
-                    // if (can($this->key, 'edit')) {
-                    $button .= '<div class="edit">
+                    if (can_access($this->permissions, $this->key, 'edit')) {
+                        $button .= '<div class="edit">
                                             <button type="button" onclick="edit(this,' . "'" . $data['id'] . "'" . ')" style="margin-right:5px;" class="btn btn-warning btn-sm btn-label waves-effect waves-light"><i class="ri-pencil-line label-icon align-middle fs-16 me-2"></i> Edit</button>
                                             </div>';
-                    // }
-                    // if (can($this->key, 'delete')) {
-                    $button .= '<div class="remove">
+                    }
+                    if (can_access($this->permissions, $this->key, 'delete')) {
+                        $button .= '<div class="remove">
                                                 <button type="button" onclick="deletee(' . "'" . $data['id'] . "'" . ')" class="btn btn-danger btn-sm btn-label waves-effect waves-light"><i class="ri-delete-bin-line label-icon align-middle fs-16 me-2"></i> Delete</button>
                                             </div>';
-                    // }
+                    }
                     $button .= '</div>';
                     return $button;
                 })

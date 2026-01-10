@@ -53,10 +53,6 @@ class MedicalResultController extends Controller
             $result = $query->orderBy('nama', 'desc')->get();
 
             return datatables()->of($result)
-                ->addColumn('action', function ($result) {
-                    $button = '<a href="' . url('admin/medical-form/edit/' . $result->id) . '" target="_blank" style="margin-right:5px;" class="btn btn-success btn-sm btn-label waves-effect waves-light"><i class="ri-file-list-line label-icon align-middle fs-16 me-2"></i> Periksa</a>';
-                    return $button;
-                })
                 ->addColumn('period_name', function ($result) {
                     return $result->period->name . ' ' . $result->period->year->name;
                 })

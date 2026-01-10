@@ -5,18 +5,21 @@
 @section('menu_parent', 'datapengguna')
 
 @section('content')
+<?php $key_ = session()->get('key') ?>
 
 <div class="row">
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header align-items-center d-flex">
                 <h4 class="card-title mb-0 flex-grow-1">Tahun</h4>
-                <div class="flex-shrink-0">
-                    <button type="button" class="btn btn-rounded btn-info" onclick="add();">
-                        <i class="ri-file-add-line label-icon align-middle rounded-pill fs-16 me-2"></i>
-                        Tambah
-                    </button>
-                </div>
+                <?php if (can_access($permissions, $key_, 'add')) { ?>
+                    <div class="flex-shrink-0">
+                        <button type="button" class="btn btn-rounded btn-info" onclick="add();">
+                            <i class="ri-file-add-line label-icon align-middle rounded-pill fs-16 me-2"></i>
+                            Tambah
+                        </button>
+                    </div>
+                <?php } ?>
             </div><!-- end card header -->
             <div class="card-body">
                 <table id="table" class="table table-bordered dt-responsive nowrap table-striped align-middle" style="width:100%">
@@ -26,7 +29,9 @@
                             <th scope="col">Nama</th>
                             <th scope="col">Username</th>
                             <th scope="col">Role</th>
-                            <th scope="col">Action</th>
+                            <?php if (can_access($permissions, $key_, 'edit') || can_access($permissions, $key_, 'delete')) { ?>
+                                <th scope="col">Action</th>
+                            <?php } ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,65 +41,66 @@
         </div>
     </div>
 </div>
-
-<div id="modal_form" class="modal fade" tabindex="-1" aria-labelledby="modalFormLabel" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- HEADER -->
-            <div class="modal-header">
-                <h5 class="modal-title" id="modal-title">Tambah Data Baru</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<?php if (can_access($permissions, $key_, 'add') || can_access($permissions, $key_, 'edit')) { ?>
+    <div id="modal_form" class="modal fade" tabindex="-1" aria-labelledby="modalFormLabel" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- HEADER -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">Tambah Data Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- FORM -->
+                <form id="form">
+                    <input type="hidden" name="id" id="id">
+                    <!-- BODY -->
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-lg-12">
+                                <div>
+                                    <label for="name" class="form-label">Nama</label>
+                                    <input type="text" name="name" id="name" class="form-control">
+                                    <div class="text-danger text-error" id="name_error">*error</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-lg-12">
+                                <div>
+                                    <label for="username" class="form-label">Username</label>
+                                    <input type="text" name="username" id="username" class="form-control">
+                                    <div class="text-danger text-error" id="username_error">*error</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-lg-12">
+                                <div>
+                                    <label for="role_id" class="form-label">Role</label>
+                                    <select name="role_id" id="role_id" class="form-control">
+                                        <?php foreach ($roles as $role) { ?>
+                                            <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                        <?php } ?>
+                                    </select>
+                                    <div class="text-danger text-error" id="role_id_error">*error</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FOOTER -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                        <button type="button" id="btnSave" class="btn btn-success btn-load" onclick="save();">
+                            <i class="ri ri-save-line me-1"></i> Simpan
+                        </button>
+                    </div>
+                </form>
             </div>
-            <!-- FORM -->
-            <form id="form">
-                <input type="hidden" name="id" id="id">
-                <!-- BODY -->
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-lg-12">
-                            <div>
-                                <label for="name" class="form-label">Nama</label>
-                                <input type="text" name="name" id="name" class="form-control">
-                                <div class="text-danger text-error" id="name_error">*error</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-lg-12">
-                            <div>
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" name="username" id="username" class="form-control">
-                                <div class="text-danger text-error" id="username_error">*error</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-lg-12">
-                            <div>
-                                <label for="role_id" class="form-label">Role</label>
-                                <select name="role_id" id="role_id" class="form-control">
-                                    <?php foreach ($roles as $role) { ?>
-                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    <?php } ?>
-                                </select>
-                                <div class="text-danger text-error" id="role_id_error">*error</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- FOOTER -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                        Close
-                    </button>
-                    <button type="button" id="btnSave" class="btn btn-success btn-load" onclick="save();">
-                        <i class="ri ri-save-line me-1"></i> Simpan
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
+<?php } ?>
 
 @endsection
 
@@ -154,10 +160,11 @@
                     data: 'role_name',
                     name: 'role_name'
                 },
-                {
-                    data: 'action',
-                    name: 'action'
-                }
+                <?php if (can_access($permissions, $key_, 'edit') || can_access($permissions, $key_, 'delete')) { ?> {
+                        data: 'action',
+                        name: 'action'
+                    }
+                <?php } ?>
             ],
             order: [
                 [1, 'asc']
@@ -166,192 +173,200 @@
 
     });
 
+    <?php if (can_access($permissions, $key_, 'add')) { ?>
 
-    function add() {
-        save_method = 'add';
-        $('.text-error').empty(); // clear error string
-        $('#form')[0].reset(); // reset form on modals
-        $('#btnSave').html(save_text);
-        $('#modal-title').text('Tambah Data Baru'); // Set Title to Bootstrap modal title
-        $('#modal_form').modal('show'); // show bootstrap modal
-    }
-
-    function save() {
-        $('.text-error').empty(); // clear error string
-        $('#btnSave').html(loading_animation); //change button text
-        $('#btnSave').attr('disabled', true); //set button disable 
-        var url;
-
-        if (save_method == 'add') {
-            url = "{{ url('/admin/user/add') }}";
-        } else {
-            url = "{{ url('/admin/user/update') }}";
+        function add() {
+            save_method = 'add';
+            $('.text-error').empty(); // clear error string
+            $('#form')[0].reset(); // reset form on modals
+            $('#btnSave').html(save_text);
+            $('#modal-title').text('Tambah Data Baru'); // Set Title to Bootstrap modal title
+            $('#modal_form').modal('show'); // show bootstrap modal
         }
+    <?php } ?>
+    <?php if (can_access($permissions, $key_, 'add') || can_access($permissions, $key_, 'edit')) { ?>
 
-        var formData = new FormData($('#form')[0]);
-        formData.append("_token", "{{ csrf_token() }}");
+        function save() {
+            $('.text-error').empty(); // clear error string
+            $('#btnSave').html(loading_animation); //change button text
+            $('#btnSave').attr('disabled', true); //set button disable 
+            var url;
 
-        formData.forEach((value, key) => {
-            console.log(key, value);
-        });
+            if (save_method == 'add') {
+                url = "{{ url('/admin/user/add') }}";
+            } else {
+                url = "{{ url('/admin/user/update') }}";
+            }
 
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: formData,
-            dataType: "JSON",
-            processData: false,
-            contentType: false,
-            success: function(data) {
-                console.log(data);
-                if (data.status) //if success close modal and reload ajax table
-                {
-                    var text = data.message;
-                    showAlert("Berhasil", text, "success");
-                    // notification('success', 'Success', text);
-                    $('#modal_form').modal('hide');
-                    reload_table();
-                } else {
-                    console.log(data.message);
-                    for (const [key, value] of Object.entries(data.message)) {
-                        $('#' + key + '_error').html('*' + value);
-                    }
+            var formData = new FormData($('#form')[0]);
+            formData.append("_token", "{{ csrf_token() }}");
 
-                    if (save_method == 'add') {
-                        $('#btnSave').html(save_text);
+            formData.forEach((value, key) => {
+                console.log(key, value);
+            });
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                dataType: "JSON",
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    console.log(data);
+                    if (data.status) //if success close modal and reload ajax table
+                    {
+                        var text = data.message;
+                        showAlert("Berhasil", text, "success");
+                        // notification('success', 'Success', text);
+                        $('#modal_form').modal('hide');
+                        reload_table();
                     } else {
-                        $('#btnSave').html(update_text);
-                    }
-                }
-
-                $('#btnSave').attr('disabled', false); //set button enable 
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // alert('Error adding / update data');
-                showAlert("Error!", textStatus, "error");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                // $('#btnSave').attr('disabled', false); //set button enable 
-            }
-        });
-    }
-
-    function edit(element, id) {
-        save_method = 'update';
-        $('.text-error').empty();
-        $('#form')[0].reset(); // reset form on modals
-        $(element).html(edit_loading_animation);
-        //Ajax Load data from ajax
-        $.ajax({
-            url: "{{ url('/admin/user/edit') }}",
-            type: "POST",
-            data: {
-                "id": id,
-                "_token": "{{ csrf_token() }}",
-            },
-            dataType: "JSON",
-            success: function(data) {
-                console.log(data);
-                for (const [key, value] of Object.entries(data)) {
-                    $('#' + key).val(value);
-                }
-                $(element).html('<i class="ri ri-pencil-line label-icon align-middle fs-16 me-2"></i> Edit');
-
-                $('#btnSave').html(update_text); // Set Title to Bootstrap modal title
-                $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
-                $('#modal-title').text('Edit Data'); // Set title to Bootstrap modal title
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                // alert('Error get data from ajax');
-                showAlert("Error!", textStatus, "error");
-            }
-        });
-    }
-
-    function deletee(id) {
-        Swal.fire({
-            title: "",
-            icon: 'question',
-            text: "Yakin Ingin Menghapus Data ?",
-            type: "warning",
-            showCancelButton: !0,
-            confirmButtonText: "Ya, Hapus!",
-            cancelButtonText: "Tidak, Batal!",
-            reverseButtons: !0
-        }).then(function(e) {
-            if (e.value === true) {
-                $.ajax({
-                    url: "{{ url('/admin/user/delete') }}",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {
-                        "id": id,
-                        "_token": "{{ csrf_token() }}",
-                    },
-                    success: function(results) {
-                        if (results.status == false) {
-                            showAlert("Gagal!", results.message, "error");
-                            return;
+                        console.log(data.message);
+                        for (const [key, value] of Object.entries(data.message)) {
+                            $('#' + key + '_error').html('*' + value);
                         }
 
-                        showAlert("Berhasil!", "Berhasil Menghapus Data", "success");
-                        reload_table();
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.log(jqXHR);
-                        console.log(textStatus);
-                        console.log(errorThrown);
-                        showAlert("Error!", textStatus, "error");
+                        if (save_method == 'add') {
+                            $('#btnSave').html(save_text);
+                        } else {
+                            $('#btnSave').html(update_text);
+                        }
                     }
-                });
-            } else {
-                e.dismiss;
-            }
-        }, function(dismiss) {
-            return false;
-        })
-    }
 
-    function reset_password(id) {
-        swal({
-            title: "",
-            icon: 'question',
-            text: "Yakin Ingin Reset Password ?",
-            type: "warning",
-            showCancelButton: !0,
-            confirmButtonText: "Ya!",
-            cancelButtonText: "Tidak, Batal!",
-            reverseButtons: !0
-        }).then(function(e) {
-            if (e.value === true) {
-                $.ajax({
-                    url: "{{ url('/admin/user/reset-password') }}",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {
-                        "id": id,
-                        "_token": "{{ csrf_token() }}",
-                    },
-                    success: function(results) {
-                        swal("Berhasil!", "Berhasil Reset Password", "success");
-                        reload_table();
+                    $('#btnSave').attr('disabled', false); //set button enable 
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // alert('Error adding / update data');
+                    showAlert("Error!", textStatus, "error");
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    // $('#btnSave').attr('disabled', false); //set button enable 
+                }
+            });
+        }
+    <?php } ?>
+    <?php if (can_access($permissions, $key_, 'edit')) { ?>
 
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        swal("Error!", textStatus, "error");
-                        console.log(jqXHR);
-                        console.log(textStatus);
-                        console.log(errorThrown);
+        function edit(element, id) {
+            save_method = 'update';
+            $('.text-error').empty();
+            $('#form')[0].reset(); // reset form on modals
+            $(element).html(edit_loading_animation);
+            //Ajax Load data from ajax
+            $.ajax({
+                url: "{{ url('/admin/user/edit') }}",
+                type: "POST",
+                data: {
+                    "id": id,
+                    "_token": "{{ csrf_token() }}",
+                },
+                dataType: "JSON",
+                success: function(data) {
+                    console.log(data);
+                    for (const [key, value] of Object.entries(data)) {
+                        $('#' + key).val(value);
                     }
-                });
-            } else {
-                e.dismiss;
-            }
-        }, function(dismiss) {
-            return false;
-        })
-    }
+                    $(element).html('<i class="ri ri-pencil-line label-icon align-middle fs-16 me-2"></i> Edit');
+
+                    $('#btnSave').html(update_text); // Set Title to Bootstrap modal title
+                    $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+                    $('#modal-title').text('Edit Data'); // Set title to Bootstrap modal title
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // alert('Error get data from ajax');
+                    showAlert("Error!", textStatus, "error");
+                }
+            });
+        }
+
+        function reset_password(id) {
+            swal({
+                title: "",
+                icon: 'question',
+                text: "Yakin Ingin Reset Password ?",
+                type: "warning",
+                showCancelButton: !0,
+                confirmButtonText: "Ya!",
+                cancelButtonText: "Tidak, Batal!",
+                reverseButtons: !0
+            }).then(function(e) {
+                if (e.value === true) {
+                    $.ajax({
+                        url: "{{ url('/admin/user/reset-password') }}",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {
+                            "id": id,
+                            "_token": "{{ csrf_token() }}",
+                        },
+                        success: function(results) {
+                            swal("Berhasil!", "Berhasil Reset Password", "success");
+                            reload_table();
+
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            swal("Error!", textStatus, "error");
+                            console.log(jqXHR);
+                            console.log(textStatus);
+                            console.log(errorThrown);
+                        }
+                    });
+                } else {
+                    e.dismiss;
+                }
+            }, function(dismiss) {
+                return false;
+            })
+        }
+    <?php } ?>
+    <?php if (can_access($permissions, $key_, 'delete')) { ?>
+
+        function deletee(id) {
+            Swal.fire({
+                title: "",
+                icon: 'question',
+                text: "Yakin Ingin Menghapus Data ?",
+                type: "warning",
+                showCancelButton: !0,
+                confirmButtonText: "Ya, Hapus!",
+                cancelButtonText: "Tidak, Batal!",
+                reverseButtons: !0
+            }).then(function(e) {
+                if (e.value === true) {
+                    $.ajax({
+                        url: "{{ url('/admin/user/delete') }}",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {
+                            "id": id,
+                            "_token": "{{ csrf_token() }}",
+                        },
+                        success: function(results) {
+                            if (results.status == false) {
+                                showAlert("Gagal!", results.message, "error");
+                                return;
+                            }
+
+                            showAlert("Berhasil!", "Berhasil Menghapus Data", "success");
+                            reload_table();
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.log(jqXHR);
+                            console.log(textStatus);
+                            console.log(errorThrown);
+                            showAlert("Error!", textStatus, "error");
+                        }
+                    });
+                } else {
+                    e.dismiss;
+                }
+            }, function(dismiss) {
+                return false;
+            })
+        }
+    <?php } ?>
 
     function reload_table() {
         table.ajax.reload(null, false); //reload datatable ajax 
