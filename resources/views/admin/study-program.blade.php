@@ -58,7 +58,7 @@
                         <div class="row mb-3"></div>
                         <div class="row mb-3">
                             <div class="col-lg">
-                                <label for="name" class="form-label">Tahun</label>
+                                <label for="name" class="form-label">Nama</label>
                                 <input type="text" class="form-control" id="name" name="name">
                                 <div class="text-danger text-error" id="name_error">
                                     *error

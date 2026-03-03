@@ -1,0 +1,44 @@
+flowchart TB
+    subgraph Sistem Uji Kesehatan Mahasiswa Baru
+        AdminSel("Admin Seleksi")
+        PetugasReg("Petugas Registrasi")
+        Nakes("Tenaga Kesehatan")
+    end
+
+    subgraph Menu_Admin[""]
+        A1("Dashboard")
+        A2("Kelola Tahun Seleksi")
+        A3("Kelola Periode Seleksi")
+        A4("Kelola Program Studi")
+        A5("Input Data Peserta")
+        A6("Data Hasil Pemeriksaan")
+    end
+
+    subgraph Menu_Petugas[""]
+        P1("Registrasi Peserta")
+        P2("Daftar Peserta Terdaftar")
+    end
+
+    subgraph Menu_Nakes[""]
+        N1("Input Pemeriksaan Antropometri")
+        N2("Input Pemeriksaan Fisik")
+        N3("Input Pemeriksaan Gigi")
+        N4("Input Pemeriksaan Narkoba")
+        N5("Kesimpulan Pemeriksaan")
+    end
+
+    AdminSel --> A1
+    AdminSel --> A2
+    AdminSel --> A3
+    AdminSel --> A4
+    AdminSel --> A5
+    AdminSel --> A6
+
+    PetugasReg --> P1
+    PetugasReg --> P2
+
+    Nakes --> N1
+    Nakes --> N2
+    Nakes --> N3
+    Nakes --> N4
+    Nakes --> N5

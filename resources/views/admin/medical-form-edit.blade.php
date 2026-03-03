@@ -1486,6 +1486,11 @@
         $('#v-pills-' + tabFrom).removeClass('show active');
         $('#v-pills-' + tabTo + '-tab').addClass('active');
         $('#v-pills-' + tabTo).addClass('show active');
+
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }
     <?php if (can_access($permissions, $key_, 'edit')) { ?>
 

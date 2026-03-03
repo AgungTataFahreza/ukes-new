@@ -494,7 +494,6 @@ class MedicalFormController extends Controller
                         $alasan         = 'Tidak lulus karena tinggi badan calon mahasiswa program studi Keperawatan berjenis kelamin laki-laki di bawah syarat minimal 155 cm.';
                     }
                 } elseif ($data->jenis_kelamin === 'P') {
-
                     $parameter = [
                         'program_studi' => $data->study_program->name,
                         'jenis_kelamin' => 'Perempuan',
