@@ -81,6 +81,13 @@ class RegistrationController extends Controller
                         return '-';
                     }
                 })
+                ->editColumn('tanggal_lahir', function ($result) {
+                    if ($result->tanggal_lahir) {
+                        return date('d-m-Y', strtotime($result->tanggal_lahir));
+                    } else {
+                        return '-';
+                    }
+                })
                 ->editColumn('tanggal_periksa', function ($result) {
                     if ($result->tgl_periksa) {
                         return date('d-m-Y', strtotime($result->tgl_periksa));
@@ -116,6 +123,7 @@ class RegistrationController extends Controller
                     'status_registrasi' => 'status_registrasi',
                     'status_bayar' => 'status_bayar',
                     'jenis_kelamin' => 'jenis_kelamin',
+                    'tanggal_lahir' => 'tanggal_lahir',
                 ])
                 ->addIndexColumn()
                 ->make(true);

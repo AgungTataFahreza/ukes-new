@@ -65,7 +65,7 @@
                                     <p class="text-muted">Sign in to continue to UJI KESEHATAN Application.</p>
                                 </div>
                                 <div class="p-2 mt-4">
-                                    <form action="{{ url('/login') }}" method="post">
+                                    <form action="{{ url('/admin/login') }}" method="post">
                                         @csrf
                                         <label for="username" class="form-label">Username</label>
                                         <input type="text" class="form-control" value="" name="username" id="username" placeholder="Enter username">

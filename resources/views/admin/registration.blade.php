@@ -36,6 +36,7 @@
                             <th scope="col">Periode</th>
                             <th scope="col">No Peserta</th>
                             <th scope="col">Nama</th>
+                            <th scope="col">Tgl Lahir</th>
                             <th scope="col">Jenis Kelamin</th>
                             <th scope="col">Prodi</th>
                             <th scope="col">Tgl Registrasi</th>
@@ -245,6 +246,10 @@
                 {
                     data: 'nama'
                 },
+                {
+                    data: 'tanggal_lahir',
+                    name: 'tanggal_lahir'
+                }, // Kolom Baru
                 {
                     data: 'jenis_kelamin'
                 },

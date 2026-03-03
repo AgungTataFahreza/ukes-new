@@ -93,15 +93,15 @@
                                     <img class="rounded-circle header-profile-user" src="{{ asset('assets/images/users/avatar-1.jpg') }}"
                                         alt="Header Avatar">
                                     <span class="text-start ms-xl-2">
-                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ Auth::user()->name }}</span>
-                                        <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">{{ Auth::user()->username }}</span>
+                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ Auth::guard('web')->user()->name }}</span>
+                                        <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">{{ Auth::guard('web')->user()->username }}</span>
                                     </span>
                                 </span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <!-- item-->
-                                <h6 class="dropdown-header">Welcome, {{ Auth::user()->name }}!</h6>
-                                <a class="dropdown-item" href="{{ url('logout') }}"><i
+                                <h6 class="dropdown-header">Welcome, {{ Auth::guard('web')->user()->name }}!</h6>
+                                <a class="dropdown-item" href="{{ url('/admin/logout') }}"><i
                                         class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
                                         class="align-middle" data-key=t-logout>Logout</span></a>
                             </div>
@@ -148,7 +148,7 @@
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span>Menu</span></li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="?app=dashboard-main" role="button"
+                            <a class="nav-link menu-link" href="{{ url('admin/dashboard') }}" role="button"
                                 aria-expanded="false" aria-controls="sidebarDashboards">
                                 <i class="ri-dashboard-2-line"></i> <span>DASHBOARD</span>
                             </a>

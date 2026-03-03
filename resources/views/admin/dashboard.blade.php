@@ -9,7 +9,7 @@
                 <div class="col-12">
                     <div class="d-flex align-items-lg-center flex-lg-row flex-column">
                         <div class="flex-grow-1">
-                            <h4 class="fs-16 mb-1">{{ Auth::user()->name }}</h4>
+                            <h4 class="fs-16 mb-1">{{ Auth::guard('web')->user()->name ?? 'Admin' }}</h4>
                             <p class="text-muted mb-0">Selamat datang di Aplikasi Uji Kesehatan.</p>
                         </div>
                         <div class="mt-3 mt-lg-0">

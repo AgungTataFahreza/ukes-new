@@ -23,7 +23,7 @@ class Access
             if (Auth::check()) {
                 return redirect()->back()->with('failed', 'Anda tidak memiliki akses ke ' . $access . ' "' . $menu . '"');
             }
-            return redirect('admin')->with('failed', 'Anda tidak memiliki akses, silahkan login terlebih dahulu');
+            return redirect('admin.login')->with('failed', 'Anda tidak memiliki akses, silahkan login terlebih dahulu');
         }
     }
 }

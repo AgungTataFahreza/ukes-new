@@ -28,7 +28,7 @@ class AuthController extends Controller
                 return redirect('/admin/dashboard');
             } else {
                 Session::flash('error', 'Wrong Username/Password');
-                return redirect()->route('login');
+                return redirect()->route('admin.login');
             }
         }
     }
@@ -36,6 +36,6 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout(); // menghapus session yang aktif
-        return redirect()->route('login');
+        return redirect()->route('admin.login');
     }
 }

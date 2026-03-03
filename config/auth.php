@@ -40,7 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-
+        // TAMBAHKAN INI
+        'applicant' => [
+            'driver' => 'session',
+            'provider' => 'applicants',
+        ],
         'api' => [
             'driver' => 'token',
             'provider' => 'users',
@@ -70,7 +74,11 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
+        // TAMBAHKAN INI
+        'applicants' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Applicant::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

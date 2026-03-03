@@ -36,12 +36,13 @@ Route::get('autocomplete', [TestController::class, 'autocomplete']);
 Route::get('/', function () {
     return redirect('/admin/dashboard');
 });
-Route::get('login', [AuthController::class, 'getLogin'])->name('login');
-Route::post('login', [AuthController::class, 'postLogin']);
 
-Route::group(['middleware' => ['auth']], function () {
-    Route::prefix('/admin')->name('admin.')->namespace('Admin')->group(function () {
-        Route::get('/', [DashboardController::class, 'index']);
+
+Route::prefix('/admin')->name('admin.')->namespace('Admin')->group(function () {
+    Route::get('/', [DashboardController::class, 'index']);
+    Route::get('login', [AuthController::class, 'getLogin'])->name('login');
+    Route::post('login', [AuthController::class, 'postLogin']);
+    Route::group(['middleware' => ['auth']], function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
         Route::post('/dashboard/summary', [DashboardController::class, 'summary']);
 
@@ -120,11 +121,20 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/medical-result', [MedicalResultController::class, 'index'])->middleware('access:Data Hasil Pemeriksaan,view');
         Route::post('/medical-result/show', [MedicalResultController::class, 'show'])->middleware('access:Data Hasil Pemeriksaan,view');
-    });
-    Route::get('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/test-pusher', function () {
-        broadcast(new TestEvent('Hello from Pusher!'));
-        return 'Event broadcasted!';
+        Route::get('/logout', [AuthController::class, 'logout']);
+    });
+});
+
+// Route untuk Peserta (Pemeriksaan Luar)
+Route::prefix('/applicant')->name('applicant.')->group(function () {
+    Route::get('/login', [App\Http\Controllers\Applicant\AuthApplicantController::class, 'getLogin'])->name('login');
+    Route::post('/login', [App\Http\Controllers\Applicant\AuthApplicantController::class, 'postLogin']);
+
+    Route::middleware('auth:applicant')->group(function () {
+        Route::get('/dashboard', function () {
+            return "Selamat Datang Peserta";
+        });
+        Route::get('/logout', [App\Http\Controllers\Applicant\AuthApplicantController::class, 'logout'])->name('logout');
     });
 });

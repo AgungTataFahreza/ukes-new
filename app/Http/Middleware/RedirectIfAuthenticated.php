@@ -22,6 +22,15 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
+                // Jika yang login adalah admin (guard web)
+                if ($guard === 'web') {
+                    return redirect('/admin/dashboard');
+                }
+                // Jika yang login adalah peserta (guard applicant)
+                if ($guard === 'applicant') {
+                    return redirect('/applicant/dashboard');
+                }
+
                 return redirect(RouteServiceProvider::HOME);
             }
         }
