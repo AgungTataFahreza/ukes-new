@@ -13,6 +13,7 @@ use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\StudyProgramController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\YearController;
+use App\Http\Controllers\Applicant\FormMandiriController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TestController;
 
@@ -33,13 +34,11 @@ Route::get('autocomplete', [TestController::class, 'autocomplete']);
 
 // Route::get('/', [DashboardController::class, 'index']);
 
-Route::get('/', function () {
-    return redirect('/admin/dashboard');
-});
+Route::get('/', [App\Http\Controllers\Applicant\AuthApplicantController::class, 'getLogin'])->name('login');
 
 
 Route::prefix('/admin')->name('admin.')->namespace('Admin')->group(function () {
-    Route::get('/', [DashboardController::class, 'index']);
+    Route::get('/', [AuthController::class, 'getLogin'])->name('login');
     Route::get('login', [AuthController::class, 'getLogin'])->name('login');
     Route::post('login', [AuthController::class, 'postLogin']);
     Route::group(['middleware' => ['auth']], function () {
@@ -132,9 +131,17 @@ Route::prefix('/applicant')->name('applicant.')->group(function () {
     Route::post('/login', [App\Http\Controllers\Applicant\AuthApplicantController::class, 'postLogin']);
 
     Route::middleware('auth:applicant')->group(function () {
-        Route::get('/dashboard', function () {
-            return "Selamat Datang Peserta";
-        });
+        // HUBUNGKAN KE FUNCTION dashboard DI CONTROLLER
+        Route::get('/dashboard', [App\Http\Controllers\Applicant\AuthApplicantController::class, 'dashboard'])->name('dashboard');
+
+        Route::get('/form-mandiri', [FormMandiriController::class, 'index'])->name('form-mandiri');
+        Route::post('/form-mandiri/update-antropometri', [App\Http\Controllers\Applicant\FormMandiriController::class, 'updateAntropometri']);
+        Route::post('/form-mandiri/update-fisik', [App\Http\Controllers\Applicant\FormMandiriController::class, 'updateFisik']);
+        Route::post('/form-mandiri/update-fisik-2', [App\Http\Controllers\Applicant\FormMandiriController::class, 'updateFisik2']);
+        Route::post('/form-mandiri/update-gigi', [App\Http\Controllers\Applicant\FormMandiriController::class, 'updateGigi']);
+        Route::post('/form-mandiri/update-narkoba', [App\Http\Controllers\Applicant\FormMandiriController::class, 'updateNarkoba']);
+        Route::post('/form-mandiri/update-berkas', [App\Http\Controllers\Applicant\FormMandiriController::class, 'updateBerkas']);
+
         Route::get('/logout', [App\Http\Controllers\Applicant\AuthApplicantController::class, 'logout'])->name('logout');
     });
 });
