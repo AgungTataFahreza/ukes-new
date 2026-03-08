@@ -44,7 +44,7 @@
                                             <input type="text" class="form-control-plaintext bg-light px-2" id="nama" value="{{ $user->name }}" readonly>
                                         </div>
                                         <div class="col-sm-12">
-                                            <label for="study_program_name" class="form-label">Prodi Lulus</label>
+                                            <label for="study_program_name" class="form-label">Prodi</label>
                                             <input type="text" class="form-control-plaintext bg-light px-2" id="study_program_name" value="{{ $user->medical_record->study_program->name ?? '-' }}" readonly>
                                         </div>
                                         <div class="d-flex align-items-end justify-content-end mt-4">
@@ -123,6 +123,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="tab-pane fade" id="v-pills-pemeriksaan-fisik" role="tabpanel" aria-labelledby="v-pills-pemeriksaan-fisik-tab">
                                 <div class="d-flex mb-2">
                                     <form id="fisikForm">
@@ -166,7 +167,7 @@
                                                 </div>
                                                 <div class="row mb-3">
                                                     <div class="col-lg-3"><label for="visus" class="form-label">Visus</label></div>
-                                                    <div class="col-lg-9"><input type="text" class="form-control" id="visus" name="visus" placeholder="visus" value="{{ $user->visus }}"></div>
+                                                    <div class="col-lg-9"><input type="text" class="form-control" id="visus" name="visus" placeholder="isi 0 jika tidak ada" value="{{ $user->visus }}"></div>
                                                 </div>
                                                 <div class="row mb-3">
                                                     <div class="col-lg-3"><label for="buta_warna" class="form-label">Buta Warna</label></div>
@@ -325,6 +326,7 @@
                                     </form>
                                 </div>
                             </div>
+
                             <div class="tab-pane fade" id="v-pills-pemeriksaan-fisik-2" role="tabpanel" aria-labelledby="v-pills-pemeriksaan-fisik-2-tab">
                                 <div class="d-flex mb-2">
                                     <form id="fisik2Form">
@@ -620,47 +622,58 @@
                             <div class="tab-pane fade" id="v-pills-berkas" role="tabpanel" aria-labelledby="v-pills-berkas-tab">
                                 <div class="d-flex mb-2">
                                     <div class="w-100">
-                                        <p class="text-muted">Unggah Dokumen Pendukung</p>
-                                        <div class="alert alert-secondary mb-4">
-                                            Silahkan unggah hasil foto/scan dokumen asli dari klinik/RS tempat Anda periksa (Format: PDF, JPG, PNG). Maksimal 2MB per file.
+                                        <p class="text-muted">Unggah Dokumen Pemeriksaan (WAJIB)</p>
+
+                                        <div class="alert alert-info mb-4">
+                                            <strong>Catatan Penting:</strong> Parameter Narkoba wajib meliputi: <strong>AMP, MOP, THC</strong>.
                                         </div>
+
+                                        <div class="alert alert-secondary mb-4">
+                                            Format: PDF, JPG, PNG. Maksimal 2MB per file.<br>
+                                            <a href="{{ asset('assets/templates/template_form_kesehatan.pdf') }}" class="btn btn-sm btn-outline-primary mt-2" download>
+                                                <i class="ri-download-2-line align-middle me-1"></i> Unduh Template
+                                            </a>
+                                        </div>
+
                                         <form id="berkasForm">
+                                            @csrf
                                             <div class="row g-3">
-                                                <div class="row mb-3">
+                                                <div class="row mb-3 align-items-center">
+                                                    <div class="col-lg-3"><label class="form-label">Hasil Uji Kesehatan</label></div>
+                                                    <div class="col-lg-6"><input type="file" class="form-control" name="file_kesehatan" accept=".pdf,.jpg,.jpeg,.png"></div>
                                                     <div class="col-lg-3">
-                                                        <label class="form-label">Surat Keterangan Sehat <span class="text-danger">*</span></label>
-                                                    </div>
-                                                    <div class="col-lg-9">
-                                                        <input type="file" class="form-control" id="file_kesehatan" name="file_kesehatan" accept=".pdf,.jpg,.jpeg,.png">
-                                                        <?php if ($user->file_kesehatan) { ?>
-                                                            <div class="mt-2 text-success" style="font-size: 13px;">
-                                                                <i class="ri-check-double-line align-middle"></i> Dokumen sehat sudah diunggah sebelumnya. (Abaikan jika tidak ingin mengganti file).
-                                                            </div>
-                                                        <?php } ?>
+                                                        @if ($user->file_kesehatan)
+                                                        <a href="{{ asset('storage/uploads/kesehatan/' . $user->file_kesehatan) }}" target="_blank" class="btn btn-soft-success w-100"><i class="ri-eye-line"></i> Lihat</a>
+                                                        @endif
                                                     </div>
                                                 </div>
 
-                                                <div class="row mb-4">
+                                                <div class="row mb-4 align-items-center">
+                                                    <div class="col-lg-3"><label class="form-label">Hasil Lab Narkoba</label></div>
+                                                    <div class="col-lg-6"><input type="file" class="form-control" name="file_narkoba" accept=".pdf,.jpg,.jpeg,.png"></div>
                                                     <div class="col-lg-3">
-                                                        <label class="form-label">Hasil Lab Narkoba <span class="text-danger">*</span></label>
-                                                    </div>
-                                                    <div class="col-lg-9">
-                                                        <input type="file" class="form-control" id="file_narkoba" name="file_narkoba" accept=".pdf,.jpg,.jpeg,.png">
-                                                        <?php if ($user->file_narkoba) { ?>
-                                                            <div class="mt-2 text-success" style="font-size: 13px;">
-                                                                <i class="ri-check-double-line align-middle"></i> Dokumen narkoba sudah diunggah sebelumnya.
-                                                            </div>
-                                                        <?php } ?>
+                                                        @if ($user->file_narkoba)
+                                                        <a href="{{ asset('storage/uploads/narkoba/' . $user->file_narkoba) }}" target="_blank" class="btn btn-soft-success w-100"><i class="ri-eye-line"></i> Lihat</a>
+                                                        @endif
                                                     </div>
                                                 </div>
 
-                                                <?php if ($user->tanggal_input == null || ($user->status_file_kesehatan == 'Rejected' || $user->status_file_narkoba == 'Rejected')) { ?>
-                                                    <div class="text-end border-top pt-4">
-                                                        <button type="button" class="btn btn-info" id="btnSaveBerkas" onclick="saveBerkas()">
-                                                            Simpan <i class="ri-arrow-right-line me-1"></i>
-                                                        </button>
+                                                <div class="text-center mb-4">
+                                                    <button type="button" class="btn btn-info w-50" id="btnUploadOnly" onclick="uploadBerkasOnly()">
+                                                        <i class="ri-upload-cloud-line me-1"></i> Upload / Perbarui Berkas
+                                                    </button>
+                                                </div>
+
+                                                @if ($user->tanggal_input == null)
+                                                <div class="text-end border-top pt-4">
+                                                    <div class="alert alert-warning text-start">
+                                                        <i class="ri-error-warning-line me-2"></i> <strong>Finalisasi:</strong> Pastikan seluruh data dari tab Antropometri hingga Berkas sudah benar. Form akan terkunci setelah tombol ini ditekan.
                                                     </div>
-                                                <?php } ?>
+                                                    <button type="button" class="btn btn-danger btn-lg" id="btnFinalisasi" onclick="confirmFinalisasi()">
+                                                        <i class="ri-lock-password-line me-1"></i> Finalisasi & Kirim Seluruh Data
+                                                    </button>
+                                                </div>
+                                                @endif
                                             </div>
                                         </form>
                                     </div>
@@ -739,11 +752,24 @@
                         text: data.message
                     });
                 }
+            },
+            error: function(jqXHR) {
+                var errorMessage = 'Terjadi kesalahan sistem saat menyimpan data antropometri.';
+                if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                    errorMessage = jqXHR.responseJSON.message; // Pesan kustom dari backend
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage
+                });
+                btnSaveAntropometri.html(save_text).attr('disabled', false);
             }
         });
     }
 
     function saveFisik() {
+        console.log("Menyimpan data pemeriksaan fisik...");
         $('#btnSaveFisik').html(loading_animation).attr('disabled', true);
         var formData = new FormData($('#fisikForm')[0]);
         formData.append("_token", "{{ csrf_token() }}");
@@ -758,16 +784,32 @@
                 if (data.status) {
                     toast(data.message, "success");
                     moveTab('pemeriksaan-fisik', 'pemeriksaan-fisik-2');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message
+                    });
                 }
                 $('#btnSaveFisik').html(save_text).attr('disabled', false);
             },
-            error: function() {
-                $('#btnSaveFisik').html(save_text).attr('disabled', false);
+            error: function(jqXHR) {
+                var errorMessage = 'Terjadi kesalahan sistem saat menyimpan data fisik.';
+                if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                    errorMessage = jqXHR.responseJSON.message; // Pesan kustom dari backend
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage
+                });
+                btnSaveFisik.html(save_text).attr('disabled', false);
             }
         });
     }
 
     function saveFisik2() {
+        console.log("Menyimpan data pemeriksaan fisik 2...");
         $('#btnSaveFisik2').html(loading_animation).attr('disabled', true);
         var formData = new FormData($('#fisik2Form')[0]);
         formData.append("_token", "{{ csrf_token() }}");
@@ -782,16 +824,32 @@
                 if (data.status) {
                     toast(data.message, "success");
                     moveTab('pemeriksaan-fisik-2', 'pemeriksaan-gigi');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message
+                    });
                 }
                 $('#btnSaveFisik2').html(save_text).attr('disabled', false);
             },
-            error: function() {
-                $('#btnSaveFisik2').html(save_text).attr('disabled', false);
+            error: function(jqXHR) {
+                var errorMessage = 'Terjadi kesalahan sistem saat menyimpan data fisik 2.';
+                if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                    errorMessage = jqXHR.responseJSON.message; // Pesan kustom dari backend
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage
+                });
+                btnSaveFisik2.html(save_text).attr('disabled', false);
             }
         });
     }
 
     function saveGigi() {
+        console.log("Menyimpan data pemeriksaan gigi...");
         $('#btnSaveGigi').html(loading_animation).attr('disabled', true);
         var formData = new FormData($('#gigiForm')[0]);
         formData.append("_token", "{{ csrf_token() }}");
@@ -806,16 +864,32 @@
                 if (data.status) {
                     toast(data.message, "success");
                     moveTab('pemeriksaan-gigi', 'pemeriksaan-narkoba');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message
+                    });
                 }
                 $('#btnSaveGigi').html(save_text).attr('disabled', false);
             },
-            error: function() {
-                $('#btnSaveGigi').html(save_text).attr('disabled', false);
+            error: function(jqXHR) {
+                var errorMessage = 'Terjadi kesalahan sistem saat menyimpan data gigi.';
+                if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                    errorMessage = jqXHR.responseJSON.message; // Pesan kustom dari backend
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage
+                });
+                btnSaveGigi.html(save_text).attr('disabled', false);
             }
         });
     }
 
     function saveNarkoba() {
+        console.log("Menyimpan data pemeriksaan narkoba...");
         $('#btnSaveNarkoba').html(loading_animation).attr('disabled', true);
         var formData = new FormData($('#narkobaForm')[0]);
         formData.append("_token", "{{ csrf_token() }}");
@@ -830,39 +904,121 @@
                 if (data.status) {
                     toast(data.message, "success");
                     moveTab('pemeriksaan-narkoba', 'berkas');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message
+                    });
                 }
                 $('#btnSaveNarkoba').html(save_text).attr('disabled', false);
             },
-            error: function() {
-                $('#btnSaveNarkoba').html(save_text).attr('disabled', false);
+            error: function(jqXHR) {
+                var errorMessage = 'Terjadi kesalahan sistem saat menyimpan data narkoba.';
+                if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                    errorMessage = jqXHR.responseJSON.message; // Pesan kustom dari backend
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage
+                });
+                btnSaveNarkoba.html(save_text).attr('disabled', false);
             }
         });
     }
 
-    function saveBerkas() {
-        $('#btnSaveBerkas').html(loading_animation).attr('disabled', true);
+    // Fungsi 1: Hanya Upload Berkas
+    function uploadBerkasOnly() {
+        $('#btnUploadOnly').html(loading_animation).attr('disabled', true);
         var formData = new FormData($('#berkasForm')[0]);
-        formData.append("_token", "{{ csrf_token() }}");
 
         $.ajax({
-            url: "{{ url('/applicant/form-mandiri/update-berkas') }}",
+            url: "{{ url('/applicant/form-mandiri/update-berkas') }}", // Nanti di backend tanggal_input dihapus dari sini
             type: "POST",
             data: formData,
             processData: false,
             contentType: false,
             success: function(data) {
                 if (data.status) {
-                    Swal.fire('Berhasil!', data.message, 'success').then(() => {
-                        window.location.href = "{{ route('applicant.dashboard') }}";
-                    });
+                    toast(data.message, "success");
+                    localStorage.setItem('activeTab', '#v-pills-berkas-tab');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000); // Reload agar tombol "Lihat" muncul
                 } else {
                     Swal.fire('Error', data.message, 'error');
-                    $('#btnSaveBerkas').html('<i class="ri-save-line me-1"></i> Kirim Form Pemeriksaan').attr('disabled', false);
+                }
+                $('#btnUploadOnly').html('<i class="ri-upload-cloud-line me-1"></i> Upload / Perbarui Berkas').attr('disabled', false);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+                var errorMessage = 'Terjadi kesalahan sistem saat mengupload file.';
+                if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                    errorMessage = jqXHR.responseJSON.message; // Pesan kustom dari backend
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage
+                });
+                $('#btnUploadOnly').html('<i class="ri-upload-cloud-line me-1"></i> Upload / Perbarui Berkas').attr('disabled', false);
+            }
+        });
+    }
+
+    // Fungsi 2: Finalisasi dengan Konfirmasi & Trigger Pengecekan
+    function confirmFinalisasi() {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Setelah difinalisasi, Anda tidak dapat mengubah data lagi. Pastikan semua pemeriksaan sudah terisi!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Finalisasi!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                processFinalisasi();
+            }
+        });
+    }
+
+    function processFinalisasi() {
+        $('#btnFinalisasi').html(loading_animation).attr('disabled', true);
+        $.ajax({
+            url: "{{ url('/applicant/form-mandiri/finalisasi') }}", // Route baru
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(data) {
+                if (data.status) {
+                    Swal.fire('Berhasil!', data.message, 'success').then(() => {
+                        location.reload(); // Reload untuk mengunci form dan menampilkan status finalisasi
+                    });
+                } else {
+                    Swal.fire('Data Belum Lengkap', data.message, 'error');
+                    $('#btnFinalisasi').html('<i class="ri-lock-password-line me-1"></i> Finalisasi & Kirim Seluruh Data').attr('disabled', false);
                 }
             },
-            error: function() {
-                Swal.fire('Error', 'Terjadi kesalahan sistem atau ukuran file terlalu besar.', 'error');
-                $('#btnSaveBerkas').html('<i class="ri-save-line me-1"></i> Kirim Form Pemeriksaan').attr('disabled', false);
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+                var errorMessage = 'Terjadi kesalahan sistem saat finalisasi data.';
+                if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                    errorMessage = jqXHR.responseJSON.message; // Pesan kustom dari backend
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage
+                });
+                $('#btnFinalisasi').html('<i class="ri-lock-password-line me-1"></i> Finalisasi & Kirim Seluruh Data').attr('disabled', false);
             }
         });
     }
@@ -871,6 +1027,8 @@
         <?php if (isset($user) && $user->tanggal_input != null && ($user->status_file_kesehatan == 'Pending' || $user->status_file_narkoba == 'Pending')) { ?>
             $('input, select, textarea').prop('disabled', true);
             $('button[id^="btnSave"]').hide();
+            $('#btnUploadOnly').hide();
+            $('#btnFinalisasi').hide();
             // Sembunyikan juga tombol selanjutnya di tab 1
             $('button[onclick="moveTab(\'data-peserta\', \'pemeriksaan-antropometri\')"]').hide();
         <?php } ?>

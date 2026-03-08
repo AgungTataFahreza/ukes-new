@@ -140,7 +140,8 @@ Route::prefix('/applicant')->name('applicant.')->group(function () {
         Route::post('/form-mandiri/update-fisik-2', [App\Http\Controllers\Applicant\FormMandiriController::class, 'updateFisik2']);
         Route::post('/form-mandiri/update-gigi', [App\Http\Controllers\Applicant\FormMandiriController::class, 'updateGigi']);
         Route::post('/form-mandiri/update-narkoba', [App\Http\Controllers\Applicant\FormMandiriController::class, 'updateNarkoba']);
-        Route::post('/form-mandiri/update-berkas', [App\Http\Controllers\Applicant\FormMandiriController::class, 'updateBerkas']);
+        Route::post('/form-mandiri/update-berkas', [App\Http\Controllers\Applicant\FormMandiriController::class, 'updateBerkas']); // Hanya upload
+        Route::post('/form-mandiri/finalisasi', [App\Http\Controllers\Applicant\FormMandiriController::class, 'finalisasi']);
 
         Route::get('/logout', [App\Http\Controllers\Applicant\AuthApplicantController::class, 'logout'])->name('logout');
     });
