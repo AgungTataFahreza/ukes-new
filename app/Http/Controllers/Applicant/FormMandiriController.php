@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Applicant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Applicant;
+use App\Models\ApplicantMedicalRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -319,6 +320,8 @@ class FormMandiriController extends Controller
                     'message' => 'Gagal Finalisasi. Anda belum mengunggah Berkas Hasil Lab Narkoba.'
                 ]);
             }
+
+            // ApplicantMedicalRecord::where('id', $user->applicant_medical_record_id)->update(['tgl_registrasi' => now()]);
 
             // 3. Jika semua lengkap, isi tanggal_input untuk mengunci form
             $user->update(['tanggal_input' => now()]);

@@ -75,10 +75,10 @@ class MedicalResultController extends Controller
                     return date('d-m-Y', strtotime($result->tanggal_lahir)) . ' (' . hitungUmur($result->tanggal_lahir) . ' Tahun)';
                 })
                 ->addColumn('dokter_name', function ($result) {
-                    return $result->dokter->name;
+                    return $result->dokter?->name ?? $result->dokter_id;
                 })
                 ->addColumn('paramedis_1_name', function ($result) {
-                    return $result->paramedis_1->name;
+                    return $result->paramedis_1?->name ?? $result->paramedis_1_id;
                 })
                 ->editColumn('tinggi_badan', function ($result) {
                     return $result->tinggi_badan . ' cm';
@@ -144,13 +144,13 @@ class MedicalResultController extends Controller
                     return 'Catatan : <br>' . $result->catatan_gigi . '<br>Keterangan : <br>' . $result->keterangan_gigi;
                 })
                 ->addColumn('dokter_gigi_name', function ($result) {
-                    return $result->dokter_gigi->name;
+                    return $result->dokter_gigi?->name ?? $result->dokter_gigi_id;
                 })
                 ->addColumn('perawat_gigi_name', function ($result) {
-                    return $result->perawat_gigi->name;
+                    return $result->perawat_gigi?->name ?? $result->perawat_gigi_id;
                 })
                 ->addColumn('petugas_narkoba_name', function ($result) {
-                    return $result->petugas_narkoba->name;
+                    return $result->petugas_narkoba?->name ?? $result->petugas_narkoba_id;
                 })
                 ->rawColumns([
                     'action' => 'action',

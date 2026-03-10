@@ -30,7 +30,6 @@ class DashboardController extends Controller
         $data['study_programs'] = StudyProgram::orderBy('name', 'asc')->get();
         $data['periods'] = Period::orderBy('name', 'desc')->get();
         return view('admin.dashboard', $data);
-        // echo "berhasil login";
     }
 
     public function summary(Request $request)
@@ -48,70 +47,64 @@ class DashboardController extends Controller
             $baseQuery->where('study_program_id', $studyProgramId);
         }
 
+        // ==========================================
+        // FUNGSI HELPER MENGAMBIL TOTAL & GROUP BY TANGGAL
+        // (Tanpa limit, agar sisa data bisa masuk Tooltip)
+        // ==========================================
+        $getStats = function ($queryObj, $dateColumn = 'tgl_periksa') {
+            $total = (clone $queryObj)->count();
+
+            $grouped = (clone $queryObj)
+                ->select(DB::raw("DATE($dateColumn) as tanggal"), DB::raw('count(*) as jumlah'))
+                ->whereNotNull($dateColumn)
+                ->groupBy(DB::raw("DATE($dateColumn)"))
+                ->orderBy('tanggal', 'desc')
+                ->pluck('jumlah', 'tanggal')
+                ->toArray();
+
+            return [
+                'total' => $total,
+                'details' => $grouped
+            ];
+        };
+
+        // Query khusus agar tidak saling tumpang tindih
+        $qRegistrasi = (clone $baseQuery)->whereNotNull('tgl_registrasi');
+        $qAntropometri = (clone $baseQuery)->whereNotNull('tinggi_badan');
+        $qFisik = (clone $baseQuery)->whereNotNull('buta_warna');
+        $qFisik2 = (clone $baseQuery)->whereNotNull('status_jantung');
+        $qGigi = (clone $baseQuery)->whereNotNull('status_gigi');
+        $qNarkoba = (clone $baseQuery)->where(function ($q) {
+            $q->whereNotNull('amp')->orWhereNotNull('mop')->orWhereNotNull('thc');
+        });
+        $qLengkap = (clone $baseQuery)->whereNotNull('tinggi_badan')
+            ->whereNotNull('buta_warna')
+            ->whereNotNull('status_jantung')
+            ->whereNotNull('status_gigi')
+            ->where(function ($q) {
+                $q->whereNotNull('amp')->orWhereNotNull('mop')->orWhereNotNull('thc');
+            });
+        $qDapat = (clone $baseQuery)->where('rekomendasi', 'Dapat');
+        $qTidakDapat = (clone $baseQuery)->where('rekomendasi', 'Tidak Dapat');
+
         return response()->json([
+            // Tidak ada grouping karena ini total keseluruhan
+            'jumlah_peserta'          => ['total' => (clone $baseQuery)->count(), 'details' => []],
 
-            // PESERTA
-            'jumlah_peserta' => (clone $baseQuery)->count(),
+            // Grouping berdasarkan tgl_registrasi
+            'jumlah_bayar_ukes'       => $getStats((clone $baseQuery)->where('status_bayar', 1), 'tgl_registrasi'),
+            'jumlah_sudah_registrasi' => $getStats($qRegistrasi, 'tgl_registrasi'),
 
-            // REGISTRASI & PEMBAYARAN
-            'jumlah_bayar_ukes' => (clone $baseQuery)
-                ->where('status_bayar', 1)
-                ->count(),
-
-            'jumlah_sudah_registrasi' => (clone $baseQuery)
-                ->whereNotNull('tgl_registrasi')
-                ->count(),
-
-            // PEMERIKSAAN
-            'jumlah_belum_periksa' => (clone $baseQuery)
-                ->whereNull('tgl_periksa')
-                ->count(),
-
-            'jumlah_periksa_antropometri' => (clone $baseQuery)
-                ->whereNotNull('tinggi_badan')
-                ->count(),
-
-            'jumlah_periksa_fisik' => (clone $baseQuery)
-                ->whereNotNull('buta_warna')
-                ->count(),
-
-            'jumlah_periksa_fisik_2' => (clone $baseQuery)
-                ->whereNotNull('status_jantung')
-                ->count(),
-
-            'jumlah_periksa_gigi' => (clone $baseQuery)
-                ->whereNotNull('status_gigi')
-                ->count(),
-
-            'jumlah_periksa_narkoba' => (clone $baseQuery)
-                ->where(function ($q) {
-                    $q->whereNotNull('amp')
-                        ->orWhereNotNull('mop')
-                        ->orWhereNotNull('thc');
-                })
-                ->count(),
-
-            // LENGKAP
-            'jumlah_periksa_lengkap' => (clone $baseQuery)
-                ->whereNotNull('tinggi_badan')
-                ->whereNotNull('buta_warna')
-                ->whereNotNull('status_jantung')
-                ->whereNotNull('status_gigi')
-                ->where(function ($q) {
-                    $q->whereNotNull('amp')
-                        ->orWhereNotNull('mop')
-                        ->orWhereNotNull('thc');
-                })
-                ->count(),
-
-            // HASIL AKHIR
-            'jumlah_hasil_dapat' => (clone $baseQuery)
-                ->where('rekomendasi', 'Dapat')
-                ->count(),
-
-            'jumlah_hasil_tidak_dapat' => (clone $baseQuery)
-                ->where('rekomendasi', 'Tidak Dapat')
-                ->count(),
+            // Grouping berdasarkan tgl_periksa
+            'jumlah_belum_periksa'        => ['total' => (clone $baseQuery)->whereNull('tgl_periksa')->count(), 'details' => []],
+            'jumlah_periksa_lengkap'      => $getStats($qLengkap, 'tgl_periksa'),
+            'jumlah_periksa_antropometri' => $getStats($qAntropometri, 'tgl_periksa'),
+            'jumlah_periksa_fisik'        => $getStats($qFisik, 'tgl_periksa'),
+            'jumlah_periksa_fisik_2'      => $getStats($qFisik2, 'tgl_periksa'),
+            'jumlah_periksa_gigi'         => $getStats($qGigi, 'tgl_periksa'),
+            'jumlah_periksa_narkoba'      => $getStats($qNarkoba, 'tgl_periksa'),
+            'jumlah_hasil_dapat'          => $getStats($qDapat, 'tgl_periksa'),
+            'jumlah_hasil_tidak_dapat'    => $getStats($qTidakDapat, 'tgl_periksa'),
         ]);
     }
 }

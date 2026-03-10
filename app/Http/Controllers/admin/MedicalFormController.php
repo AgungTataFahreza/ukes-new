@@ -72,6 +72,13 @@ class MedicalFormController extends Controller
                 ->editColumn('tgl_registrasi', function ($result) {
                     return date('d-m-Y', strtotime($result->tgl_registrasi));
                 })
+                ->editColumn('tgl_periksa', function ($result) {
+                    if ($result->tgl_periksa == null) {
+                        return '<span class="badge bg-secondary">Belum Diperiksa</span>';
+                    } else {
+                        return date('d-m-Y', strtotime($result->tgl_periksa));
+                    }
+                })
                 ->addColumn('status', function ($result) {
                     return $result->rekomendasi ? '<span class="badge badge-label bg-success"><i class="mdi mdi-circle-medium"></i> Selesai</span>' : '';
                 })
@@ -428,7 +435,7 @@ class MedicalFormController extends Controller
         }
     }
 
-    public function cekKesimpulan(Request $request)
+    public function cekKesimpulan2025(Request $request)
     {
         $data = ApplicantMedicalRecord::findOrFail($request->id);
 
@@ -582,6 +589,65 @@ class MedicalFormController extends Controller
         ];
     }
 
+    public function cekKesimpulan(Request $request)
+    {
+        $data = ApplicantMedicalRecord::with('study_program')->findOrFail($request->id);
+
+        // Default nilai (Asumsi awal tidak lulus)
+        $status         = false;
+        $hasil          = 'TIDAK LULUS';
+        $kesimpulan     = 'Tidak Dapat';
+        $alasan         = '';
+        $alasan_singkat = '';
+        $parameter      = [
+            'program_studi' => $data->study_program->name ?? '-',
+            'tinggi_badan'  => $data->tinggi_badan . ' cm',
+            'buta_warna'    => $data->buta_warna,
+            'syarat_tinggi' => '≥ 145 cm'
+        ];
+
+        /*
+    |--------------------------------------------------------------------------
+    | VALIDASI 1: BUTA WARNA
+    |--------------------------------------------------------------------------
+    */
+        if (in_array($data->buta_warna, ['Parsial', 'Total'])) {
+            $alasan_singkat = 'Buta warna';
+            $alasan         = 'Tidak lulus karena calon mahasiswa mengalami buta warna '
+                . strtolower($data->buta_warna)
+                . ', sedangkan bebas buta warna adalah syarat mutlak.';
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | VALIDASI 2: TINGGI BADAN
+    |--------------------------------------------------------------------------
+    */ elseif ($data->tinggi_badan < 145) {
+            $alasan_singkat = 'Tinggi Badan Kurang (' . $data->tinggi_badan . ' cm)';
+            $alasan         = 'Tidak lulus karena tinggi badan calon mahasiswa di bawah syarat minimal 145 cm.';
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | KONDISI LULUS
+    |--------------------------------------------------------------------------
+    */ else {
+            $status         = true;
+            $hasil          = 'LULUS';
+            $kesimpulan     = 'Dapat';
+            $alasan_singkat = 'Memenuhi syarat';
+            $alasan         = 'Lulus karena calon mahasiswa memenuhi syarat tinggi badan minimal 145 cm dan tidak buta warna.';
+        }
+
+        return [
+            'status'         => $status,
+            'hasil'          => $hasil,
+            'kesimpulan'     => $kesimpulan,
+            'alasan'         => $alasan,
+            'alasan_singkat' => $alasan_singkat,
+            'parameter'      => $parameter
+        ];
+    }
 
     public function get(Request $request)
     {

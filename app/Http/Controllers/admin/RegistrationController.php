@@ -40,7 +40,7 @@ class RegistrationController extends Controller
 
             $period_id = $request->period_id;
             $study_program_id = $request->study_program_id;
-            $query = ApplicantMedicalRecord::with('period', 'study_program');
+            $query = ApplicantMedicalRecord::with('period', 'study_program', 'applicant');
             if ($period_id) {
                 $query->where('period_id', $period_id);
             }
@@ -107,7 +107,23 @@ class RegistrationController extends Controller
                     }
                 })
                 ->addColumn('status_registrasi', function ($result) {
-                    return $result->tgl_registrasi ? '<span class="badge badge-label bg-secondary"><i class="mdi mdi-circle-medium"></i> Sudah</span>' : '<span class="badge badge-label bg-danger"><i class="mdi mdi-circle-medium"></i> Belum</span>';
+                    // 1. Badge Status Registrasi (Bawaan)
+                    $badgeRegistrasi = $result->tgl_registrasi
+                        ? '<span class="badge badge-label bg-secondary"><i class="mdi mdi-circle-medium"></i> Sudah</span>'
+                        : '<span class="badge badge-label bg-danger"><i class="mdi mdi-circle-medium"></i> Belum</span>';
+
+                    // 2. Badge Penanda Peserta Luar
+                    $badgeLuar = '';
+
+                    // SESUAIKAN INI: Ganti 'is_luar' dengan nama kolom yang benar di tabel Applicant kamu.
+                    // Contoh lain: if ($result->applicant?->jenis_peserta == 'Luar')
+                    if ($result->applicant) {
+                        // Tambahkan <br> agar badge turun ke bawahnya, atau gunakan class mt-1
+                        $badgeLuar = '<br><span class="badge badge-label bg-warning text-dark mt-1" title="Peserta Luar"><i class="ri-walk-line"></i> Luar</span>';
+                    }
+
+                    // Gabungkan keduanya
+                    return $badgeRegistrasi . $badgeLuar;
                 })
                 ->addColumn('status_bayar', function ($result) {
                     return $result->status_bayar ? '<span class="badge badge-label bg-secondary"><i class="mdi mdi-circle-medium"></i> Sudah</span>' : '<span class="badge badge-label bg-danger"><i class="mdi mdi-circle-medium"></i> Belum</span>';

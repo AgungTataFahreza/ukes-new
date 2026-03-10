@@ -65,7 +65,7 @@
 
                                         <div class="col-sm-12">
                                             <label for="nama_petugas_registrasi" class="form-label">Petugas Registrasi</label>
-                                            <input type="text" class="form-control-plaintext" id="nama_petugas_registrasi" placeholder="Enter name" value="{{ $applicant->petugas_registrasi->name }}" readonly>
+                                            <input type="text" class="form-control-plaintext" id="nama_petugas_registrasi" placeholder="Enter name" value="{{ $applicant->petugas_registrasi?->name ?? $applicant->petugas_registrasi_id }}" readonly>
                                         </div>
                                     </div>
                                 </div>

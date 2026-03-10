@@ -9,9 +9,11 @@ use App\Http\Controllers\admin\MedicalResultController;
 use App\Http\Controllers\admin\MenuController;
 use App\Http\Controllers\admin\PeriodController;
 use App\Http\Controllers\admin\RegistrationController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\StudyProgramController;
 use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\admin\VerificationController;
 use App\Http\Controllers\admin\YearController;
 use App\Http\Controllers\Applicant\FormMandiriController;
 use App\Http\Controllers\AuthController;
@@ -120,6 +122,26 @@ Route::prefix('/admin')->name('admin.')->namespace('Admin')->group(function () {
 
         Route::get('/medical-result', [MedicalResultController::class, 'index'])->middleware('access:Data Hasil Pemeriksaan,view');
         Route::post('/medical-result/show', [MedicalResultController::class, 'show'])->middleware('access:Data Hasil Pemeriksaan,view');
+
+        Route::get('/verification', [VerificationController::class, 'index'])->name('index');
+        Route::post('/verification/show', [VerificationController::class, 'show'])->name('show');
+        Route::get('/verification/edit/{id}', [VerificationController::class, 'edit'])->name('edit');
+        Route::post('/verification/update-antropometri/{id}', [VerificationController::class, 'updateAntropometri']);
+        Route::post('/verification/update-fisik/{id}', [VerificationController::class, 'updateFisik']);
+        Route::post('/verification/update-fisik-2/{id}', [VerificationController::class, 'updateFisik2']);
+        Route::post('/verification/update-gigi/{id}', [VerificationController::class, 'updateGigi']);
+        Route::post('/verification/update-narkoba/{id}', [VerificationController::class, 'updateNarkoba']);
+        Route::post('/verification/update-berkas/{id}', [VerificationController::class, 'updateBerkas']);
+        Route::get('/verification/get-kesimpulan/{id}', [VerificationController::class, 'getKesimpulan']);
+        Route::post('/verification/update-kesimpulan/{id}', [VerificationController::class, 'updateKesimpulan']);
+        Route::post('/verification/update-status/{id}', [VerificationController::class, 'updateStatus']);
+
+        Route::get('/rekap-pemeriksaan', [ReportController::class, 'index'])->name('admin.rekap.index');
+        Route::post('/rekap-pemeriksaan/show', [ReportController::class, 'show'])->name('admin.rekap.show');
+        Route::get('/rekap-pemeriksaan/get-dates', [App\Http\Controllers\Admin\ReportController::class, 'getDates'])->name('admin.rekap.get-dates');
+
+        Route::get('/cek-tahapan', [ReportController::class, 'indexCekTahapan'])->name('admin.cek-tahapan.index');
+        Route::post('/cek-tahapan/show', [ReportController::class, 'showCekTahapan'])->name('admin.cek-tahapan.show');
 
         Route::get('/logout', [AuthController::class, 'logout']);
     });

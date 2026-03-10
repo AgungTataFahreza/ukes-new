@@ -24,7 +24,7 @@
                                         <div class="flex-grow-1 ms-3">
                                             <p class="text-uppercase fw-semibold fs-12 text-muted mb-1">Data Mandiri</p>
                                             <h4 class="mb-0">
-                                                @if(Auth::guard('applicant')->user()->medical_record->tgl_periksa)
+                                                @if(Auth::guard('applicant')->user()->tanggal_input)
                                                 <span class="badge bg-success">Sudah Diisi</span>
                                                 @else
                                                 <span class="badge bg-warning">Belum Diisi</span>
@@ -64,9 +64,12 @@
                         <h6>Petunjuk Pengisian:</h6>
                         <ol>
                             <li>Pastikan Anda sudah melakukan pemeriksaan di fasilitas kesehatan resmi.</li>
-                            <li>Klik menu <b>Input Data Mandiri</b> di sebelah kiri.</li>
+                            <li>Klik menu <b>Input Data Mandiri</b> di sebelah kiri, atau klik <a href="{{ route('applicant.form-mandiri') }}" class="btn btn-primary btn-sm">di sini</a>.</li>
                             <li>Isi data sesuai dengan hasil pemeriksaan luar Anda.</li>
                             <li>Jangan lupa mengunggah dokumen pendukung jika diminta.</li>
+                            <li>Periksa kembali data yang Anda masukkan sebelum menyimpan.</li>
+                            <li>Setelah semua data terisi, jangan lupa finalisasi data.</li>
+                            <li>Setelah selesai, data Anda akan diverifikasi oleh petugas.</li>
                         </ol>
                     </div>
                 </div>

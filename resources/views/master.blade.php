@@ -148,7 +148,7 @@
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span>Menu</span></li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ url('admin/dashboard') }}" role="button"
+                            <a class="nav-link  {{ $menu === 'dashboard' ? 'active' : '' }} menu-link" href="{{ url('admin/dashboard') }}" role="button"
                                 aria-expanded="false" aria-controls="sidebarDashboards">
                                 <i class="ri-dashboard-2-line"></i> <span>DASHBOARD</span>
                             </a>
@@ -183,6 +183,21 @@
                                         <?php if (can_access($permissions, "Daftar Peserta", 'view')) { ?>
                                             <li class="nav-item">
                                                 <a href="{{ url('admin/applicant') }}" class="nav-link {{ $menu === 'applicant' ? 'active' : '' }}">Daftar Peserta</a>
+                                            </li>
+                                        <?php } ?>
+                                        <?php if (can_access($permissions, "Verifikasi Peserta Luar", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/verification') }}" class="nav-link {{ $menu === 'verification' ? 'active' : '' }}">Verifikasi Peserta Luar</a>
+                                            </li>
+                                        <?php } ?>
+                                        <?php if (can_access($permissions, "Rekap Pemeriksaan", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/rekap-pemeriksaan') }}" class="nav-link {{ $menu === 'rekap-pemeriksaan' ? 'active' : '' }}">Rekap Pemeriksaan</a>
+                                            </li>
+                                        <?php } ?>
+                                        <?php if (can_access($permissions, "Selisih", 'view')) { ?>
+                                            <li class="nav-item">
+                                                <a href="{{ url('admin/cek-tahapan') }}" class="nav-link {{ $menu === 'selisih' ? 'active' : '' }}">Selisih</a>
                                             </li>
                                         <?php } ?>
                                     </ul>
@@ -306,11 +321,11 @@
                         <div class="col-sm-6">
                             <script>
                                 document.write(new Date().getFullYear())
-                            </script> © Velzon.
+                            </script> © Uji Kesehatan.
                         </div>
                         <div class="col-sm-6">
                             <div class="text-sm-end d-none d-sm-block">
-                                Design & Develop by Themesbrand
+                                Poltekkes Kemenkes Medan
                             </div>
                         </div>
                     </div>

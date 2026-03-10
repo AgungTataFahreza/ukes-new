@@ -145,4 +145,10 @@ class ApplicantMedicalRecord extends Model
     {
         return $this->belongsTo(User::class, 'petugas_narkoba_id');
     }
+
+    public function applicant()
+    {
+        // Karena foreign key (applicant_medical_record_id) ada di tabel Applicant
+        return $this->hasOne(Applicant::class, 'applicant_medical_record_id', 'id');
+    }
 }
