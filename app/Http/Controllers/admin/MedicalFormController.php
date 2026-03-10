@@ -99,15 +99,22 @@ class MedicalFormController extends Controller
         session()->put('menu', 'medical-form');
         session()->put('title', 'Formulir Uji Kesehatan');
         session()->put('key', $this->key);
+
         $data['permissions'] = $this->permissions;
         $data['study_programs'] = StudyProgram::orderBy('name', 'asc')->get();
         $data['periods'] = Period::orderBy('name', 'desc')->get();
         $data['applicant'] = ApplicantMedicalRecord::find($request->id);
-        $data['dokters'] = User::where('role_id', '2')->orderBy('name', 'asc')->get();
-        $data['paramediss'] = User::where('role_id', [3, 85])->orderBy('name', 'asc')->get();
-        $data['petugas_narkobas'] = User::where('role_id', '87')->orderBy('name', 'asc')->get();
-        $data['dokter_gigis'] = User::where('role_id', '86')->orderBy('name', 'asc')->get();
-        $data['perawat_gigis'] = User::where('role_id', '85')->orderBy('name', 'asc')->get();
+
+        // Tambahkan where('is_active', 1) di setiap kueri petugas
+        $data['dokters']          = User::where('role_id', '2')->where('is_active', 1)->orderBy('name', 'asc')->get();
+
+        // PERBAIKAN: Gunakan whereIn untuk pencarian data di dalam array [3, 85]
+        $data['paramediss']       = User::whereIn('role_id', [3, 85])->where('is_active', 1)->orderBy('name', 'asc')->get();
+
+        $data['petugas_narkobas'] = User::where('role_id', '87')->where('is_active', 1)->orderBy('name', 'asc')->get();
+        $data['dokter_gigis']     = User::where('role_id', '86')->where('is_active', 1)->orderBy('name', 'asc')->get();
+        $data['perawat_gigis']    = User::where('role_id', '85')->where('is_active', 1)->orderBy('name', 'asc')->get();
+
         return view('admin.medical-form-edit', $data);
     }
 
