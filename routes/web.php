@@ -138,7 +138,7 @@ Route::prefix('/admin')->name('admin.')->namespace('Admin')->group(function () {
 
         Route::get('/rekap-pemeriksaan', [ReportController::class, 'index'])->name('admin.rekap.index');
         Route::post('/rekap-pemeriksaan/show', [ReportController::class, 'show'])->name('admin.rekap.show');
-        Route::get('/rekap-pemeriksaan/get-dates', [App\Http\Controllers\Admin\ReportController::class, 'getDates'])->name('admin.rekap.get-dates');
+        Route::get('/rekap-pemeriksaan/get-dates', [ReportController::class, 'getDates'])->name('admin.rekap.get-dates');
 
         Route::get('/cek-tahapan', [ReportController::class, 'indexCekTahapan'])->name('admin.cek-tahapan.index');
         Route::post('/cek-tahapan/show', [ReportController::class, 'showCekTahapan'])->name('admin.cek-tahapan.show');
