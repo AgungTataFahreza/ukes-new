@@ -63,7 +63,28 @@
                     <div class="mt-4">
                         <h6>Petunjuk Pengisian:</h6>
                         <ol>
-                            <li>Pastikan Anda sudah melakukan pemeriksaan di fasilitas kesehatan resmi.</li>
+                            <li>
+                                Pastikan Anda sudah melakukan pemeriksaan di fasilitas kesehatan resmi.
+                                <br><br>
+                                Pemeriksaan yang harus dilakukan terdiri dari:
+                                <ul>
+                                    <li>
+                                        <b>Pemeriksaan Kesehatan</b>, menggunakan format formulir yang telah disediakan.
+                                        Template dapat diunduh di
+                                        <a href="{{ asset('assets/templates/template_form_kesehatan.pdf') }}" target="_blank">
+                                            sini
+                                        </a>.
+                                    </li>
+                                    <li>
+                                        <b>Pemeriksaan Narkoba</b> dengan 3 parameter pemeriksaan:
+                                        <ul>
+                                            <li>Amphetamines (Amfetamin)</li>
+                                            <li>Tetrahydrocannabinol (Tetrahidrokannabinol)</li>
+                                            <li>Morphine (Morfina)</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
                             <li>Klik menu <b>Input Data Mandiri</b> di sebelah kiri, atau klik <a href="{{ route('applicant.form-mandiri') }}" class="btn btn-primary btn-sm">di sini</a>.</li>
                             <li>Isi data sesuai dengan hasil pemeriksaan luar Anda.</li>
                             <li>Jangan lupa mengunggah dokumen pendukung jika diminta.</li>
