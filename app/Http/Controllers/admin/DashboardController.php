@@ -37,7 +37,11 @@ class DashboardController extends Controller
         $periodId = $request->period_id;
         $studyProgramId = $request->study_program_id;
 
-        $baseQuery = ApplicantMedicalRecord::query();
+        // TAMBAHKAN FILTER DI SINI AGAR SINKRON DENGAN REKAPITULASI
+        $baseQuery = ApplicantMedicalRecord::where(function ($query) {
+            $query->where('tempat_periksa', '!=', 'Lainnya')
+                ->orWhereNull('tempat_periksa'); // Berjaga-jaga jika ada data yang tempat_periksanya masih kosong/null
+        });
 
         if ($periodId) {
             $baseQuery->where('period_id', $periodId);
