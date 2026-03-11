@@ -41,7 +41,7 @@ class MedicalResultController extends Controller
             $study_program_id = $request->study_program_id;
             $query = ApplicantMedicalRecord::with('period', 'study_program')
                 ->where('tgl_registrasi', '!=', null)
-                ->where('rekomendasi', '!=', null);
+                ->where('tgl_periksa', '!=', null);
 
             if ($period_id) {
                 $query->where('period_id', $period_id);
