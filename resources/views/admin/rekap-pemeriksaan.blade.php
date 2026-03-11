@@ -99,7 +99,8 @@
                         tanggalDropdown.append('<option value="' + date + '">' + date + '</option>');
                     });
                 },
-                error: function() {
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR, textStatus, errorThrown);
                     tanggalDropdown.html('<option value="">Gagal Memuat Data</option>');
                 }
             });
