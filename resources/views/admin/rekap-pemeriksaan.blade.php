@@ -48,7 +48,7 @@
                             <th rowspan="2" class="align-middle">No</th>
                             <th rowspan="2" class="align-middle text-start">Program Studi</th>
                             <th rowspan="2" class="align-middle">Total Peserta</th>
-                            <th colspan="5">Progres Tahapan (Selesai)</th>
+                            <th colspan="6">Progres Tahapan (Selesai)</th>
                             <th colspan="2">Rekomendasi Final</th>
                         </tr>
                         <tr>
@@ -57,12 +57,27 @@
                             <th>Fisik 2</th>
                             <th>Gigi</th>
                             <th>Narkoba</th>
+                            <th class="text-primary">Kesimpulan</th>
                             <th class="text-success">Dapat</th>
                             <th class="text-danger">Tdk Dapat</th>
                         </tr>
                     </thead>
                     <tbody>
                     </tbody>
+                    <tfoot class="table-light fw-bold">
+                        <tr>
+                            <th colspan="2" class="text-end">TOTAL KESELURUHAN :</th>
+                            <th>0</th>
+                            <th>0</th>
+                            <th>0</th>
+                            <th>0</th>
+                            <th>0</th>
+                            <th>0</th>
+                            <th>0</th>
+                            <th>0</th>
+                            <th>0</th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -121,8 +136,8 @@
             responsive: true,
             searching: false,
             ordering: false,
-            paging: false, // <-- Tambahkan ini untuk mematikan pagination
-            info: false, // <-- Tambahkan ini untuk menghilangkan teks "Showing 1 to X..."
+            paging: false,
+            info: false,
             ajax: {
                 url: "{{ url('admin/rekap-pemeriksaan/show') }}",
                 type: "POST",
@@ -145,7 +160,8 @@
                 },
                 {
                     data: 'total_peserta',
-                    name: 'total_peserta'
+                    name: 'total_peserta',
+                    className: 'fs-6 text-primary'
                 },
                 {
                     data: 'antropometri',
@@ -168,6 +184,11 @@
                     name: 'narkoba'
                 },
                 {
+                    data: 'kesimpulan',
+                    name: 'kesimpulan',
+                    className: 'text-primary'
+                }, // <-- KOLOM BARU
+                {
                     data: 'dapat',
                     name: 'dapat',
                     className: 'text-success fw-bold'
@@ -177,7 +198,31 @@
                     name: 'tidak_dapat',
                     className: 'text-danger fw-bold'
                 }
-            ]
+            ],
+            // TAMBAHAN: Fungsi untuk menghitung total baris paling bawah
+            footerCallback: function(row, data, start, end, display) {
+                var api = this.api();
+
+                // Fungsi bantu mengubah nilai string menjadi angka (integer)
+                var intVal = function(i) {
+                    return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+                };
+
+                // Array indeks kolom yang ingin dihitung totalnya (Mulai dari kolom indeks ke-2 sampai ke-10)
+                var columnsToSum = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+                columnsToSum.forEach(function(colIndex) {
+                    var total = api
+                        .column(colIndex)
+                        .data()
+                        .reduce(function(a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Perbarui tag <th> di tfoot dengan nilai total
+                    $(api.column(colIndex).footer()).html(total);
+                });
+            }
         });
 
         // Trigger reload tabel saat tombol "Filter Data" ditekan

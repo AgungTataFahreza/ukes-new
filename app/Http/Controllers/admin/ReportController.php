@@ -62,13 +62,14 @@ class ReportController extends Controller
                 'fisik2'        => 0,
                 'gigi'          => 0,
                 'narkoba'       => 0,
+                'kesimpulan'    => 0, // <-- TAMBAHAN KOLOM
                 'dapat'         => 0,
                 'tidak_dapat'   => 0,
             ];
         }
 
         // 2. AMBIL DATA AKTUAL
-        // TAMBAHAN: Filter tempat_periksa != 'Lainnya'
+        // Filter tempat_periksa != 'Lainnya'
         $query = ApplicantMedicalRecord::with('study_program')
             ->whereNotNull('tgl_periksa')
             ->where('tempat_periksa', '!=', 'Lainnya');
@@ -94,18 +95,18 @@ class ReportController extends Controller
                 'fisik2'        => $group->whereNotNull('status_thyroid')->count(),
                 'gigi'          => $group->whereNotNull('status_gigi')->count(),
                 'narkoba'       => $group->whereNotNull('amp')->count(),
+                'kesimpulan'    => $group->whereNotNull('rekomendasi')->count(), // <-- TAMBAHAN PERHITUNGAN
                 'dapat'         => $group->where('rekomendasi', 'Dapat')->count(),
                 'tidak_dapat'   => $group->where('rekomendasi', 'Tidak Dapat')->count(),
             ];
-        })->toArray(); // Ubah ke array agar mudah digabungkan
+        })->toArray();
 
-        // 3. GABUNGKAN: Timpa kerangka dasar (yang 0) dengan data aktual (jika ada pesertanya)
+        // 3. GABUNGKAN
         foreach ($actualRekaps as $prodiName => $data) {
             $baseRekap[$prodiName] = $data;
-            // Catatan: Jika ada peserta 'Belum Pilih Prodi', ia akan otomatis tertambah di sini
         }
 
-        // 4. Reset index array agar bisa dibaca oleh DataTables
+        // 4. Reset index array
         $rekaps = array_values($baseRekap);
 
         return datatables()->of($rekaps)
