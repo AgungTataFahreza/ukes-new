@@ -47,6 +47,9 @@ class ReportController extends Controller
     /**
      * Mengambil Data untuk AJAX DataTables
      */
+    /**
+     * Mengambil Data untuk AJAX DataTables Rekapitulasi
+     */
     public function show(Request $request)
     {
         // 1. BUAT KERANGKA DASAR: Ambil semua nama Prodi, set semua nilainya jadi 0
@@ -57,58 +60,65 @@ class ReportController extends Controller
             $baseRekap[$prodiName] = [
                 'prodi'         => $prodiName,
                 'total_peserta' => 0,
+                'registrasi'    => 0, // Kolom Registrasi
                 'antropometri'  => 0,
                 'fisik1'        => 0,
                 'fisik2'        => 0,
                 'gigi'          => 0,
                 'narkoba'       => 0,
-                'kesimpulan'    => 0, // <-- TAMBAHAN KOLOM
+                'kesimpulan'    => 0, // Kolom Kesimpulan
                 'dapat'         => 0,
                 'tidak_dapat'   => 0,
             ];
         }
 
         // 2. AMBIL DATA AKTUAL
-        // Filter tempat_periksa != 'Lainnya'
+        // Filter tempat_periksa != 'Lainnya' dan yang sudah memiliki tgl_periksa
         $query = ApplicantMedicalRecord::with('study_program')
             ->whereNotNull('tgl_periksa')
             ->where('tempat_periksa', '!=', 'Lainnya');
 
+        // Filter dari dropdown Periode
         if ($request->filled('period_id')) {
             $query->where('period_id', $request->period_id);
         }
 
+        // Filter dari dropdown Tanggal
         if ($request->filled('tanggal')) {
             $query->whereDate('tgl_periksa', $request->tanggal);
         }
 
         $records = $query->get();
 
+        // Grouping data aktual per Program Studi dan hitung masing-masing tahapannya
         $actualRekaps = $records->groupBy(function ($item) {
             return $item->study_program->name ?? 'Belum Pilih Prodi';
         })->map(function ($group, $prodiName) {
             return [
                 'prodi'         => $prodiName,
                 'total_peserta' => $group->count(),
+                'registrasi'    => $group->whereNotNull('tgl_registrasi')->count(),
                 'antropometri'  => $group->whereNotNull('tinggi_badan')->count(),
                 'fisik1'        => $group->whereNotNull('status_kulit')->count(),
                 'fisik2'        => $group->whereNotNull('status_thyroid')->count(),
                 'gigi'          => $group->whereNotNull('status_gigi')->count(),
                 'narkoba'       => $group->whereNotNull('amp')->count(),
-                'kesimpulan'    => $group->whereNotNull('rekomendasi')->count(), // <-- TAMBAHAN PERHITUNGAN
+                'kesimpulan'    => $group->whereNotNull('rekomendasi')->count(),
                 'dapat'         => $group->where('rekomendasi', 'Dapat')->count(),
                 'tidak_dapat'   => $group->where('rekomendasi', 'Tidak Dapat')->count(),
             ];
-        })->toArray();
+        })->toArray(); // Ubah ke array agar mudah digabungkan
 
-        // 3. GABUNGKAN
+        // 3. GABUNGKAN: Timpa kerangka dasar (yang 0) dengan data aktual (jika ada pesertanya)
         foreach ($actualRekaps as $prodiName => $data) {
             $baseRekap[$prodiName] = $data;
+            // Catatan: Jika ada peserta yang 'Belum Pilih Prodi', ia akan otomatis tertambah di baris paling bawah
         }
 
-        // 4. Reset index array
+        // 4. Reset index array agar berurutan (0, 1, 2, dst) untuk dibaca oleh DataTables
         $rekaps = array_values($baseRekap);
 
+        // Kembalikan ke DataTables
         return datatables()->of($rekaps)
             ->addIndexColumn()
             ->make(true);

@@ -20,7 +20,7 @@
                     <select id="period_id" class="form-select">
                         <option value="">-- Semua Periode --</option>
                         @foreach($periods as $period)
-                        <option value="{{ $period->id }}" {{ ($period->is_active? 'selected' : '') }}>{{ $period->name }} {{ $period->year->name }}</option>
+                        <option value="{{ $period->id }}" {{ ($period->is_active ? 'selected' : '') }}>{{ $period->name }} {{ $period->year->name ?? '' }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -48,16 +48,17 @@
                             <th rowspan="2" class="align-middle">No</th>
                             <th rowspan="2" class="align-middle text-start">Program Studi</th>
                             <th rowspan="2" class="align-middle">Total Peserta</th>
-                            <th colspan="6">Progres Tahapan (Selesai)</th>
+                            <th colspan="7">Progres Tahapan (Selesai)</th>
                             <th colspan="2">Rekomendasi Final</th>
                         </tr>
                         <tr>
+                            <th>Registrasi</th>
                             <th>Antro</th>
                             <th>Fisik 1</th>
                             <th>Fisik 2</th>
                             <th>Gigi</th>
                             <th>Narkoba</th>
-                            <th class="text-primary">Kesimpulan</th>
+                            <th class="text-info">Kesimpulan</th>
                             <th class="text-success">Dapat</th>
                             <th class="text-danger">Tdk Dapat</th>
                         </tr>
@@ -66,7 +67,9 @@
                     </tbody>
                     <tfoot class="table-light fw-bold">
                         <tr>
-                            <th colspan="2" class="text-end">TOTAL KESELURUHAN :</th>
+                            <th></th>
+                            <th class="text-end">TOTAL KESELURUHAN :</th>
+                            <th>0</th>
                             <th>0</th>
                             <th>0</th>
                             <th>0</th>
@@ -96,7 +99,6 @@
             var periodId = $(this).val();
             var tanggalDropdown = $('#tanggal');
 
-            // Ubah teks sementara jadi loading
             tanggalDropdown.html('<option value="">Memuat Tanggal...</option>');
 
             $.ajax({
@@ -106,10 +108,7 @@
                     period_id: periodId
                 },
                 success: function(data) {
-                    // Kosongkan dan beri opsi default
                     tanggalDropdown.html('<option value="">-- Semua Tanggal --</option>');
-
-                    // Looping data tanggal dari server dan masukkan ke select
                     $.each(data, function(index, date) {
                         tanggalDropdown.append('<option value="' + date + '">' + date + '</option>');
                     });
@@ -121,14 +120,11 @@
             });
         });
 
-        // Trigger change saat halaman pertama dimuat agar tanggal langsung terisi
+        // Trigger change pertama kali untuk load tanggal
         $('#period_id').trigger('change');
 
         // ==========================================================
-        // 2. DATATABLES REKAPITULASI
-        // ==========================================================
-        // ==========================================================
-        // 2. DATATABLES REKAPITULASI
+        // 2. DATATABLES REKAPITULASI & PERHITUNGAN TOTAL BAWAH
         // ==========================================================
         var table = $('#tableRekap').DataTable({
             processing: true,
@@ -136,8 +132,8 @@
             responsive: true,
             searching: false,
             ordering: false,
-            paging: false,
-            info: false,
+            paging: false, // Menampilkan semua data memanjang ke bawah
+            info: false, // Menghilangkan teks "Showing 1 to..."
             ajax: {
                 url: "{{ url('admin/rekap-pemeriksaan/show') }}",
                 type: "POST",
@@ -164,6 +160,10 @@
                     className: 'fs-6 text-primary'
                 },
                 {
+                    data: 'registrasi',
+                    name: 'registrasi'
+                },
+                {
                     data: 'antropometri',
                     name: 'antropometri'
                 },
@@ -186,8 +186,8 @@
                 {
                     data: 'kesimpulan',
                     name: 'kesimpulan',
-                    className: 'text-primary'
-                }, // <-- KOLOM BARU
+                    className: 'text-info fw-bold'
+                },
                 {
                     data: 'dapat',
                     name: 'dapat',
@@ -199,19 +199,19 @@
                     className: 'text-danger fw-bold'
                 }
             ],
-            // TAMBAHAN: Fungsi untuk menghitung total baris paling bawah
             footerCallback: function(row, data, start, end, display) {
                 var api = this.api();
 
-                // Fungsi bantu mengubah nilai string menjadi angka (integer)
+                // Fungsi helper mengubah nilai menjadi angka
                 var intVal = function(i) {
                     return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
                 };
 
-                // Array indeks kolom yang ingin dihitung totalnya (Mulai dari kolom indeks ke-2 sampai ke-10)
-                var columnsToSum = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+                // Indeks kolom yang akan dijumlahkan (Mulai dari Total Peserta s.d Tidak Dapat)
+                var columnsToSum = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
                 columnsToSum.forEach(function(colIndex) {
+                    // Hitung total nilai di kolom tersebut
                     var total = api
                         .column(colIndex)
                         .data()
@@ -219,13 +219,13 @@
                             return intVal(a) + intVal(b);
                         }, 0);
 
-                    // Perbarui tag <th> di tfoot dengan nilai total
+                    // Masukkan hasil ke tag <th> pada tfoot sesuai indeksnya
                     $(api.column(colIndex).footer()).html(total);
                 });
             }
         });
 
-        // Trigger reload tabel saat tombol "Filter Data" ditekan
+        // Trigger reload tabel saat tombol ditekan
         $('#btn-filter').click(function() {
             table.draw();
         });
