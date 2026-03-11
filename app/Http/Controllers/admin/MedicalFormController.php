@@ -88,6 +88,7 @@ class MedicalFormController extends Controller
                     'study_program_name' => 'study_program_name',
                     'jenis_kelamin' => 'jenis_kelamin',
                     'status' => 'status',
+                    'tgl_periksa' => 'tgl_periksa'
                 ])
                 ->addIndexColumn()
                 ->make(true);
