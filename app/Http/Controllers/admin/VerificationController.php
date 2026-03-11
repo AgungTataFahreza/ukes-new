@@ -347,12 +347,6 @@ class VerificationController extends Controller
             ]);
         }
 
-        // Default nilai (Asumsi awal tidak lulus)
-        $status         = false;
-        $hasil          = 'TIDAK LULUS';
-        $kesimpulan     = 'Tidak Dapat';
-        $alasan         = '';
-        $alasan_singkat = '';
         $parameter      = [
             'program_studi' => $data->study_program->name ?? '-',
             'tinggi_badan'  => ($data->tinggi_badan ?? 0) . ' cm',
@@ -360,46 +354,61 @@ class VerificationController extends Controller
             'syarat_tinggi' => '≥ 145 cm'
         ];
 
+        // Siapkan array penampung error
+        $kendala_singkat = [];
+        $kendala_detail  = [];
+
         /*
         |--------------------------------------------------------------------------
         | VALIDASI 1: BUTA WARNA
         |--------------------------------------------------------------------------
         */
         if (in_array($data->buta_warna, ['Parsial', 'Total'])) {
-            $alasan_singkat = 'Buta warna';
-            $alasan         = 'Tidak lulus karena calon mahasiswa mengalami buta warna '
-                . strtolower($data->buta_warna)
-                . ', sedangkan bebas buta warna adalah syarat mutlak.';
+            $kendala_singkat[] = 'Buta warna';
+            $kendala_detail[]  = 'mengalami buta warna ' . strtolower($data->buta_warna);
         }
 
         /*
         |--------------------------------------------------------------------------
         | VALIDASI 2: TINGGI BADAN
         |--------------------------------------------------------------------------
-        */ elseif ($data->tinggi_badan < 145) {
-            $alasan_singkat = 'Tinggi Badan Kurang (' . $data->tinggi_badan . ' cm)';
-            $alasan         = 'Tidak lulus karena tinggi badan calon mahasiswa di bawah syarat minimal 145 cm.';
+        */
+        if ($data->tinggi_badan < 145) {
+            $kendala_singkat[] = 'Tinggi Badan Kurang (' . ($data->tinggi_badan ?? 0) . ' cm)';
+            $kendala_detail[]  = 'tinggi badan di bawah syarat minimal 145 cm';
         }
 
         /*
         |--------------------------------------------------------------------------
-        | KONDISI LULUS
+        | KESIMPULAN AKHIR
         |--------------------------------------------------------------------------
-        */ else {
+        */
+        // Jika ada kendala (array tidak kosong), maka TIDAK LULUS
+        if (count($kendala_singkat) > 0) {
+            $status         = false;
+            $hasil          = 'TIDAK LULUS';
+            $kesimpulan     = 'Tidak Dapat';
+
+            // Gabungkan kendala
+            $alasan_singkat = implode(' & ', $kendala_singkat);
+            $alasan         = 'Tidak lulus karena calon mahasiswa ' . implode(' dan ', $kendala_detail) . '.';
+        }
+        // Jika array kosong, berarti semua syarat terpenuhi (LULUS)
+        else {
             $status         = true;
             $hasil          = 'LULUS';
             $kesimpulan     = 'Dapat';
             $alasan_singkat = 'Memenuhi syarat';
-            $alasan         = 'Lulus karena calon mahasiswa memenuhi syarat tinggi badan minimal 145 cm dan tidak buta warna.';
+            $alasan         = 'Lulus karena calon mahasiswa memenuhi syarat tinggi badan minimal 145 cm dan bebas buta warna.';
         }
 
         return response()->json([
-            'status'         => $status,
-            'hasil'          => $hasil,
-            'kesimpulan'     => $kesimpulan,
-            'alasan'         => $alasan,
-            'alasan_singkat' => $alasan_singkat,
-            'parameter'      => $parameter,
+            'status'           => $status,
+            'hasil'            => $hasil,
+            'kesimpulan'       => $kesimpulan,
+            'alasan'           => $alasan,
+            'alasan_singkat'   => $alasan_singkat,
+            'parameter'        => $parameter,
             'riwayat_penyakit' => $data->riwayat_penyakit ?? ''
         ]);
     }
