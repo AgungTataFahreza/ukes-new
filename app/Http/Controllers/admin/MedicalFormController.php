@@ -196,6 +196,7 @@ class MedicalFormController extends Controller
                     $data = ApplicantMedicalRecord::find($request->id);
                     $data->dokter_id = $request->dokter_id;
                     $data->paramedis_2_id = $request->paramedis_2_id;
+                    $data->paramedis_3id = $request->paramedis_2_id;
                     $data->status_kulit = ifEmptySelect($request->status_kulit);
                     $data->catatan_kulit = ifEmptyInput($request->catatan_kulit);
                     $data->keterangan_kulit = ifEmptyInput($request->keterangan_kulit);

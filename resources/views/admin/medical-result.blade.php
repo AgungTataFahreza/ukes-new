@@ -49,6 +49,7 @@
                                 <th>Tekanan Darah</th>
                                 <th>Status</th>
                                 <th>Catatan / Keterangan<br>Antropometri</th>
+                                <th>Paramedis 2</th>
                                 <th>Kulit</th>
                                 <th>Catatan / Keterangan<br>Kulit</th>
                                 <th>Mata</th>
@@ -66,6 +67,7 @@
                                 <th>Catatan /<br>Keterangan<br>Pharynx</th>
                                 <th>Tonsil</th>
                                 <th>Catatan /<br>Keterangan<br>Tonsil</th>
+                                <th>Paramedis 3</th>
                                 <th>Thyroid</th>
                                 <th>Catatan / <br>Keterangan<br>Thyroid</th>
                                 <th>Jantung</th>
@@ -256,6 +258,9 @@
                     data: 'catatan_keterangan_antropometri'
                 },
                 {
+                    data: 'paramedis_2_name'
+                },
+                {
                     data: 'status_kulit'
                 },
                 {
@@ -305,6 +310,9 @@
                 },
                 {
                     data: 'catatan_keterangan_tonsil'
+                },
+                {
+                    data: 'paramedis_3_name'
                 },
                 {
                     data: 'status_thyroid'

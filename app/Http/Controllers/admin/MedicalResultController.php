@@ -152,6 +152,12 @@ class MedicalResultController extends Controller
                 ->addColumn('petugas_narkoba_name', function ($result) {
                     return $result->petugas_narkoba?->name ?? $result->petugas_narkoba_id;
                 })
+                ->addColumn('paramedis_2_name', function ($result) {
+                    return $result->paramedis_2?->name ?? $result->paramedis_2_id;
+                })
+                ->addColumn('paramedis_3_name', function ($result) {
+                    return $result->paramedis_3?->name ?? $result->paramedis_3_id;
+                })
                 ->rawColumns([
                     'action' => 'action',
                     'period_name' => 'period_name',
@@ -161,6 +167,8 @@ class MedicalResultController extends Controller
                     'umur' => 'umur',
                     'dokter_name' => 'dokter_name',
                     'paramedis_1_name' => 'paramedis_1_name',
+                    'paramedis_2_name' => 'paramedis_2_name',
+                    'paramedis_3_name' => 'paramedis_3_name',
                     'catatan_keterangan_antropometri' => 'catatan_keterangan_antropometri',
                     'catatan_keterangan_kulit' => 'catatan_keterangan_kulit',
                     'catatan_keterangan_mata' => 'catatan_keterangan_mata',
@@ -183,7 +191,6 @@ class MedicalResultController extends Controller
                     'telinga_kiri_kanan' => 'telinga_kiri_kanan',
                     'tekanan_darah' => 'tekanan_darah',
                     ''
-
                 ])
                 ->addIndexColumn()
                 ->make(true);
