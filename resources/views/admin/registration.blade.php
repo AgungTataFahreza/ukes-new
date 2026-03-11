@@ -39,7 +39,7 @@
                             <th scope="col">Tgl Lahir</th>
                             <th scope="col">Jenis Kelamin</th>
                             <th scope="col">Prodi</th>
-                            <th scope="col">Tgl Registrasi</th>
+                            <!-- <th scope="col">Tgl Registrasi</th> -->
                             <th scope="col">Tgl Periksa</th>
                             <th scope="col">Status Lulus</th>
                             <th scope="col">Status Registrasi</th>
@@ -259,9 +259,9 @@
                 {
                     data: 'tanggal_registrasi'
                 },
-                {
-                    data: 'tanggal_periksa'
-                },
+                // {
+                //     data: 'tanggal_periksa'
+                // },
                 {
                     data: 'status_lulus'
                 },

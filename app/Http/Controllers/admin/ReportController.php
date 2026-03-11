@@ -22,14 +22,13 @@ class ReportController extends Controller
     }
 
     /**
-     * Mengambil Data untuk AJAX DataTables
-     */
-    /**
      * Mengambil daftar tanggal untuk Dropdown Dinamis
      */
     public function getDates(Request $request)
     {
-        $query = ApplicantMedicalRecord::whereNotNull('tgl_periksa');
+        // TAMBAHAN: Filter tempat_periksa != 'Lainnya'
+        $query = ApplicantMedicalRecord::whereNotNull('tgl_periksa')
+            ->where('tempat_periksa', '!=', 'Lainnya');
 
         // Jika ada periode yang dikirim, filter tanggalnya berdasarkan periode tersebut
         if ($request->filled('period_id')) {
@@ -69,9 +68,10 @@ class ReportController extends Controller
         }
 
         // 2. AMBIL DATA AKTUAL
-        // Tambahkan whereNotNull agar hanya menghitung yang tgl_periksa-nya tidak kosong
+        // TAMBAHAN: Filter tempat_periksa != 'Lainnya'
         $query = ApplicantMedicalRecord::with('study_program')
-            ->whereNotNull('tgl_periksa');
+            ->whereNotNull('tgl_periksa')
+            ->where('tempat_periksa', '!=', 'Lainnya');
 
         if ($request->filled('period_id')) {
             $query->where('period_id', $request->period_id);
@@ -125,7 +125,10 @@ class ReportController extends Controller
 
     public function showCekTahapan(Request $request)
     {
-        $query = ApplicantMedicalRecord::with('study_program')->whereNotNull('tgl_periksa');
+        // TAMBAHAN: Filter tempat_periksa != 'Lainnya'
+        $query = ApplicantMedicalRecord::with('study_program')
+            ->whereNotNull('tgl_periksa')
+            ->where('tempat_periksa', '!=', 'Lainnya');
 
         // 1. Filter Periode & Tanggal
         if ($request->filled('period_id')) {
