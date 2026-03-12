@@ -52,40 +52,38 @@ class ReportController extends Controller
      */
     public function show(Request $request)
     {
-        // 1. BUAT KERANGKA DASAR: Ambil semua nama Prodi, set semua nilainya jadi 0
+        // 1. BUAT KERANGKA DASAR
         $allProdis = StudyProgram::orderBy('name', 'asc')->pluck('name');
 
         $baseRekap = [];
         foreach ($allProdis as $prodiName) {
             $baseRekap[$prodiName] = [
-                'prodi'         => $prodiName,
-                'total_peserta' => 0,
-                'registrasi'    => 0, // Kolom Registrasi
-                'antropometri'  => 0,
-                'fisik1'        => 0,
-                'fisik2'        => 0,
-                'gigi'          => 0,
-                'narkoba'       => 0,
-                'kesimpulan'    => 0, // Kolom Kesimpulan
-                'dapat'         => 0,
-                'tidak_dapat'   => 0,
+                'prodi'           => $prodiName,
+                'total_peserta'   => 0,
+                'registrasi'      => 0,
+                'antropometri'    => 0,
+                'fisik1'          => 0,
+                'fisik2'          => 0,
+                'gigi'            => 0,
+                'narkoba'         => 0,
+                'periksa_lengkap' => 0, // <-- Kolom Baru
+                'kesimpulan'      => 0,
+                'dapat'           => 0,
+                'tidak_dapat'     => 0,
             ];
         }
 
         // 2. AMBIL DATA AKTUAL
         $query = ApplicantMedicalRecord::with('study_program')
             ->where(function ($q) {
-                // Abaikan peserta luar, tapi ikutkan jika masih kosong (baru mendaftar awal)
                 $q->where('tempat_periksa', '!=', 'Lainnya')
                     ->orWhereNull('tempat_periksa');
             });
 
-        // Filter dari dropdown Periode
         if ($request->filled('period_id')) {
             $query->where('period_id', $request->period_id);
         }
 
-        // Filter dari dropdown Tanggal (Ambil yg Registrasi ATAU Periksa di tanggal tersebut)
         $tanggal = $request->tanggal;
         if ($tanggal) {
             $query->where(function ($q) use ($tanggal) {
@@ -101,28 +99,19 @@ class ReportController extends Controller
             return $item->study_program->name ?? 'Belum Pilih Prodi';
         })->map(function ($group, $prodiName) use ($tanggal) {
 
-            // FUNGSI BANTUAN: Memfilter koleksi berdasarkan tanggal yang relevan (tgl_registrasi / tgl_periksa)
             $countByDate = function ($items, $column, $dateColumn, $value = null) use ($tanggal) {
                 return $items->filter(function ($item) use ($column, $dateColumn, $tanggal, $value) {
-                    // Cek pencocokan tanggal (jika difilter)
                     if ($tanggal) {
                         $itemDate = $item->{$dateColumn} ? date('Y-m-d', strtotime($item->{$dateColumn})) : null;
-                        if ($itemDate != $tanggal) {
-                            return false; // Lewati jika beda tanggal
-                        }
+                        if ($itemDate != $tanggal) return false;
                     }
-
-                    // Cek jika butuh perbandingan value (contoh: rekomendasi == 'Dapat')
                     if ($value !== null) {
                         return $item->{$column} === $value;
                     }
-
-                    // Cek biasa (asal tidak null)
                     return $item->{$column} !== null;
                 })->count();
             };
 
-            // Hitung Total Peserta (semua yang daftar/registrasi di tanggal tersebut)
             $totalPeserta = $tanggal
                 ? $group->filter(function ($item) use ($tanggal) {
                     $tglReg = $item->tgl_registrasi ? date('Y-m-d', strtotime($item->tgl_registrasi)) : null;
@@ -130,22 +119,33 @@ class ReportController extends Controller
                 })->count()
                 : $group->count();
 
+            // LOGIKA UNTUK PERIKSA LENGKAP
+            $periksaLengkapCount = $group->filter(function ($item) use ($tanggal) {
+                if ($tanggal) {
+                    $itemDate = $item->tgl_periksa ? date('Y-m-d', strtotime($item->tgl_periksa)) : null;
+                    if ($itemDate != $tanggal) return false;
+                }
+                // Syarat Lengkap: Kelima tahap ini tidak boleh kosong
+                return $item->tinggi_badan !== null &&
+                    $item->status_kulit !== null &&
+                    $item->status_thyroid !== null &&
+                    $item->status_gigi !== null &&
+                    $item->amp !== null;
+            })->count();
+
             return [
-                'prodi'         => $prodiName,
-
-                // Murni berdasarkan tgl_registrasi
-                'total_peserta' => $totalPeserta,
-                'registrasi'    => $countByDate($group, 'tgl_registrasi', 'tgl_registrasi'),
-
-                // Murni berdasarkan tgl_periksa
-                'antropometri'  => $countByDate($group, 'tinggi_badan', 'tgl_periksa'),
-                'fisik1'        => $countByDate($group, 'status_kulit', 'tgl_periksa'),
-                'fisik2'        => $countByDate($group, 'status_thyroid', 'tgl_periksa'),
-                'gigi'          => $countByDate($group, 'status_gigi', 'tgl_periksa'),
-                'narkoba'       => $countByDate($group, 'amp', 'tgl_periksa'),
-                'kesimpulan'    => $countByDate($group, 'rekomendasi', 'tgl_periksa'),
-                'dapat'         => $countByDate($group, 'rekomendasi', 'tgl_periksa', 'Dapat'),
-                'tidak_dapat'   => $countByDate($group, 'rekomendasi', 'tgl_periksa', 'Tidak Dapat'),
+                'prodi'           => $prodiName,
+                'total_peserta'   => $totalPeserta,
+                'registrasi'      => $countByDate($group, 'tgl_registrasi', 'tgl_registrasi'),
+                'antropometri'    => $countByDate($group, 'tinggi_badan', 'tgl_periksa'),
+                'fisik1'          => $countByDate($group, 'status_kulit', 'tgl_periksa'),
+                'fisik2'          => $countByDate($group, 'status_thyroid', 'tgl_periksa'),
+                'gigi'            => $countByDate($group, 'status_gigi', 'tgl_periksa'),
+                'narkoba'         => $countByDate($group, 'amp', 'tgl_periksa'),
+                'periksa_lengkap' => $periksaLengkapCount, // <-- Masukkan hasil hitungan ke array
+                'kesimpulan'      => $countByDate($group, 'rekomendasi', 'tgl_periksa'),
+                'dapat'           => $countByDate($group, 'rekomendasi', 'tgl_periksa', 'Dapat'),
+                'tidak_dapat'     => $countByDate($group, 'rekomendasi', 'tgl_periksa', 'Tidak Dapat'),
             ];
         })->toArray();
 
@@ -157,7 +157,6 @@ class ReportController extends Controller
         // 5. Reset index array
         $rekaps = array_values($baseRekap);
 
-        // Kembalikan ke DataTables
         return datatables()->of($rekaps)
             ->addIndexColumn()
             ->make(true);

@@ -48,7 +48,7 @@
                             <th rowspan="2" class="align-middle">No</th>
                             <th rowspan="2" class="align-middle text-start">Program Studi</th>
                             <th rowspan="2" class="align-middle">Total Peserta</th>
-                            <th colspan="7">Progres Tahapan (Selesai)</th>
+                            <th colspan="8">Progres Tahapan (Selesai)</th>
                             <th colspan="2">Rekomendasi Final</th>
                         </tr>
                         <tr>
@@ -58,6 +58,7 @@
                             <th>Fisik 2</th>
                             <th>Gigi</th>
                             <th>Narkoba</th>
+                            <th class="text-warning">Lengkap</th>
                             <th class="text-info">Kesimpulan</th>
                             <th class="text-success">Dapat</th>
                             <th class="text-danger">Tdk Dapat</th>
@@ -69,6 +70,7 @@
                         <tr>
                             <th></th>
                             <th class="text-end">TOTAL KESELURUHAN :</th>
+                            <th>0</th>
                             <th>0</th>
                             <th>0</th>
                             <th>0</th>
@@ -132,8 +134,8 @@
             responsive: true,
             searching: false,
             ordering: false,
-            paging: false, // Menampilkan semua data memanjang ke bawah
-            info: false, // Menghilangkan teks "Showing 1 to..."
+            paging: false,
+            info: false,
             ajax: {
                 url: "{{ url('admin/rekap-pemeriksaan/show') }}",
                 type: "POST",
@@ -184,6 +186,11 @@
                     name: 'narkoba'
                 },
                 {
+                    data: 'periksa_lengkap',
+                    name: 'periksa_lengkap',
+                    className: 'text-warning fw-bold'
+                }, // <-- Kolom Baru di JS
+                {
                     data: 'kesimpulan',
                     name: 'kesimpulan',
                     className: 'text-info fw-bold'
@@ -201,17 +208,14 @@
             ],
             footerCallback: function(row, data, start, end, display) {
                 var api = this.api();
-
-                // Fungsi helper mengubah nilai menjadi angka
                 var intVal = function(i) {
                     return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
                 };
 
-                // Indeks kolom yang akan dijumlahkan (Mulai dari Total Peserta s.d Tidak Dapat)
-                var columnsToSum = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+                // Array bertambah sampai indeks ke-12 karena kolom 'Lengkap' disisipkan
+                var columnsToSum = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
                 columnsToSum.forEach(function(colIndex) {
-                    // Hitung total nilai di kolom tersebut
                     var total = api
                         .column(colIndex)
                         .data()
@@ -219,7 +223,6 @@
                             return intVal(a) + intVal(b);
                         }, 0);
 
-                    // Masukkan hasil ke tag <th> pada tfoot sesuai indeksnya
                     $(api.column(colIndex).footer()).html(total);
                 });
             }
