@@ -73,49 +73,88 @@ class ReportController extends Controller
         }
 
         // 2. AMBIL DATA AKTUAL
-        // Filter tempat_periksa != 'Lainnya' dan yang sudah memiliki tgl_periksa
         $query = ApplicantMedicalRecord::with('study_program')
-            // ->whereNotNull('tgl_periksa')
-            ->where('tempat_periksa', '!=', 'Lainnya');
+            ->where(function ($q) {
+                // Abaikan peserta luar, tapi ikutkan jika masih kosong (baru mendaftar awal)
+                $q->where('tempat_periksa', '!=', 'Lainnya')
+                    ->orWhereNull('tempat_periksa');
+            });
 
         // Filter dari dropdown Periode
         if ($request->filled('period_id')) {
             $query->where('period_id', $request->period_id);
         }
 
-        // Filter dari dropdown Tanggal
-        if ($request->filled('tanggal')) {
-            $query->whereDate('tgl_periksa', $request->tanggal);
+        // Filter dari dropdown Tanggal (Ambil yg Registrasi ATAU Periksa di tanggal tersebut)
+        $tanggal = $request->tanggal;
+        if ($tanggal) {
+            $query->where(function ($q) use ($tanggal) {
+                $q->whereDate('tgl_registrasi', $tanggal)
+                    ->orWhereDate('tgl_periksa', $tanggal);
+            });
         }
 
         $records = $query->get();
 
-        // Grouping data aktual per Program Studi dan hitung masing-masing tahapannya
+        // 3. GROUPING & PERHITUNGAN DINAMIS
         $actualRekaps = $records->groupBy(function ($item) {
             return $item->study_program->name ?? 'Belum Pilih Prodi';
-        })->map(function ($group, $prodiName) {
+        })->map(function ($group, $prodiName) use ($tanggal) {
+
+            // FUNGSI BANTUAN: Memfilter koleksi berdasarkan tanggal yang relevan (tgl_registrasi / tgl_periksa)
+            $countByDate = function ($items, $column, $dateColumn, $value = null) use ($tanggal) {
+                return $items->filter(function ($item) use ($column, $dateColumn, $tanggal, $value) {
+                    // Cek pencocokan tanggal (jika difilter)
+                    if ($tanggal) {
+                        $itemDate = $item->{$dateColumn} ? date('Y-m-d', strtotime($item->{$dateColumn})) : null;
+                        if ($itemDate != $tanggal) {
+                            return false; // Lewati jika beda tanggal
+                        }
+                    }
+
+                    // Cek jika butuh perbandingan value (contoh: rekomendasi == 'Dapat')
+                    if ($value !== null) {
+                        return $item->{$column} === $value;
+                    }
+
+                    // Cek biasa (asal tidak null)
+                    return $item->{$column} !== null;
+                })->count();
+            };
+
+            // Hitung Total Peserta (semua yang daftar/registrasi di tanggal tersebut)
+            $totalPeserta = $tanggal
+                ? $group->filter(function ($item) use ($tanggal) {
+                    $tglReg = $item->tgl_registrasi ? date('Y-m-d', strtotime($item->tgl_registrasi)) : null;
+                    return $tglReg == $tanggal;
+                })->count()
+                : $group->count();
+
             return [
                 'prodi'         => $prodiName,
-                'total_peserta' => $group->count(),
-                'registrasi'    => $group->whereNotNull('tgl_registrasi')->count(),
-                'antropometri'  => $group->whereNotNull('tinggi_badan')->count(),
-                'fisik1'        => $group->whereNotNull('status_kulit')->count(),
-                'fisik2'        => $group->whereNotNull('status_thyroid')->count(),
-                'gigi'          => $group->whereNotNull('status_gigi')->count(),
-                'narkoba'       => $group->whereNotNull('amp')->count(),
-                'kesimpulan'    => $group->whereNotNull('rekomendasi')->count(),
-                'dapat'         => $group->where('rekomendasi', 'Dapat')->count(),
-                'tidak_dapat'   => $group->where('rekomendasi', 'Tidak Dapat')->count(),
-            ];
-        })->toArray(); // Ubah ke array agar mudah digabungkan
 
-        // 3. GABUNGKAN: Timpa kerangka dasar (yang 0) dengan data aktual (jika ada pesertanya)
+                // Murni berdasarkan tgl_registrasi
+                'total_peserta' => $totalPeserta,
+                'registrasi'    => $countByDate($group, 'tgl_registrasi', 'tgl_registrasi'),
+
+                // Murni berdasarkan tgl_periksa
+                'antropometri'  => $countByDate($group, 'tinggi_badan', 'tgl_periksa'),
+                'fisik1'        => $countByDate($group, 'status_kulit', 'tgl_periksa'),
+                'fisik2'        => $countByDate($group, 'status_thyroid', 'tgl_periksa'),
+                'gigi'          => $countByDate($group, 'status_gigi', 'tgl_periksa'),
+                'narkoba'       => $countByDate($group, 'amp', 'tgl_periksa'),
+                'kesimpulan'    => $countByDate($group, 'rekomendasi', 'tgl_periksa'),
+                'dapat'         => $countByDate($group, 'rekomendasi', 'tgl_periksa', 'Dapat'),
+                'tidak_dapat'   => $countByDate($group, 'rekomendasi', 'tgl_periksa', 'Tidak Dapat'),
+            ];
+        })->toArray();
+
+        // 4. GABUNGKAN
         foreach ($actualRekaps as $prodiName => $data) {
             $baseRekap[$prodiName] = $data;
-            // Catatan: Jika ada peserta yang 'Belum Pilih Prodi', ia akan otomatis tertambah di baris paling bawah
         }
 
-        // 4. Reset index array agar berurutan (0, 1, 2, dst) untuk dibaca oleh DataTables
+        // 5. Reset index array
         $rekaps = array_values($baseRekap);
 
         // Kembalikan ke DataTables
