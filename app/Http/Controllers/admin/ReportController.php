@@ -174,21 +174,30 @@ class ReportController extends Controller
 
     public function showCekTahapan(Request $request)
     {
-        // TAMBAHAN: Filter tempat_periksa != 'Lainnya'
+        // 1. BASE QUERY
+        // Hapus whereNotNull('tgl_periksa') agar peserta yang baru registrasi bisa terbaca
         $query = ApplicantMedicalRecord::with('study_program')
-            ->whereNotNull('tgl_periksa')
-            ->where('tempat_periksa', '!=', 'Lainnya');
+            ->where(function ($q) {
+                $q->where('tempat_periksa', '!=', 'Lainnya')
+                    ->orWhereNull('tempat_periksa');
+            });
 
-        // 1. Filter Periode & Tanggal
+        // 2. Filter Periode
         if ($request->filled('period_id')) {
             $query->where('period_id', $request->period_id);
         }
+
+        // 3. Filter Tanggal (Cek di tgl_registrasi ATAU tgl_periksa)
         if ($request->filled('tanggal')) {
-            $query->whereDate('tgl_periksa', $request->tanggal);
+            $query->where(function ($q) use ($request) {
+                $q->whereDate('tgl_registrasi', $request->tanggal)
+                    ->orWhereDate('tgl_periksa', $request->tanggal);
+            });
         }
 
-        // Mapping nama tahap dari view ke nama kolom asli di database
+        // 4. Mapping nama tahap dari view ke nama kolom asli di database
         $kolomTahap = [
+            'registrasi'   => 'tgl_registrasi', // <-- TAMBAHAN KOLOM REGISTRASI
             'antropometri' => 'tinggi_badan',
             'fisik1'       => 'status_kulit',
             'fisik2'       => 'status_thyroid',
@@ -197,12 +206,12 @@ class ReportController extends Controller
             'rekomendasi'  => 'rekomendasi',
         ];
 
-        // 2. Filter Tahap "SUDAH" (Where Not Null)
+        // 5. Filter Tahap "SUDAH" (Where Not Null)
         if ($request->filled('tahap_sudah') && isset($kolomTahap[$request->tahap_sudah])) {
             $query->whereNotNull($kolomTahap[$request->tahap_sudah]);
         }
 
-        // 3. Filter Tahap "BELUM" (Where Null)
+        // 6. Filter Tahap "BELUM" (Where Null)
         if ($request->filled('tahap_belum') && isset($kolomTahap[$request->tahap_belum])) {
             $query->whereNull($kolomTahap[$request->tahap_belum]);
         }
