@@ -75,7 +75,7 @@ class ReportController extends Controller
         // 2. AMBIL DATA AKTUAL
         // Filter tempat_periksa != 'Lainnya' dan yang sudah memiliki tgl_periksa
         $query = ApplicantMedicalRecord::with('study_program')
-            ->whereNotNull('tgl_periksa')
+            // ->whereNotNull('tgl_periksa')
             ->where('tempat_periksa', '!=', 'Lainnya');
 
         // Filter dari dropdown Periode
