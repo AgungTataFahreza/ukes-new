@@ -609,7 +609,7 @@ $is_keputusan_verif = $user->tanggal_verifikasi !== null || ($rec && $rec->kesim
 
                                                 <div class="col-sm-6">
                                                     <label class="form-label fw-bold text-primary">Kesimpulan Pemeriksaan</label>
-                                                    <textarea name="kesimpulan" id="input_kesimpulan" rows="3" class="form-control bg-light" placeholder="Kesimpulan otomatis dari sistem..." readonly>{{ $rec?->kesimpulan ?? '' }}</textarea>
+                                                    <textarea name="kesimpulan" id="input_kesimpulan" rows="3" class="form-control bg-light" placeholder="Kesimpulan otomatis dari sistem...">{{ $rec?->kesimpulan ?? '' }}</textarea>
                                                 </div>
 
                                                 <div class="col-sm-6">
