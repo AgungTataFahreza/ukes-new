@@ -68,6 +68,7 @@ Route::prefix('/admin')->name('admin.')->namespace('Admin')->group(function () {
         Route::post('/period/update', [PeriodController::class, 'update'])->middleware('access:Periode,edit');
         Route::post('/period/delete', [PeriodController::class, 'delete'])->middleware('access:Periode,delete');
         Route::post('/period/toggle', [PeriodController::class, 'toggle'])->middleware('access:Periode,edit');
+        Route::post('/period/toggle-login', [PeriodController::class, 'toggleLogin'])->middleware('access:Periode,edit');
 
         Route::get('/menu', [MenuController::class, 'index'])->middleware('access:Menu,view');
         Route::post('/menu/show', [MenuController::class, 'show'])->middleware('access:Menu,view');

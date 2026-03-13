@@ -58,10 +58,18 @@ class PeriodController extends Controller
                     $button = '<div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" onchange="togglePeriod(this,' . $result->id . ')" id="checkbox_' . $result->id . '" ' . $checked . '><label class="form-check-label" for="checkbox_' . $result->id . '"></label></div>';
                     return $button;
                 })
+                // TAMBAHAN: Kolom Toggle Login Peserta
+                ->addColumn('can_login_button', function ($result) {
+                    $checked = $result->can_applicant_login ? 'checked' : '';
+                    // Gunakan warna hijau (form-switch-success) agar berbeda dengan toggle status
+                    $button = '<div class="form-check form-switch form-switch-success"><input class="form-check-input" type="checkbox" role="switch" onchange="toggleLogin(this,' . $result->id . ')" id="checkbox_login_' . $result->id . '" ' . $checked . '><label class="form-check-label" for="checkbox_login_' . $result->id . '"></label></div>';
+                    return $button;
+                })
                 ->rawColumns([
-                    'action' => 'action',
+                    'action'           => 'action',
                     'is_active_button' => 'is_active_button',
-                    'year' => 'year',
+                    'can_login_button' => 'can_login_button', // Jangan lupa didaftarkan di sini
+                    'year'             => 'year',
                 ])
                 ->addIndexColumn()
                 ->make(true);
@@ -200,6 +208,32 @@ class PeriodController extends Controller
             }
 
             $period->save();
+
+            return response()->json([
+                'status'  => true,
+                'message' => $message
+            ]);
+        }
+    }
+
+    public function toggleLogin(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $period = Period::find($request->id);
+
+            if (!$period) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Periode tidak ditemukan'
+                ]);
+            }
+
+            // Langsung ubah sesuai nilai toggle yang dikirim (1 atau 0)
+            $period->can_applicant_login = $request->status;
+            $period->save();
+
+            $message = $request->status == 1 ? 'Akses Login Peserta DIBUKA' : 'Akses Login Peserta DITUTUP';
 
             return response()->json([
                 'status'  => true,

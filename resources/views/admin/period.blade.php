@@ -29,7 +29,8 @@
                             <th scope="col">No</th>
                             <th scope="col">Tahun</th>
                             <th scope="col">Periode</th>
-                            <th scope="col">Status</th>
+                            <th scope="col">Status Aktif</th>
+                            <th scope="col">Akses Login</th>
                             <?php if (can_access($permissions, $key_, 'edit') || can_access($permissions, $key_, 'delete')) { ?>
                                 <th scope="col">Action</th>
                             <?php } ?>
@@ -152,6 +153,13 @@
                 {
                     data: 'is_active_button',
                     orderable: false,
+                    searchable: false // Tambahkan searchable: false agar rapi
+                },
+                // TAMBAHAN: Panggil kolom dari controller
+                {
+                    data: 'can_login_button',
+                    orderable: false,
+                    searchable: false
                 },
                 <?php if (can_access($permissions, $key_, 'edit') || can_access($permissions, $key_, 'delete')) { ?> {
                         data: 'action',
@@ -160,7 +168,6 @@
                     }
                 <?php } ?>
             ],
-
             order: [
                 [1, 'desc']
             ]
@@ -323,6 +330,33 @@
                 },
                 error: function(jqXHR, textStatus) {
                     el.checked = !el.checked; // rollback
+                    showAlert("Error!", textStatus, "error");
+                }
+            });
+        }
+
+        function toggleLogin(el, id) {
+            const status = el.checked ? 1 : 0;
+
+            $.ajax({
+                url: "{{ url('/admin/period/toggle-login') }}",
+                type: "POST",
+                data: {
+                    id: id,
+                    status: status,
+                    _token: "{{ csrf_token() }}"
+                },
+                dataType: "JSON",
+                success: function(data) {
+                    if (data.status) {
+                        showAlert("Berhasil", data.message, "success");
+                    } else {
+                        el.checked = !el.checked; // kembalikan ke semula jika gagal
+                        showAlert("Gagal!", data.message, "error");
+                    }
+                },
+                error: function(jqXHR, textStatus) {
+                    el.checked = !el.checked; // kembalikan ke semula jika error
                     showAlert("Error!", textStatus, "error");
                 }
             });
