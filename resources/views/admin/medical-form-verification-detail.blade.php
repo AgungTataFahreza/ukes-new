@@ -693,7 +693,7 @@ $is_keputusan_verif = $user->tanggal_verifikasi !== null || ($rec && $rec->kesim
                     messageEl = $('#success-message');
                     paramEl = $('#success-parameter');
 
-                    $('#input_kesimpulan').val("Memenuhi syarat fisik untuk mengikuti pendidikan.");
+                    $('#input_kesimpulan').val("Dapat");
                 } else {
                     alertBox = $('#danger-alert');
                     titleEl = $('#danger-title');
