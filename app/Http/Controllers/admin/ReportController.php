@@ -22,43 +22,42 @@ class ReportController extends Controller
     }
 
     /**
-     * Mengambil daftar tanggal untuk Dropdown Dinamis
+     * Mengambil daftar tanggal untuk Dropdown Dinamis (Registrasi & Periksa)
      */
     public function getDates(Request $request)
     {
-        // TAMBAHAN: Filter tempat_periksa != 'Lainnya'
-        $query = ApplicantMedicalRecord::whereNotNull('tgl_periksa')
+        $period_id = $request->period_id;
+
+        // 1. Tanggal Registrasi
+        $queryReg = ApplicantMedicalRecord::selectRaw('DATE(tgl_registrasi) as tanggal')->whereNotNull('tgl_registrasi');
+        if ($period_id) $queryReg->where('period_id', $period_id);
+        $tgl_registrasi = $queryReg->groupBy('tanggal')->orderBy('tanggal', 'desc')->pluck('tanggal');
+
+        // 2. Tanggal Pemeriksaan
+        $queryPeriksa = ApplicantMedicalRecord::selectRaw('DATE(tgl_periksa) as tanggal')->whereNotNull('tgl_periksa')
             ->where('tempat_periksa', '!=', 'Lainnya');
+        if ($period_id) $queryPeriksa->where('period_id', $period_id);
+        $tgl_periksa = $queryPeriksa->groupBy('tanggal')->orderBy('tanggal', 'desc')->pluck('tanggal');
 
-        // Jika ada periode yang dikirim, filter tanggalnya berdasarkan periode tersebut
-        if ($request->filled('period_id')) {
-            $query->where('period_id', $request->period_id);
-        }
-
-        // Ambil tgl_periksa, kelompokkan (group by) agar unik, dan urutkan dari yang terbaru
-        $dates = $query->select('tgl_periksa')
-            ->groupBy('tgl_periksa')
-            ->orderBy('tgl_periksa', 'desc')
-            ->pluck('tgl_periksa');
-
-        return response()->json($dates);
+        return response()->json([
+            'tgl_registrasi' => $tgl_registrasi,
+            'tgl_periksa'    => $tgl_periksa
+        ]);
     }
 
     /**
-     * Mengambil Data untuk AJAX DataTables
-     */
-    /**
-     * Mengambil Data untuk AJAX DataTables Rekapitulasi
+     * Mengambil Data untuk AJAX DataTables Rekapitulasi Utama
      */
     public function show(Request $request)
     {
         // 1. BUAT KERANGKA DASAR
-        $allProdis = StudyProgram::orderBy('name', 'asc')->pluck('name');
+        $allProdis = StudyProgram::orderBy('name', 'asc')->get();
 
         $baseRekap = [];
-        foreach ($allProdis as $prodiName) {
-            $baseRekap[$prodiName] = [
-                'prodi'           => $prodiName,
+        foreach ($allProdis as $prodi) {
+            $baseRekap[$prodi->name] = [
+                'prodi_id'        => $prodi->id,
+                'prodi'           => $prodi->name,
                 'total_peserta'   => 0,
                 'registrasi'      => 0,
                 'antropometri'    => 0,
@@ -66,29 +65,44 @@ class ReportController extends Controller
                 'fisik2'          => 0,
                 'gigi'            => 0,
                 'narkoba'         => 0,
-                'periksa_lengkap' => 0, // <-- Kolom Baru
+                'periksa_lengkap' => 0,
                 'kesimpulan'      => 0,
                 'dapat'           => 0,
                 'tidak_dapat'     => 0,
+                'action'          => '<button type="button" class="btn btn-sm btn-info btn-detail" data-prodi="' . $prodi->name . '" data-prodiid="' . $prodi->id . '"><i class="ri-eye-line"></i> Detail</button>'
             ];
         }
 
-        // 2. AMBIL DATA AKTUAL
-        $query = ApplicantMedicalRecord::with('study_program')
-            ->where(function ($q) {
-                $q->where('tempat_periksa', '!=', 'Lainnya')
-                    ->orWhereNull('tempat_periksa');
+        // 2. AMBIL DATA AKTUAL (Filter Tempat Periksa)
+        $query = ApplicantMedicalRecord::with('study_program');
+
+        $tempat_periksa = $request->tempat_periksa;
+        if ($tempat_periksa) {
+            if ($tempat_periksa === 'Lainnya') {
+                $query->where('tempat_periksa', 'Lainnya');
+            } else {
+                $query->where(function ($q) {
+                    $q->where('tempat_periksa', '!=', 'Lainnya')->orWhereNull('tempat_periksa');
+                });
+            }
+        } else {
+            $query->where(function ($q) {
+                $q->where('tempat_periksa', '!=', 'Lainnya')->orWhereNull('tempat_periksa');
             });
+        }
 
         if ($request->filled('period_id')) {
             $query->where('period_id', $request->period_id);
         }
 
-        $tanggal = $request->tanggal;
-        if ($tanggal) {
-            $query->where(function ($q) use ($tanggal) {
-                $q->whereDate('tgl_registrasi', $tanggal)
-                    ->orWhereDate('tgl_periksa', $tanggal);
+        $tgl_registrasi = $request->tgl_registrasi;
+        $tgl_periksa = $request->tgl_periksa;
+
+        // Ambil data yang berkaitan dengan salah satu/kedua tanggal
+        if ($tgl_registrasi || $tgl_periksa) {
+            $query->where(function ($q) use ($tgl_registrasi, $tgl_periksa) {
+                if ($tgl_registrasi) $q->whereDate('tgl_registrasi', $tgl_registrasi);
+                if ($tgl_periksa) $q->orWhereDate('tgl_periksa', $tgl_periksa);
             });
         }
 
@@ -97,43 +111,43 @@ class ReportController extends Controller
         // 3. GROUPING & PERHITUNGAN DINAMIS
         $actualRekaps = $records->groupBy(function ($item) {
             return $item->study_program->name ?? 'Belum Pilih Prodi';
-        })->map(function ($group, $prodiName) use ($tanggal) {
+        })->map(function ($group, $prodiName) use ($tgl_registrasi, $tgl_periksa) {
 
-            $countByDate = function ($items, $column, $dateColumn, $value = null) use ($tanggal) {
-                return $items->filter(function ($item) use ($column, $dateColumn, $tanggal, $value) {
-                    if ($tanggal) {
-                        $itemDate = $item->{$dateColumn} ? date('Y-m-d', strtotime($item->{$dateColumn})) : null;
-                        if ($itemDate != $tanggal) return false;
+            $countByDate = function ($items, $column, $dateColumn, $value = null) use ($tgl_registrasi, $tgl_periksa) {
+                return $items->filter(function ($item) use ($column, $dateColumn, $tgl_registrasi, $tgl_periksa, $value) {
+                    if ($dateColumn == 'tgl_registrasi' && $tgl_registrasi) {
+                        $itemDate = $item->tgl_registrasi ? date('Y-m-d', strtotime($item->tgl_registrasi)) : null;
+                        if ($itemDate != $tgl_registrasi) return false;
                     }
-                    if ($value !== null) {
-                        return $item->{$column} === $value;
+                    if ($dateColumn == 'tgl_periksa' && $tgl_periksa) {
+                        $itemDate = $item->tgl_periksa ? date('Y-m-d', strtotime($item->tgl_periksa)) : null;
+                        if ($itemDate != $tgl_periksa) return false;
                     }
+                    if ($value !== null) return $item->{$column} === $value;
                     return $item->{$column} !== null;
                 })->count();
             };
 
-            $totalPeserta = $tanggal
-                ? $group->filter(function ($item) use ($tanggal) {
+            $totalPeserta = $tgl_registrasi
+                ? $group->filter(function ($item) use ($tgl_registrasi) {
                     $tglReg = $item->tgl_registrasi ? date('Y-m-d', strtotime($item->tgl_registrasi)) : null;
-                    return $tglReg == $tanggal;
+                    return $tglReg == $tgl_registrasi;
                 })->count()
                 : $group->count();
 
-            // LOGIKA UNTUK PERIKSA LENGKAP
-            $periksaLengkapCount = $group->filter(function ($item) use ($tanggal) {
-                if ($tanggal) {
+            $periksaLengkapCount = $group->filter(function ($item) use ($tgl_periksa) {
+                if ($tgl_periksa) {
                     $itemDate = $item->tgl_periksa ? date('Y-m-d', strtotime($item->tgl_periksa)) : null;
-                    if ($itemDate != $tanggal) return false;
+                    if ($itemDate != $tgl_periksa) return false;
                 }
-                // Syarat Lengkap: Kelima tahap ini tidak boleh kosong
-                return $item->tinggi_badan !== null &&
-                    $item->status_kulit !== null &&
-                    $item->status_thyroid !== null &&
-                    $item->status_gigi !== null &&
-                    $item->amp !== null;
+                return $item->tinggi_badan !== null && $item->status_kulit !== null &&
+                    $item->status_thyroid !== null && $item->status_gigi !== null && $item->amp !== null;
             })->count();
 
+            $prodiId = $group->first()->study_program_id ?? null;
+
             return [
+                'prodi_id'        => $prodiId,
                 'prodi'           => $prodiName,
                 'total_peserta'   => $totalPeserta,
                 'registrasi'      => $countByDate($group, 'tgl_registrasi', 'tgl_registrasi'),
@@ -142,10 +156,11 @@ class ReportController extends Controller
                 'fisik2'          => $countByDate($group, 'status_thyroid', 'tgl_periksa'),
                 'gigi'            => $countByDate($group, 'status_gigi', 'tgl_periksa'),
                 'narkoba'         => $countByDate($group, 'amp', 'tgl_periksa'),
-                'periksa_lengkap' => $periksaLengkapCount, // <-- Masukkan hasil hitungan ke array
+                'periksa_lengkap' => $periksaLengkapCount,
                 'kesimpulan'      => $countByDate($group, 'rekomendasi', 'tgl_periksa'),
                 'dapat'           => $countByDate($group, 'rekomendasi', 'tgl_periksa', 'Dapat'),
                 'tidak_dapat'     => $countByDate($group, 'rekomendasi', 'tgl_periksa', 'Tidak Dapat'),
+                'action'          => '<button type="button" class="btn btn-sm btn-info btn-detail" data-prodi="' . $prodiName . '" data-prodiid="' . $prodiId . '"><i class="ri-eye-line"></i> Detail</button>'
             ];
         })->toArray();
 
@@ -154,11 +169,77 @@ class ReportController extends Controller
             $baseRekap[$prodiName] = $data;
         }
 
-        // 5. Reset index array
-        $rekaps = array_values($baseRekap);
-
-        return datatables()->of($rekaps)
+        return datatables()->of(array_values($baseRekap))
             ->addIndexColumn()
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    /**
+     * Mengambil Data untuk Detail Modal berdasarkan Filter & Prodi
+     */
+    public function showDetail(Request $request)
+    {
+        $query = ApplicantMedicalRecord::query();
+
+        // 1. Filter Prodi (bisa null jika 'Belum Pilih Prodi')
+        if ($request->prodi_id) {
+            $query->where('study_program_id', $request->prodi_id);
+        } else {
+            $query->whereNull('study_program_id');
+        }
+
+        // 2. Terapkan Filter yang sama seperti di laporan utama
+        if ($request->filled('period_id')) $query->where('period_id', $request->period_id);
+
+        $tempat_periksa = $request->tempat_periksa;
+        if ($tempat_periksa) {
+            if ($tempat_periksa === 'Lainnya') {
+                $query->where('tempat_periksa', 'Lainnya');
+            } else {
+                $query->where(function ($q) {
+                    $q->where('tempat_periksa', '!=', 'Lainnya')->orWhereNull('tempat_periksa');
+                });
+            }
+        } else {
+            $query->where(function ($q) {
+                $q->where('tempat_periksa', '!=', 'Lainnya')->orWhereNull('tempat_periksa');
+            });
+        }
+
+        $tgl_registrasi = $request->tgl_registrasi;
+        $tgl_periksa = $request->tgl_periksa;
+
+        if ($tgl_registrasi || $tgl_periksa) {
+            $query->where(function ($q) use ($tgl_registrasi, $tgl_periksa) {
+                if ($tgl_registrasi) $q->whereDate('tgl_registrasi', $tgl_registrasi);
+                if ($tgl_periksa) $q->orWhereDate('tgl_periksa', $tgl_periksa);
+            });
+        }
+
+        $records = $query->get();
+
+        // 3. Custom Sorting (Dapat -> Tidak Dapat -> Kosong) lalu Abjad Nama
+        $sorted = $records->sort(function ($a, $b) {
+            $order = ['Dapat' => 1, 'Tidak Dapat' => 2, '' => 3, null => 3];
+
+            $valA = $order[$a->rekomendasi] ?? 3;
+            $valB = $order[$b->rekomendasi] ?? 3;
+
+            if ($valA === $valB) {
+                return strcmp($a->nama, $b->nama); // Jika sama, urutkan abjad
+            }
+            return $valA <=> $valB;
+        })->values();
+
+        return datatables()->of($sorted)
+            ->addIndexColumn()
+            ->addColumn('rekomendasi_badge', function ($row) {
+                if ($row->rekomendasi == 'Dapat') return '<span class="badge bg-success">Dapat</span>';
+                if ($row->rekomendasi == 'Tidak Dapat') return '<span class="badge bg-danger">Tidak Dapat</span>';
+                return '<span class="badge bg-secondary">Belum Kesimpulan</span>';
+            })
+            ->rawColumns(['rekomendasi_badge'])
             ->make(true);
     }
 
