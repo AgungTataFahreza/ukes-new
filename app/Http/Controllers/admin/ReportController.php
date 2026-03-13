@@ -51,17 +51,40 @@ class ReportController extends Controller
     /**
      * Mengambil Data untuk AJAX DataTables Rekapitulasi Utama
      */
+    /**
+     * Mengambil Data untuk AJAX DataTables Rekapitulasi Utama
+     */
     public function show(Request $request)
     {
-        // 1. BUAT KERANGKA DASAR (Tampilkan semua prodi dengan nilai awal 0)
-        $allProdis = StudyProgram::orderBy('name', 'asc')->get();
+        // ====================================================================
+        // 1. KUERI KHUSUS TOTAL PESERTA (KEBAL DARI FILTER TANGGAL & TEMPAT)
+        // ====================================================================
+        $queryTotal = ApplicantMedicalRecord::query();
 
+        // Total peserta hanya terpengaruh oleh Periode (Gelombang)
+        if ($request->filled('period_id') && $request->period_id !== 'null') {
+            $queryTotal->where('period_id', $request->period_id);
+        }
+
+        // Ambil data dalam bentuk array: [prodi_id => jumlah_peserta]
+        $totalPerProdi = $queryTotal->selectRaw('study_program_id, count(id) as total')
+            ->groupBy('study_program_id')
+            ->pluck('total', 'study_program_id');
+
+        // ====================================================================
+        // 2. BUAT KERANGKA DASAR (Isi Total Peserta dari Kueri Bebas Filter)
+        // ====================================================================
+        $allProdis = StudyProgram::orderBy('name', 'asc')->get();
         $baseRekap = [];
+
         foreach ($allProdis as $prodi) {
-            $baseRekap[$prodi->name] = [
+            $baseRekap[$prodi->id] = [ // Gunakan ID sebagai key array
                 'prodi_id'        => $prodi->id,
                 'prodi'           => $prodi->name,
-                'total_peserta'   => 0,
+                // Masukkan angka dari $totalPerProdi. Jika kosong, beri 0.
+                'total_peserta'   => $totalPerProdi[$prodi->id] ?? 0,
+
+                // Set default tahapan progres ke 0 dulu
                 'registrasi'      => 0,
                 'antropometri'    => 0,
                 'fisik1'          => 0,
@@ -76,7 +99,9 @@ class ReportController extends Controller
             ];
         }
 
-        // 2. QUERY DATABASE DENGAN FILTER YANG SANGAT KETAT
+        // ====================================================================
+        // 3. KUERI DATA PROGRES (INI YANG TERKENA SEMUA FILTER)
+        // ====================================================================
         $query = ApplicantMedicalRecord::with('study_program');
 
         // Filter Periode
@@ -84,11 +109,11 @@ class ReportController extends Controller
             $query->where('period_id', $request->period_id);
         }
 
-        // Filter Tempat Periksa (Default: Exclude 'Lainnya')
+        // Filter Tempat Periksa
         $tempat_periksa = $request->tempat_periksa;
         if ($tempat_periksa === 'Lainnya') {
             $query->where('tempat_periksa', 'Lainnya');
-        } else {
+        } elseif (!empty($tempat_periksa)) {
             $query->where(function ($q) {
                 $q->where('tempat_periksa', '!=', 'Lainnya')->orWhereNull('tempat_periksa');
             });
@@ -108,41 +133,34 @@ class ReportController extends Controller
 
         $records = $query->get();
 
-        // 3. PERHITUNGAN MENGGUNAKAN LARAVEL COLLECTION (Jauh lebih akurat)
-        $actualRekaps = $records->groupBy(function ($item) {
-            return $item->study_program->name ?? 'Belum Pilih Prodi';
-        })->map(function ($group, $prodiName) {
+        // ====================================================================
+        // 4. TIMPA ANGKA TAHAPAN PROGRES SESUAI HASIL FILTER
+        // ====================================================================
+        $records->groupBy('study_program_id')->each(function ($group, $prodiId) use (&$baseRekap) {
+            // Pastikan prodinya ada di array dasar
+            if (isset($baseRekap[$prodiId])) {
+                $baseRekap[$prodiId]['registrasi']      = $group->whereNotNull('tgl_registrasi')->count();
+                $baseRekap[$prodiId]['antropometri']    = $group->whereNotNull('tinggi_badan')->count();
+                $baseRekap[$prodiId]['fisik1']          = $group->whereNotNull('status_kulit')->count();
+                $baseRekap[$prodiId]['fisik2']          = $group->whereNotNull('status_thyroid')->count();
+                $baseRekap[$prodiId]['gigi']            = $group->whereNotNull('status_gigi')->count();
+                $baseRekap[$prodiId]['narkoba']         = $group->whereNotNull('amp')->count();
 
-            $prodiId = $group->first()->study_program_id ?? null;
-
-            return [
-                'prodi_id'        => $prodiId,
-                'prodi'           => $prodiName,
-                'total_peserta'   => $group->count(), // Ambil semua baris yang lolos filter database
-                'registrasi'      => $group->whereNotNull('tgl_registrasi')->count(),
-                'antropometri'    => $group->whereNotNull('tinggi_badan')->count(),
-                'fisik1'          => $group->whereNotNull('status_kulit')->count(),
-                'fisik2'          => $group->whereNotNull('status_thyroid')->count(),
-                'gigi'            => $group->whereNotNull('status_gigi')->count(),
-                'narkoba'         => $group->whereNotNull('amp')->count(),
-                'periksa_lengkap' => $group->filter(function ($i) {
-                    // Cek syarat lengkap
+                $baseRekap[$prodiId]['periksa_lengkap'] = $group->filter(function ($i) {
                     return $i->tinggi_badan !== null && $i->status_kulit !== null &&
                         $i->status_thyroid !== null && $i->status_gigi !== null && $i->amp !== null;
-                })->count(),
-                'kesimpulan'      => $group->whereNotNull('rekomendasi')->count(),
-                'dapat'           => $group->where('rekomendasi', 'Dapat')->count(),
-                'tidak_dapat'     => $group->where('rekomendasi', 'Tidak Dapat')->count(),
-                'action'          => '<button type="button" class="btn btn-sm btn-info btn-detail" data-prodi="' . $prodiName . '" data-prodiid="' . $prodiId . '"><i class="ri-eye-line"></i> Detail</button>'
-            ];
-        })->toArray();
+                })->count();
 
-        // 4. GABUNGKAN DATA AKTUAL KE KERANGKA DASAR
-        foreach ($actualRekaps as $prodiName => $data) {
-            $baseRekap[$prodiName] = $data;
-        }
+                $baseRekap[$prodiId]['kesimpulan']  = $group->whereNotNull('rekomendasi')->count();
+                $baseRekap[$prodiId]['dapat']       = $group->where('rekomendasi', 'Dapat')->count();
+                $baseRekap[$prodiId]['tidak_dapat'] = $group->where('rekomendasi', 'Tidak Dapat')->count();
+            }
+        });
 
-        return datatables()->of(array_values($baseRekap))
+        // 5. Ubah kembali array associative menjadi indexed array untuk DataTables
+        $rekaps = array_values($baseRekap);
+
+        return datatables()->of($rekaps)
             ->addIndexColumn()
             ->rawColumns(['action'])
             ->make(true);
