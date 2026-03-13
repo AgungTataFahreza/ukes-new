@@ -120,6 +120,7 @@ Route::prefix('/admin')->name('admin.')->namespace('Admin')->group(function () {
         Route::post('/medical-form/update-narkoba', [MedicalFormController::class, 'updateNarkoba'])->middleware('access:Formulir Uji Kesehatan,edit');
         Route::post('/medical-form/update-kesimpulan', [MedicalFormController::class, 'updateKesimpulan'])->middleware('access:Formulir Uji Kesehatan,edit');
         Route::post('/medical-form/get-kesimpulan', [MedicalFormController::class, 'getKesimpulan']);
+        Route::get('/medical-form/get-dates', [App\Http\Controllers\admin\MedicalFormController::class, 'getDates']);
 
         Route::get('/medical-result', [MedicalResultController::class, 'index'])->middleware('access:Data Hasil Pemeriksaan,view');
         Route::post('/medical-result/show', [MedicalResultController::class, 'show'])->middleware('access:Data Hasil Pemeriksaan,view');

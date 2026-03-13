@@ -29,9 +29,11 @@ class MedicalFormController extends Controller
         session()->put('menu', 'medical-form');
         session()->put('title', 'Formulir Uji Kesehatan');
         session()->put('key', $this->key);
+
         $data['permissions'] = $this->permissions;
         $data['study_programs'] = StudyProgram::orderBy('name', 'asc')->get();
         $data['periods'] = Period::orderBy('name', 'desc')->get();
+
         return view('admin.medical-form', $data);
     }
 
@@ -41,13 +43,39 @@ class MedicalFormController extends Controller
 
             $period_id = $request->period_id;
             $study_program_id = $request->study_program_id;
-            $query = ApplicantMedicalRecord::with('period', 'study_program')->where('tgl_registrasi', '!=', null);
 
+            // Parameter Filter Tambahan
+            $tgl_registrasi = $request->tgl_registrasi;
+            $tgl_periksa = $request->tgl_periksa;
+            $tempat_periksa = $request->tempat_periksa;
+
+            $query = ApplicantMedicalRecord::with('period', 'study_program')->whereNotNull('tgl_registrasi');
+
+            // Eksekusi Filter
             if ($period_id) {
                 $query->where('period_id', $period_id);
             }
             if ($study_program_id) {
                 $query->where('study_program_id', $study_program_id);
+            }
+            if ($tgl_registrasi) {
+                $query->whereDate('tgl_registrasi', $tgl_registrasi);
+            }
+            if ($tgl_periksa) {
+                $query->whereDate('tgl_periksa', $tgl_periksa);
+            }
+
+            // Filter Tempat Periksa
+            if ($tempat_periksa) {
+                if ($tempat_periksa === 'Lainnya') {
+                    $query->where('tempat_periksa', 'Lainnya');
+                } else {
+                    // Jika Klinik (Internal), ambil selain 'Lainnya' ATAU yang masih kosong
+                    $query->where(function ($q) {
+                        $q->where('tempat_periksa', '!=', 'Lainnya')
+                            ->orWhereNull('tempat_periksa');
+                    });
+                }
             }
 
             $result = $query->orderBy('nama', 'desc')->get();
@@ -61,7 +89,7 @@ class MedicalFormController extends Controller
                     return $button;
                 })
                 ->addColumn('period_name', function ($result) {
-                    return $result->period->name . ' ' . $result->period->year->name;
+                    return $result->period->name . ' ' . ($result->period->year->name ?? '');
                 })
                 ->addColumn('study_program_name', function ($result) {
                     return $result->study_program->name;
@@ -93,6 +121,41 @@ class MedicalFormController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
+    }
+
+    // FUNGSI BARU UNTUK MENGAMBIL TANGGAL VIA AJAX
+    public function getDates(Request $request)
+    {
+        $period_id = $request->period_id;
+
+        // 1. Query untuk Tanggal Registrasi
+        $queryReg = ApplicantMedicalRecord::selectRaw('DATE(tgl_registrasi) as tanggal')
+            ->whereNotNull('tgl_registrasi');
+
+        if ($period_id) {
+            $queryReg->where('period_id', $period_id);
+        }
+
+        $tgl_registrasi = $queryReg->groupBy('tanggal')
+            ->orderBy('tanggal', 'desc')
+            ->pluck('tanggal');
+
+        // 2. Query untuk Tanggal Periksa
+        $queryPeriksa = ApplicantMedicalRecord::selectRaw('DATE(tgl_periksa) as tanggal')
+            ->whereNotNull('tgl_periksa');
+
+        if ($period_id) {
+            $queryPeriksa->where('period_id', $period_id);
+        }
+
+        $tgl_periksa = $queryPeriksa->groupBy('tanggal')
+            ->orderBy('tanggal', 'desc')
+            ->pluck('tanggal');
+
+        return response()->json([
+            'tgl_registrasi' => $tgl_registrasi,
+            'tgl_periksa'    => $tgl_periksa
+        ]);
     }
 
     public function edit(Request $request)

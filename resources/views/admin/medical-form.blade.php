@@ -56,14 +56,13 @@
             </div>
             <!-- FORM -->
             <div class="modal-body">
-                <div class="row mb-3"></div>
                 <div class="row mb-3">
                     <div class="col-lg">
                         <label for="period_id_filter" class="form-label">Periode</label>
                         <select name="period_id_filter" id="period_id_filter" class="form-control">
                             <option value="">Pilih Periode</option>
                             @foreach($periods as $period)
-                            <option value="{{ $period->id }}" {{ ($period->is_active? 'selected' : '') }}>{{ $period->name }} {{ $period->year->name }}</option>
+                            <option value="{{ $period->id }}" {{ ($period->is_active? 'selected' : '') }}>{{ $period->name }} {{ $period->year->name ?? '' }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -72,10 +71,37 @@
                     <div class="col-lg">
                         <label for="study_program_id_filter" class="form-label">Program Studi</label>
                         <select name="study_program_id_filter" id="study_program_id_filter" class="form-control">
-                            <option value="">Semua</option>
+                            <option value="">Semua Program Studi</option>
                             @foreach($study_programs as $study_program)
                             <option value="{{ $study_program->id }}">{{ $study_program->name }}</option>
                             @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-lg">
+                        <label for="tgl_registrasi_filter" class="form-label">Tanggal Registrasi</label>
+                        <select name="tgl_registrasi_filter" id="tgl_registrasi_filter" class="form-control">
+                            <option value="">Semua Tanggal</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-lg">
+                        <label for="tgl_periksa_filter" class="form-label">Tanggal Pemeriksaan</label>
+                        <select name="tgl_periksa_filter" id="tgl_periksa_filter" class="form-control">
+                            <option value="">Semua Tanggal</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-lg">
+                        <label for="tempat_periksa_filter" class="form-label">Tempat Periksa</label>
+                        <select name="tempat_periksa_filter" id="tempat_periksa_filter" class="form-control">
+                            <option value="">Semua Tempat</option>
+                            <option value="Klinik">Klinik Pratama (Internal)</option>
+                            <option value="Lainnya">Lainnya (Peserta Luar)</option>
                         </select>
                     </div>
                 </div>
@@ -110,13 +136,7 @@
             autoWidth: true,
             processing: true,
             serverSide: true,
-            // scrollX: true,
             bDestroy: true,
-            // language: {
-            //     processing: '<i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>' +
-            //         '<span class="sr-only">Loading...</span>'
-            // },
-
             ajax: {
                 type: "POST",
                 url: "{{ url('/admin/medical-form/show') }}",
@@ -127,21 +147,21 @@
                     },
                     "study_program_id": function() {
                         return $('#study_program_id_filter').val();
+                    },
+                    "tgl_registrasi": function() {
+                        return $('#tgl_registrasi_filter').val();
+                    },
+                    "tgl_periksa": function() {
+                        return $('#tgl_periksa_filter').val();
+                    },
+                    "tempat_periksa": function() {
+                        return $('#tempat_periksa_filter').val();
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    console.log(jqXHR);
-                    console.log(textStatus);
-                    console.log(errorThrown);
+                    console.log(jqXHR, textStatus, errorThrown);
                 }
             },
-
-            // aLengthMenu: [
-            //     [10, 25, 50, 100, -1],
-            //     [10, 25, 50, 100, "All"]
-            // ],
-            // iDisplayLength: 10,
-
             columns: [{
                     data: 'DT_RowIndex',
                     orderable: false,
@@ -174,14 +194,56 @@
                         searchable: false
                     },
                 <?php } ?> {
-                    data: 'status',
+                    data: 'status'
                 }
             ],
-
             order: [
                 [3, 'asc']
-            ]
+            ] // Urut berdasarkan nama
         });
+
+        // 2. AJAX UNTUK DEPENDENT DROPDOWN TANGGAL
+        $('#period_id_filter').change(function() {
+            var periodId = $(this).val();
+            var regDropdown = $('#tgl_registrasi_filter');
+            var periksaDropdown = $('#tgl_periksa_filter');
+
+            regDropdown.html('<option value="">Memuat...</option>');
+            periksaDropdown.html('<option value="">Memuat...</option>');
+
+            $.ajax({
+                url: "{{ url('/admin/medical-form/get-dates') }}",
+                type: "GET",
+                data: {
+                    period_id: periodId
+                },
+                success: function(data) {
+                    regDropdown.html('<option value="">Semua Tanggal</option>');
+                    periksaDropdown.html('<option value="">Semua Tanggal</option>');
+
+                    function formatTanggalIndo(dateStr) {
+                        var parts = dateStr.split('-');
+                        return parts[2] + '-' + parts[1] + '-' + parts[0];
+                    }
+
+                    $.each(data.tgl_registrasi, function(index, date) {
+                        regDropdown.append('<option value="' + date + '">' + formatTanggalIndo(date) + '</option>');
+                    });
+
+                    $.each(data.tgl_periksa, function(index, date) {
+                        periksaDropdown.append('<option value="' + date + '">' + formatTanggalIndo(date) + '</option>');
+                    });
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR, textStatus, errorThrown);
+                    regDropdown.html('<option value="">Gagal Memuat</option>');
+                    periksaDropdown.html('<option value="">Gagal Memuat</option>');
+                }
+            });
+        });
+
+        // Trigger pertama kali untuk load tanggal bawaan saat modal dibuka
+        $('#period_id_filter').trigger('change');
     });
 
     function reload_table() {
