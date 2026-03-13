@@ -73,7 +73,7 @@ class ReportController extends Controller
             ];
         }
 
-        // 2. AMBIL DATA AKTUAL (Filter Tempat Periksa)
+        // 2. AMBIL DATA AKTUAL (Hanya Filter Tempat & Periode)
         $query = ApplicantMedicalRecord::with('study_program');
 
         $tempat_periksa = $request->tempat_periksa;
@@ -95,20 +95,13 @@ class ReportController extends Controller
             $query->where('period_id', $request->period_id);
         }
 
+        // Definisikan variabel untuk dipakai di Grouping (TANPA FILTER DATABASE)
         $tgl_registrasi = $request->tgl_registrasi;
         $tgl_periksa = $request->tgl_periksa;
 
-        // Ambil data yang berkaitan dengan salah satu/kedua tanggal
-        if ($tgl_registrasi || $tgl_periksa) {
-            $query->where(function ($q) use ($tgl_registrasi, $tgl_periksa) {
-                if ($tgl_registrasi) $q->whereDate('tgl_registrasi', $tgl_registrasi);
-                if ($tgl_periksa) $q->orWhereDate('tgl_periksa', $tgl_periksa);
-            });
-        }
-
         $records = $query->get();
 
-        // 3. GROUPING & PERHITUNGAN DINAMIS
+        // 3. GROUPING & PERHITUNGAN DINAMIS (Filter Tanggal Bekerja di Sini)
         $actualRekaps = $records->groupBy(function ($item) {
             return $item->study_program->name ?? 'Belum Pilih Prodi';
         })->map(function ($group, $prodiName) use ($tgl_registrasi, $tgl_periksa) {
@@ -128,6 +121,8 @@ class ReportController extends Controller
                 })->count();
             };
 
+            // Jika filter tgl_registrasi aktif, hitung yang registrasi di tanggal itu.
+            // Jika kosong, hitung seluruh peserta di periode tersebut!
             $totalPeserta = $tgl_registrasi
                 ? $group->filter(function ($item) use ($tgl_registrasi) {
                     $tglReg = $item->tgl_registrasi ? date('Y-m-d', strtotime($item->tgl_registrasi)) : null;
