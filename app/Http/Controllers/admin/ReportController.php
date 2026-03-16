@@ -180,25 +180,32 @@ class ReportController extends Controller
             $query->whereNull('study_program_id');
         }
 
-        // 2. Terapkan logika saringan yang SAMA PERSIS dengan tabel utama
+        // 2. Filter Periode
         if ($request->filled('period_id') && $request->period_id !== 'null') {
             $query->where('period_id', $request->period_id);
         }
 
+        // 3. Filter Tempat Periksa (DIPERBAIKI)
         $tempat_periksa = $request->tempat_periksa;
-        if ($tempat_periksa === 'Lainnya') {
-            $query->where('tempat_periksa', 'Lainnya');
-        } else {
-            $query->where(function ($q) {
-                $q->where('tempat_periksa', '!=', 'Lainnya')->orWhereNull('tempat_periksa');
-            });
+        // Hanya jalankan kueri tempat periksa JIKA filternya memang dipilih (tidak kosong)
+        if (!empty($tempat_periksa) && $tempat_periksa !== 'null' && $tempat_periksa !== 'undefined') {
+            if ($tempat_periksa === 'Lainnya') {
+                $query->where('tempat_periksa', 'Lainnya');
+            } else { // Jika yang dipilih adalah "Klinik"
+                $query->where(function ($q) {
+                    $q->where('tempat_periksa', '!=', 'Lainnya')->orWhereNull('tempat_periksa');
+                });
+            }
         }
+        // Jika $tempat_periksa kosong ("Semua Tempat"), blok ini akan dilewati sehingga tidak ada data yang terbuang.
 
+        // 4. Filter Tanggal Registrasi
         $tgl_registrasi = $request->tgl_registrasi;
         if (!empty($tgl_registrasi) && $tgl_registrasi !== 'null' && $tgl_registrasi !== 'undefined') {
             $query->whereDate('tgl_registrasi', $tgl_registrasi);
         }
 
+        // 5. Filter Tanggal Periksa
         $tgl_periksa = $request->tgl_periksa;
         if (!empty($tgl_periksa) && $tgl_periksa !== 'null' && $tgl_periksa !== 'undefined') {
             $query->whereDate('tgl_periksa', $tgl_periksa);
@@ -206,7 +213,7 @@ class ReportController extends Controller
 
         $records = $query->get();
 
-        // 3. Custom Sorting (Dapat -> Tidak Dapat -> Kosong) lalu urutkan Abjad
+        // 6. Custom Sorting (Dapat -> Tidak Dapat -> Kosong) lalu urutkan Abjad Nama
         $sorted = $records->sort(function ($a, $b) {
             $order = ['Dapat' => 1, 'Tidak Dapat' => 2, '' => 3, null => 3];
 

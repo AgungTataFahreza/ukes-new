@@ -96,12 +96,14 @@ class VerificationController extends Controller
                     // Kita bisa cek apakah kolom 'rekomendasi' sudah terisi di medical_record
                     if ($result->medical_record && $result->medical_record->rekomendasi) {
                         return '<span class="badge bg-success"><i class="ri-checkbox-circle-line align-middle me-1"></i> Terverifikasi</span>';
+                    } else {
+                        return '<span class="badge bg-warning"><i class="ri-question-line align-middle me-1"></i> Belum Diverifikasi</span>';
                     }
 
-                    // Status berdasarkan file yang diupload applicant
-                    $status = $result->status_file_kesehatan ?? 'Pending';
-                    $class = $status == 'Verified' ? 'success' : ($status == 'Rejected' ? 'danger' : 'warning');
-                    return '<span class="badge bg-' . $class . '">' . $status . '</span>';
+                    // // Status berdasarkan file yang diupload applicant
+                    // $status = $result->status_file_kesehatan ?? 'Pending';
+                    // $class = $status == 'Verified' ? 'success' : ($status == 'Rejected' ? 'danger' : 'warning');
+                    // return '<span class="badge bg-' . $class . '">' . $status . '</span>';
                 })
                 ->rawColumns(['action', 'jenis_kelamin', 'status'])
                 ->addIndexColumn()
