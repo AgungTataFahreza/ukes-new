@@ -171,7 +171,8 @@ class ReportController extends Controller
      */
     public function showDetail(Request $request)
     {
-        $query = ApplicantMedicalRecord::query();
+        // BASE QUERY: Syarat mutlak, hanya ambil peserta yang minimal sudah registrasi
+        $query = ApplicantMedicalRecord::whereNotNull('tgl_registrasi');
 
         // 1. Filter Program Studi spesifik dari tombol Detail
         if ($request->filled('prodi_id') && $request->prodi_id !== 'null') {
@@ -185,19 +186,17 @@ class ReportController extends Controller
             $query->where('period_id', $request->period_id);
         }
 
-        // 3. Filter Tempat Periksa (DIPERBAIKI)
+        // 3. Filter Tempat Periksa
         $tempat_periksa = $request->tempat_periksa;
-        // Hanya jalankan kueri tempat periksa JIKA filternya memang dipilih (tidak kosong)
         if (!empty($tempat_periksa) && $tempat_periksa !== 'null' && $tempat_periksa !== 'undefined') {
             if ($tempat_periksa === 'Lainnya') {
                 $query->where('tempat_periksa', 'Lainnya');
-            } else { // Jika yang dipilih adalah "Klinik"
+            } else {
                 $query->where(function ($q) {
                     $q->where('tempat_periksa', '!=', 'Lainnya')->orWhereNull('tempat_periksa');
                 });
             }
         }
-        // Jika $tempat_periksa kosong ("Semua Tempat"), blok ini akan dilewati sehingga tidak ada data yang terbuang.
 
         // 4. Filter Tanggal Registrasi
         $tgl_registrasi = $request->tgl_registrasi;
