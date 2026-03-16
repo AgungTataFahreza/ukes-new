@@ -42,10 +42,8 @@ class VerificationController extends Controller
             $study_program_id = $request->study_program_id;
 
             // Query utama ke Applicant
-            // Karena period_id dan study_program_id ada di tabel medical record, 
-            // maka filter harus lewat whereHas
-            $query = Applicant::with(['medical_record.period.year', 'medical_record.study_program'])
-                ->whereNotNull('tanggal_input');
+            // 1. HAPUS whereNotNull('tanggal_input') agar semua data muncul
+            $query = Applicant::with(['medical_record.period.year', 'medical_record.study_program']);
 
             // Filter periode melalui relasi medical_record
             if ($period_id) {
@@ -67,7 +65,17 @@ class VerificationController extends Controller
                 ->addColumn('action', function ($result) {
                     $button = '';
                     if (can_access($this->permissions, $this->key, 'edit')) {
-                        $button .= '<a target="_blank" href="' . url('admin/verification/edit/' . $result->id) . '" class="btn btn-success btn-sm btn-label waves-effect waves-light"><i class="ri-file-list-line label-icon align-middle fs-16 me-2"></i> Verifikasi</a>';
+                        // 2. TAMBAH LOGIKA PENGECEKAN FILE & TANGGAL DI SINI
+                        // Cek apakah tanggal_input terisi ATAU (file_kesehatan DAN file_narkoba terisi)
+                        $hasTanggal = !is_null($result->tanggal_input);
+                        $hasFiles   = !empty($result->file_kesehatan) && !empty($result->file_narkoba);
+
+                        if ($hasTanggal || $hasFiles) {
+                            $button .= '<a target="_blank" href="' . url('admin/verification/edit/' . $result->id) . '" class="btn btn-success btn-sm btn-label waves-effect waves-light"><i class="ri-file-list-line label-icon align-middle fs-16 me-2"></i> Verifikasi</a>';
+                        } else {
+                            // Jika tidak memenuhi syarat, bisa kembalikan kosong atau badge info
+                            $button .= '<span class="text-muted small"><i class="ri-forbid-line"></i> Berkas Belum Lengkap</span>';
+                        }
                     }
                     return $button;
                 })
@@ -93,17 +101,11 @@ class VerificationController extends Controller
                 })
                 ->addColumn('status', function ($result) {
                     // Logika centang: Jika data sudah diverifikasi masuk ke record permanen
-                    // Kita bisa cek apakah kolom 'rekomendasi' sudah terisi di medical_record
                     if ($result->medical_record && $result->medical_record->rekomendasi) {
                         return '<span class="badge bg-success"><i class="ri-checkbox-circle-line align-middle me-1"></i> Terverifikasi</span>';
                     } else {
                         return '<span class="badge bg-warning"><i class="ri-question-line align-middle me-1"></i> Belum Diverifikasi</span>';
                     }
-
-                    // // Status berdasarkan file yang diupload applicant
-                    // $status = $result->status_file_kesehatan ?? 'Pending';
-                    // $class = $status == 'Verified' ? 'success' : ($status == 'Rejected' ? 'danger' : 'warning');
-                    // return '<span class="badge bg-' . $class . '">' . $status . '</span>';
                 })
                 ->rawColumns(['action', 'jenis_kelamin', 'status'])
                 ->addIndexColumn()
