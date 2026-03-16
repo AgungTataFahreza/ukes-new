@@ -36,24 +36,37 @@ class DashboardController extends Controller
     {
         $periodId = $request->period_id;
         $studyProgramId = $request->study_program_id;
+        $tempatPeriksa = $request->tempat_periksa;
 
-        // TAMBAHKAN FILTER DI SINI AGAR SINKRON DENGAN REKAPITULASI
-        $baseQuery = ApplicantMedicalRecord::where(function ($query) {
-            $query->where('tempat_periksa', '!=', 'Lainnya')
-                ->orWhereNull('tempat_periksa'); // Berjaga-jaga jika ada data yang tempat_periksanya masih kosong/null
-        });
+        // 1. Inisialisasi Query Dasar
+        $baseQuery = ApplicantMedicalRecord::query();
 
+        // 2. Filter Periode
         if ($periodId) {
             $baseQuery->where('period_id', $periodId);
         }
 
+        // 3. Filter Program Studi
         if ($studyProgramId) {
             $baseQuery->where('study_program_id', $studyProgramId);
         }
 
+        // 4. Filter Tempat Periksa secara Dinamis
+        if (!empty($tempatPeriksa) && $tempatPeriksa !== 'null' && $tempatPeriksa !== 'undefined') {
+            if ($tempatPeriksa === 'Lainnya') {
+                $baseQuery->where('tempat_periksa', 'Lainnya');
+            } else {
+                // Jika pilih Klinik (Internal)
+                $baseQuery->where(function ($q) {
+                    $q->where('tempat_periksa', '!=', 'Lainnya')
+                        ->orWhereNull('tempat_periksa');
+                });
+            }
+        }
+        // Jika $tempatPeriksa kosong ("Semua Tempat"), ia akan melewati blok ini dan menampilkan semua data.
+
         // ==========================================
         // FUNGSI HELPER MENGAMBIL TOTAL & GROUP BY TANGGAL
-        // (Tanpa limit, agar sisa data bisa masuk Tooltip)
         // ==========================================
         $getStats = function ($queryObj, $dateColumn = 'tgl_periksa') {
             $total = (clone $queryObj)->count();

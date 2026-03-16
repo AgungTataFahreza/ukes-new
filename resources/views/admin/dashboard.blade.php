@@ -288,6 +288,16 @@
                         </select>
                     </div>
                 </div>
+                <div class="row mb-3">
+                    <div class="col-lg">
+                        <label for="tempat_periksa_filter" class="form-label">Tempat Periksa</label>
+                        <select name="tempat_periksa_filter" id="tempat_periksa_filter" class="form-control">
+                            <option value="">Semua Tempat</option>
+                            <option value="Klinik">Klinik Pratama (Internal)</option>
+                            <option value="Lainnya">Lainnya (Peserta Luar)</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
@@ -325,7 +335,8 @@
             data: {
                 _token: "{{ csrf_token() }}",
                 period_id: $('#period_id_filter').val(),
-                study_program_id: $('#study_program_id_filter').val()
+                study_program_id: $('#study_program_id_filter').val(),
+                tempat_periksa: $('#tempat_periksa_filter').val()
             },
             success: function(res) {
                 // Hancurkan tooltip lama agar tidak nyangkut/bug saat di-reload
