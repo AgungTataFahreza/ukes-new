@@ -122,6 +122,11 @@ class DashboardController extends Controller
             'jumlah_periksa_narkoba'      => $getStats($qNarkoba, 'tgl_periksa'),
             'jumlah_hasil_dapat'          => $getStats($qDapat, 'tgl_periksa'),
             'jumlah_hasil_tidak_dapat'    => $getStats($qTidakDapat, 'tgl_periksa'),
+            'jumlah_kesimpulan' => [
+                'total' => $qDapat->count() + $qTidakDapat->count(),
+                'dapat' => $qDapat->count(),
+                'tidak_dapat' => $qTidakDapat->count()
+            ],
         ]);
     }
 }

@@ -254,6 +254,35 @@
                     </div>
                 </div>
 
+                <!-- Tambahkan di dalam <div class="row"> sebelum card HASIL: DAPAT -->
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card card-animate h-100 border-primary border-start border-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-bold text-primary text-truncate mb-0">KESIMPULAN HASIL</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div class="w-100">
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-2">
+                                        <span class="counter-value" id="jumlah_kesimpulan" data-target="">0</span> orang
+                                    </h4>
+                                    <div id="detail_kesimpulan" class="mt-2 pt-2 border-top">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Dapat:</span>
+                                            <span class="badge bg-success-subtle text-success" id="kesimpulan_dapat">0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mt-1">
+                                            <span>Tidak Dapat:</span>
+                                            <span class="badge bg-danger-subtle text-danger" id="kesimpulan_tidak_dapat">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -343,23 +372,35 @@
                 $('[data-bs-toggle="tooltip"]').tooltip('dispose');
 
                 Object.entries(res).forEach(([key, data]) => {
-                    // 1. UPDATE ANGKA TOTAL
+
+                    // 1. LOGIKA KHUSUS UNTUK CARD KESIMPULAN
+                    if (key === 'jumlah_kesimpulan') {
+                        const elTotal = document.getElementById('jumlah_kesimpulan');
+                        if (elTotal) elTotal.innerText = data.total;
+
+                        const elDapat = document.getElementById('kesimpulan_dapat');
+                        if (elDapat) elDapat.innerText = data.dapat;
+
+                        const elTidakDapat = document.getElementById('kesimpulan_tidak_dapat');
+                        if (elTidakDapat) elTidakDapat.innerText = data.tidak_dapat;
+
+                        return; // Lanjut ke iterasi berikutnya
+                    }
+
+                    // 2. UPDATE ANGKA TOTAL UNTUK CARD STANDAR
                     const elTotal = document.getElementById(key);
                     if (elTotal) {
                         elTotal.innerText = data.total;
                         elTotal.setAttribute('data-target', data.total);
                     }
 
-                    // 2. UPDATE LIST TANGGAL (MAKSIMAL 5) + TOOLTIP SISANYA
+                    // 3. UPDATE LIST TANGGAL (MAKSIMAL 5) + TOOLTIP SISANYA
                     const elDetail = document.getElementById('detail_' + key);
                     if (elDetail) {
                         elDetail.innerHTML = ''; // Kosongkan wadah
 
                         if (data.details && Object.keys(data.details).length > 0) {
-                            // Ubah object details menjadi array: [ ["2026-03-12", 20], ["2026-03-11", 5] ]
                             const detailEntries = Object.entries(data.details);
-
-                            // Pisahkan 5 teratas dan sisanya
                             const top5 = detailEntries.slice(0, 5);
                             const sisanya = detailEntries.slice(5);
 
@@ -372,7 +413,6 @@
 
                             // Jika ada sisa lebih dari 5, jadikan Tooltip
                             if (sisanya.length > 0) {
-                                // Rangkai teks HTML untuk isi Tooltip
                                 let tooltipContent = '<div class="text-start">';
                                 sisanya.forEach(([tgl, jml]) => {
                                     tooltipContent += `${formatDateIndo(tgl)} : <strong>${jml}</strong><br>`;
@@ -397,16 +437,19 @@
                     }
                 });
 
-                // 3. AKTIFKAN TOOLTIP BOOTSTRAP UNTUK ELEMEN BARU
+                // 4. AKTIFKAN ULANG TOOLTIP BOOTSTRAP
                 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-                var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                tooltipTriggerList.map(function(tooltipTriggerEl) {
                     return new bootstrap.Tooltip(tooltipTriggerEl)
                 });
 
-                // 4. ANIMASI ANGKA (Jika library counterUp tersedia di template)
+                // 5. JALANKAN ANIMASI ANGKA (Jika ada)
                 if (typeof counterUp === 'function') {
                     counterUp();
                 }
+            },
+            error: function(err) {
+                console.error("Gagal memuat data summary", err);
             }
         });
     }
