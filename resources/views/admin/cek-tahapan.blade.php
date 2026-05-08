@@ -111,6 +111,7 @@
                     period_id: periodId
                 },
                 success: function(data) {
+                    console.log(data);
                     tanggalDropdown.html('<option value="">-- Semua Tanggal --</option>');
                     $.each(data, function(index, date) {
                         tanggalDropdown.append('<option value="' + date + '">' + date + '</option>');
