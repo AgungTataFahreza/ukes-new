@@ -36,6 +36,7 @@
                     <label class="form-label fw-bold text-success"><i class="ri-check-line"></i> SUDAH Tahap</label>
                     <select id="tahap_sudah" class="form-select">
                         <option value="">-- Abaikan --</option>
+                        <option value="bayar">Pembayaran</option>
                         <option value="registrasi">Registrasi</option>
                         <option value="antropometri">Antropometri</option>
                         <option value="fisik1">Fisik 1</option>
@@ -50,6 +51,7 @@
                     <label class="form-label fw-bold text-danger"><i class="ri-close-line"></i> BELUM Tahap</label>
                     <select id="tahap_belum" class="form-select">
                         <option value="">-- Abaikan --</option>
+                        <option value="bayar">Pembayaran</option>
                         <option value="registrasi">Registrasi</option>
                         <option value="antropometri">Antropometri</option>
                         <option value="fisik1">Fisik 1</option>

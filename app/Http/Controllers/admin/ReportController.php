@@ -271,6 +271,7 @@ class ReportController extends Controller
 
         // 4. Mapping nama tahap dari view ke nama kolom asli di database
         $kolomTahap = [
+            'bayar' => 'status_bayar',
             'registrasi'   => 'tgl_registrasi', // <-- TAMBAHAN KOLOM REGISTRASI
             'antropometri' => 'tinggi_badan',
             'fisik1'       => 'status_kulit',
