@@ -198,7 +198,7 @@
                 }
             ],
             order: [
-                [9, 'desc']
+                [9, 'asc']
             ] // Urut berdasarkan nama
         });
 
