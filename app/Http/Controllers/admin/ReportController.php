@@ -281,14 +281,31 @@ class ReportController extends Controller
             'rekomendasi'  => 'rekomendasi',
         ];
 
-        // 5. Filter Tahap "SUDAH" (Where Not Null)
+        // 5. Filter Tahap "SUDAH"
         if ($request->filled('tahap_sudah') && isset($kolomTahap[$request->tahap_sudah])) {
-            $query->whereNotNull($kolomTahap[$request->tahap_sudah]);
+            $kolom = $kolomTahap[$request->tahap_sudah];
+
+            if ($request->tahap_sudah === 'bayar') {
+                // Cari yang nilai integer-nya 1 (Asumsi 1 = Sudah Bayar)
+                $query->where($kolom, 1);
+            } else {
+                $query->whereNotNull($kolom);
+            }
         }
 
-        // 6. Filter Tahap "BELUM" (Where Null)
+        // 6. Filter Tahap "BELUM"
         if ($request->filled('tahap_belum') && isset($kolomTahap[$request->tahap_belum])) {
-            $query->whereNull($kolomTahap[$request->tahap_belum]);
+            $kolom = $kolomTahap[$request->tahap_belum];
+
+            if ($request->tahap_belum === 'bayar') {
+                // Cari yang nilai integer-nya 0 ATAU masih NULL
+                $query->where(function ($q) use ($kolom) {
+                    $q->whereNull($kolom)
+                        ->orWhere($kolom, 0);
+                });
+            } else {
+                $query->whereNull($kolom);
+            }
         }
 
         return datatables()->of($query)
