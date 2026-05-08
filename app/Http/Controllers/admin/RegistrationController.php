@@ -97,7 +97,7 @@ class RegistrationController extends Controller
                 })
                 ->addColumn('status_lulus', function ($result) {
                     if ($result->rekomendasi != null) {
-                        if ($result->rekomendasi == 'Lulus') {
+                        if ($result->rekomendasi == 'Dapat') {
                             return '<span class="badge badge-label bg-success"><i class="mdi mdi-circle-medium"></i> Lulus</span>';
                         } else {
                             return '<span class="badge badge-label bg-danger"><i class="mdi mdi-circle-medium"></i> Tidak Lulus</span>';
