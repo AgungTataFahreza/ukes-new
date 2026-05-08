@@ -198,7 +198,8 @@
                 }
             ],
             order: [
-                [9, 'asc']
+                [9, 'asc'], // Pertama: urutkan berdasarkan Status (index 9)
+                [3, 'asc'] // Kedua: urutkan berdasarkan Nama (index 3)
             ] // Urut berdasarkan nama
         });
 
