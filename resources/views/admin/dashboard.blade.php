@@ -221,6 +221,25 @@
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="flex-grow-1 overflow-hidden">
+                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0">TOTAL HASIL (KESIMPULAN)</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-end justify-content-between mt-4">
+                                <div class="w-100">
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-2"><span class="counter-value" id="jumlah_kesimpulan" data-target="">0</span> orang</h4>
+                                    <a href="{{ url('admin/medical-result') }}" class="text-decoration-underline mb-2 d-inline-block">Lihat Peserta</a>
+                                    <div id="detail_jumlah_kesimpulan" class="text-muted" style="font-size: 0.8rem;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card card-animate h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1 overflow-hidden">
                                     <p class="text-uppercase fw-medium text-muted text-truncate mb-0">HASIL : DAPAT</p>
                                 </div>
                             </div>
@@ -254,35 +273,6 @@
                     </div>
                 </div>
 
-                <!-- Tambahkan di dalam <div class="row"> sebelum card HASIL: DAPAT -->
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card card-animate h-100 border-primary border-start border-4">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1 overflow-hidden">
-                                    <p class="text-uppercase fw-bold text-primary text-truncate mb-0">KESIMPULAN HASIL</p>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-end justify-content-between mt-4">
-                                <div class="w-100">
-                                    <h4 class="fs-22 fw-semibold ff-secondary mb-2">
-                                        <span class="counter-value" id="jumlah_kesimpulan" data-target="">0</span> orang
-                                    </h4>
-                                    <div id="detail_kesimpulan" class="mt-2 pt-2 border-top">
-                                        <div class="d-flex justify-content-between">
-                                            <span>Dapat:</span>
-                                            <span class="badge bg-success-subtle text-success" id="kesimpulan_dapat">0</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between mt-1">
-                                            <span>Tidak Dapat:</span>
-                                            <span class="badge bg-danger-subtle text-danger" id="kesimpulan_tidak_dapat">0</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -372,29 +362,14 @@
                 $('[data-bs-toggle="tooltip"]').tooltip('dispose');
 
                 Object.entries(res).forEach(([key, data]) => {
-
-                    // 1. LOGIKA KHUSUS UNTUK CARD KESIMPULAN
-                    if (key === 'jumlah_kesimpulan') {
-                        const elTotal = document.getElementById('jumlah_kesimpulan');
-                        if (elTotal) elTotal.innerText = data.total;
-
-                        const elDapat = document.getElementById('kesimpulan_dapat');
-                        if (elDapat) elDapat.innerText = data.dapat;
-
-                        const elTidakDapat = document.getElementById('kesimpulan_tidak_dapat');
-                        if (elTidakDapat) elTidakDapat.innerText = data.tidak_dapat;
-
-                        return; // Lanjut ke iterasi berikutnya
-                    }
-
-                    // 2. UPDATE ANGKA TOTAL UNTUK CARD STANDAR
+                    // 1. UPDATE ANGKA TOTAL
                     const elTotal = document.getElementById(key);
                     if (elTotal) {
                         elTotal.innerText = data.total;
                         elTotal.setAttribute('data-target', data.total);
                     }
 
-                    // 3. UPDATE LIST TANGGAL (MAKSIMAL 5) + TOOLTIP SISANYA
+                    // 2. UPDATE LIST TANGGAL (MAKSIMAL 5) + TOOLTIP SISANYA
                     const elDetail = document.getElementById('detail_' + key);
                     if (elDetail) {
                         elDetail.innerHTML = ''; // Kosongkan wadah
@@ -437,19 +412,16 @@
                     }
                 });
 
-                // 4. AKTIFKAN ULANG TOOLTIP BOOTSTRAP
+                // 3. AKTIFKAN TOOLTIP BOOTSTRAP UNTUK ELEMEN BARU
                 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-                tooltipTriggerList.map(function(tooltipTriggerEl) {
+                var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
                     return new bootstrap.Tooltip(tooltipTriggerEl)
                 });
 
-                // 5. JALANKAN ANIMASI ANGKA (Jika ada)
+                // 4. ANIMASI ANGKA (Jika library counterUp tersedia di template)
                 if (typeof counterUp === 'function') {
                     counterUp();
                 }
-            },
-            error: function(err) {
-                console.error("Gagal memuat data summary", err);
             }
         });
     }

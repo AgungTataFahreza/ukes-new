@@ -103,6 +103,7 @@ class DashboardController extends Controller
             });
         $qDapat = (clone $baseQuery)->where('rekomendasi', 'Dapat');
         $qTidakDapat = (clone $baseQuery)->where('rekomendasi', 'Tidak Dapat');
+        $qKesimpulan = (clone $baseQuery)->whereIn('rekomendasi', ['Dapat', 'Tidak Dapat']);
 
         return response()->json([
             // Tidak ada grouping karena ini total keseluruhan
@@ -122,11 +123,7 @@ class DashboardController extends Controller
             'jumlah_periksa_narkoba'      => $getStats($qNarkoba, 'tgl_periksa'),
             'jumlah_hasil_dapat'          => $getStats($qDapat, 'tgl_periksa'),
             'jumlah_hasil_tidak_dapat'    => $getStats($qTidakDapat, 'tgl_periksa'),
-            'jumlah_kesimpulan' => [
-                'total' => $qDapat->count() + $qTidakDapat->count(),
-                'dapat' => $qDapat->count(),
-                'tidak_dapat' => $qTidakDapat->count()
-            ],
+            'jumlah_kesimpulan'        => $getStats($qKesimpulan, 'tgl_periksa'),
         ]);
     }
 }
