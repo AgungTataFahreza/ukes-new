@@ -206,14 +206,30 @@
                     exportOptions: {
                         format: {
                             body: function(data, row, column, node) {
-                                // Kolom indeks ke-2 adalah 'nomor_peserta' (dimulai dari 0)
-                                // Jika ada kolom lain yang angkanya panjang (seperti NIK), tambahkan kondisinya di sini
-                                if (column === 2) {
-                                    // Tambahkan karakter invisible (\u200C) di depan angka
-                                    // agar Excel menganggapnya murni sebagai Teks
-                                    return '\u200C' + data;
+                                // 1. Cegah error jika datanya kosong (null/undefined)
+                                if (data === null || data === undefined) {
+                                    return '';
                                 }
-                                return data;
+
+                                // 2. Jadikan data sebagai String agar bisa diproses
+                                let textData = String(data);
+
+                                // 3. Ubah tag <br> atau <br/> menjadi karakter Newline (\n) khusus untuk Excel
+                                // Ini sangat berguna untuk kolom Catatan & Keterangan kamu
+                                textData = textData.replace(/<br\s*\/?>/gi, '\n');
+
+                                // 4. Bersihkan SEMUA tag HTML yang tersisa (seperti <span>, <i>, <div>)
+                                textData = textData.replace(/<[^>]+>/g, '');
+
+                                // 5. Hapus spasi berlebih di awal/akhir kata (misal: " Laki-laki" menjadi "Laki-laki")
+                                textData = textData.trim();
+
+                                // 6. Aturan khusus untuk kolom Nomor Peserta (indeks 2)
+                                if (column === 2) {
+                                    return '\u200C' + textData;
+                                }
+
+                                return textData;
                             }
                         }
                     }
