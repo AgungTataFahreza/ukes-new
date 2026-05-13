@@ -198,7 +198,28 @@
 
             dom: '<"top"lB>frtip',
             buttons: [
-                'copy', 'csv', 'excel', 'print', 'pdf'
+                'copy',
+                'csv',
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    exportOptions: {
+                        format: {
+                            body: function(data, row, column, node) {
+                                // Kolom indeks ke-2 adalah 'nomor_peserta' (dimulai dari 0)
+                                // Jika ada kolom lain yang angkanya panjang (seperti NIK), tambahkan kondisinya di sini
+                                if (column === 2) {
+                                    // Tambahkan karakter invisible (\u200C) di depan angka
+                                    // agar Excel menganggapnya murni sebagai Teks
+                                    return '\u200C' + data;
+                                }
+                                return data;
+                            }
+                        }
+                    }
+                },
+                'print',
+                'pdf'
             ],
             lengthMenu: [
                 [10, 25, 50, 100, -1],
