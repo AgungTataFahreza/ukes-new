@@ -39,9 +39,11 @@ class MedicalResultController extends Controller
 
             $period_id = $request->period_id;
             $study_program_id = $request->study_program_id;
-            $query = ApplicantMedicalRecord::with('period', 'study_program')
-                ->where('tgl_registrasi', '!=', null)
-                ->where('tgl_periksa', '!=', null);
+
+            // 1. Tambahkan period.year ke dalam with() untuk mencegah N+1 Query Issue
+            $query = ApplicantMedicalRecord::with(['period.year', 'study_program'])
+                ->whereNotNull('tgl_registrasi') // Gunakan helper whereNotNull bawaan Laravel
+                ->whereNotNull('tgl_periksa');
 
             if ($period_id) {
                 $query->where('period_id', $period_id);
@@ -50,41 +52,44 @@ class MedicalResultController extends Controller
                 $query->where('study_program_id', $study_program_id);
             }
 
-            $result = $query->orderBy('nama', 'desc')->get();
-
-            return datatables()->of($result)
+            // 2. HAPUS pemanggilan ->get() agar Yajra melakukan paginasi murni di level Database
+            // Biarkan DataTables mengatur sorting juga jika diperlukan
+            return datatables()->of($query)
                 ->addColumn('period_name', function ($result) {
-                    return $result->period->name . ' ' . $result->period->year->name;
+                    // 3. Gunakan nullsafe operator (?->) untuk mencegah error saat data relasi kosong
+                    return ($result->period?->name ?? '') . ' ' . ($result->period?->year?->name ?? '');
                 })
                 ->addColumn('study_program_name', function ($result) {
-                    return $result->study_program->name;
+                    return $result->study_program?->name ?? '-';
                 })
                 ->editColumn('jenis_kelamin', function ($result) {
                     return $result->jenis_kelamin == 'L' ? '<span class="badge bg-primary"> Laki-laki</span>' : '<span class="badge bg-danger"> Perempuan</span>';
                 })
                 ->editColumn('tgl_registrasi', function ($result) {
-                    return date('d-m-Y', strtotime($result->tgl_registrasi));
+                    return $result->tgl_registrasi ? date('d-m-Y', strtotime($result->tgl_registrasi)) : '-';
                 })
                 ->addColumn('status', function ($result) {
                     return $result->rekomendasi ? '<span class="badge badge-label bg-success"><i class="mdi mdi-circle-medium"></i> Selesai</span>' : '';
                 })
                 ->editColumn('tgl_periksa', function ($result) {
-                    return date('d-m-Y', strtotime($result->tgl_periksa));
+                    return $result->tgl_periksa ? date('d-m-Y', strtotime($result->tgl_periksa)) : '-';
                 })
                 ->addColumn('umur', function ($result) {
+                    if (!$result->tanggal_lahir) return '-';
+                    // Pastikan fungsi hitungUmur sudah ter-load/terdefinisi dengan benar di server
                     return date('d-m-Y', strtotime($result->tanggal_lahir)) . ' (' . hitungUmur($result->tanggal_lahir) . ' Tahun)';
                 })
                 ->addColumn('dokter_name', function ($result) {
-                    return $result->dokter?->name ?? $result->dokter_id;
+                    return $result->dokter?->name ?? $result->dokter_id ?? '-';
                 })
                 ->addColumn('paramedis_1_name', function ($result) {
-                    return $result->paramedis_1?->name ?? $result->paramedis_1_id;
+                    return $result->paramedis_1?->name ?? $result->paramedis_1_id ?? '-';
                 })
                 ->editColumn('tinggi_badan', function ($result) {
-                    return $result->tinggi_badan . ' cm';
+                    return $result->tinggi_badan ? $result->tinggi_badan . ' cm' : '-';
                 })
                 ->editColumn('berat_badan', function ($result) {
-                    return $result->berat_badan . ' kg';
+                    return $result->berat_badan ? $result->berat_badan . ' kg' : '-';
                 })
                 ->addColumn('tekanan_darah', function ($result) {
                     return $result->tekanan_darah_sistolik . '/' . $result->tekanan_darah_diastolik . ' mmHg';
@@ -116,9 +121,6 @@ class MedicalResultController extends Controller
                 ->addColumn('catatan_keterangan_tonsil', function ($result) {
                     return 'Catatan : <br>' . $result->catatan_tonsil . '<br>Keterangan : <br>' . $result->keterangan_tonsil;
                 })
-                ->addColumn('catatan_keterangan_tonsil', function ($result) {
-                    return 'Catatan : <br>' . $result->catatan_tonsil . '<br>Keterangan : <br>' . $result->keterangan_tonsil;
-                })
                 ->addColumn('catatan_keterangan_thyroid', function ($result) {
                     return 'Catatan : <br>' . $result->catatan_thyroid . '<br>Keterangan : <br>' . $result->keterangan_thyroid;
                 })
@@ -144,53 +146,41 @@ class MedicalResultController extends Controller
                     return 'Catatan : <br>' . $result->catatan_gigi . '<br>Keterangan : <br>' . $result->keterangan_gigi;
                 })
                 ->addColumn('dokter_gigi_name', function ($result) {
-                    return $result->dokter_gigi?->name ?? $result->dokter_gigi_id;
+                    return $result->dokter_gigi?->name ?? $result->dokter_gigi_id ?? '-';
                 })
                 ->addColumn('perawat_gigi_name', function ($result) {
-                    return $result->perawat_gigi?->name ?? $result->perawat_gigi_id;
+                    return $result->perawat_gigi?->name ?? $result->perawat_gigi_id ?? '-';
                 })
                 ->addColumn('petugas_narkoba_name', function ($result) {
-                    return $result->petugas_narkoba?->name ?? $result->petugas_narkoba_id;
+                    return $result->petugas_narkoba?->name ?? $result->petugas_narkoba_id ?? '-';
                 })
                 ->addColumn('paramedis_2_name', function ($result) {
-                    return $result->paramedis_2?->name ?? $result->paramedis_2_id;
+                    return $result->paramedis_2?->name ?? $result->paramedis_2_id ?? '-';
                 })
                 ->addColumn('paramedis_3_name', function ($result) {
-                    return $result->paramedis_3?->name ?? $result->paramedis_3_id;
+                    return $result->paramedis_3?->name ?? $result->paramedis_3_id ?? '-';
                 })
+                // 4. Perbaikan struktur Array rawColumns (Hanya berisi nama kolom yang me-render HTML)
                 ->rawColumns([
-                    'action' => 'action',
-                    'period_name' => 'period_name',
-                    'study_program_name' => 'study_program_name',
-                    'jenis_kelamin' => 'jenis_kelamin',
-                    'status' => 'status',
-                    'umur' => 'umur',
-                    'dokter_name' => 'dokter_name',
-                    'paramedis_1_name' => 'paramedis_1_name',
-                    'paramedis_2_name' => 'paramedis_2_name',
-                    'paramedis_3_name' => 'paramedis_3_name',
-                    'catatan_keterangan_antropometri' => 'catatan_keterangan_antropometri',
-                    'catatan_keterangan_kulit' => 'catatan_keterangan_kulit',
-                    'catatan_keterangan_mata' => 'catatan_keterangan_mata',
-                    'catatan_keterangan_telinga' => 'catatan_keterangan_telinga',
-                    'catatan_keterangan_hidung' => 'catatan_keterangan_hidung',
-                    'catatan_keterangan_lidah' => 'catatan_keterangan_lidah',
-                    'catatan_keterangan_pharynx' => 'catatan_keterangan_pharynx',
-                    'catatan_keterangan_tonsil' => 'catatan_keterangan_tonsil',
-                    'catatan_keterangan_thyroid' => 'catatan_keterangan_thyroid',
-                    'catatan_keterangan_jantung' => 'catatan_keterangan_jantung',
-                    'catatan_keterangan_paru_paru' => 'catatan_keterangan_paru_paru',
-                    'catatan_keterangan_abdomen' => 'catatan_keterangan_abdomen',
-                    'catatan_keterangan_refleks' => 'catatan_keterangan_refleks',
-                    'catatan_keterangan_thorax' => 'catatan_keterangan_thorax',
-                    'catatan_keterangan_kemampuan_bicara' => 'catatan_keterangan_kemampuan_bicara',
-                    'catatan_keterangan_gigi' => 'catatan_keterangan_gigi',
-                    'dokter_gigi_name' => 'dokter_gigi_name',
-                    'perawat_gigi_name' => 'perawat_gigi_name',
-                    'petugas_narkoba_name' => 'petugas_narkoba_name',
-                    'telinga_kiri_kanan' => 'telinga_kiri_kanan',
-                    'tekanan_darah' => 'tekanan_darah',
-                    ''
+                    'jenis_kelamin',
+                    'status',
+                    'catatan_keterangan_antropometri',
+                    'catatan_keterangan_kulit',
+                    'catatan_keterangan_mata',
+                    'telinga_kiri_kanan',
+                    'catatan_keterangan_telinga',
+                    'catatan_keterangan_hidung',
+                    'catatan_keterangan_lidah',
+                    'catatan_keterangan_pharynx',
+                    'catatan_keterangan_tonsil',
+                    'catatan_keterangan_thyroid',
+                    'catatan_keterangan_jantung',
+                    'catatan_keterangan_paru_paru',
+                    'catatan_keterangan_abdomen',
+                    'catatan_keterangan_refleks',
+                    'catatan_keterangan_thorax',
+                    'catatan_keterangan_kemampuan_bicara',
+                    'catatan_keterangan_gigi'
                 ])
                 ->addIndexColumn()
                 ->make(true);
