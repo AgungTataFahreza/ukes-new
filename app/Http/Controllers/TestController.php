@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccountCode;
+use App\Models\ApplicantMedicalRecord;
 use App\Models\BehaviorScore;
 use App\Models\Deduction;
 use App\Models\EducationalStaff;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use App\Models\Message;
 use App\Models\Setting;
+use App\Models\StudyProgram;
 use Carbon\Carbon;
 
 class TestController extends Controller
@@ -41,40 +43,110 @@ class TestController extends Controller
 
     public function index(Request $request)
     {
-        $tanggal = '2025-12-31';
-        $settings = Setting::find(1);
-        $date = $settings->date;
-        $inputDate = Carbon::parse($tanggal);
-        $nextMonthDate = $inputDate->copy()->addMonthsNoOverflow()->day($date);
-        $currentDate = Carbon::now();
+        // ====================================================================
+        // 1. KUERI KHUSUS TOTAL PESERTA (KEBAL DARI FILTER TANGGAL & TEMPAT)
+        // ====================================================================
+        $queryTotal = ApplicantMedicalRecord::query();
 
-        $isPast = $nextMonthDate->lessThan($currentDate);
-
-        // echo "Tanggal Bulan Depan";
-        // echo "<br>";
-        // var_dump($nextMonthDate);
-        // echo "<br>";
-        // echo "<br>";
-        // echo "Tanggal Sekarang";
-        // echo "<br>";
-        // var_dump($currentDate);
-        // echo "<br>";
-        // echo "<br>";
-
-        echo "tanggal inputan: " . $inputDate->format('Y-m-d');
-        echo "<br>";
-        echo "<br>";
-
-        echo "Apakah " . $currentDate->format('Y-m-d') . " sudah lewat dari " .  $nextMonthDate->format('Y-m-d') . " ?";
-        echo "<br>";
-        echo "<br>";
-        if ($isPast) {
-            // return false;
-            echo "false-Sudah lewat";
-        } else {
-            // return true;
-            echo "true-Belum lewat";
+        // Total peserta hanya terpengaruh oleh Periode (Gelombang)
+        if ($request->filled('period_id') && $request->period_id !== 'null') {
+            $queryTotal->where('period_id', $request->period_id);
         }
+
+        // Ambil data dalam bentuk array: [prodi_id => jumlah_peserta]
+        $totalPerProdi = $queryTotal->selectRaw('study_program_id, count(id) as total')
+            ->groupBy('study_program_id')
+            ->pluck('total', 'study_program_id');
+
+        // ====================================================================
+        // 2. BUAT KERANGKA DASAR (Isi Total Peserta dari Kueri Bebas Filter)
+        // ====================================================================
+        $allProdis = StudyProgram::orderBy('name', 'asc')->get();
+        $baseRekap = [];
+
+        foreach ($allProdis as $prodi) {
+            $baseRekap[$prodi->id] = [ // Gunakan ID sebagai key array
+                'prodi_id'        => $prodi->id,
+                'prodi'           => $prodi->name,
+                'total_peserta'   => $totalPerProdi[$prodi->id] ?? 0,
+                'registrasi'      => 0,
+                'antropometri'    => 0,
+                'fisik1'          => 0,
+                'fisik2'          => 0,
+                'gigi'            => 0,
+                'narkoba'         => 0,
+                'periksa_lengkap' => 0,
+                'kesimpulan'      => 0,
+                'dapat'           => 0,
+                'tidak_dapat'     => 0,
+                'action'          => '<button type="button" class="btn btn-sm btn-info btn-detail" data-prodi="' . $prodi->name . '" data-prodiid="' . $prodi->id . '"><i class="ri-eye-line"></i> Detail</button>'
+            ];
+        }
+
+        // ====================================================================
+        // 3. KUERI DATA PROGRES (INI YANG TERKENA SEMUA FILTER)
+        // ====================================================================
+        $query = ApplicantMedicalRecord::with('study_program');
+
+        // Filter Periode
+        if ($request->filled('period_id') && $request->period_id !== 'null') {
+            $query->where('period_id', $request->period_id);
+        }
+
+        // Filter Tempat Periksa
+        $tempat_periksa = $request->tempat_periksa;
+        if ($tempat_periksa === 'Lainnya') {
+            $query->where('tempat_periksa', 'Lainnya');
+        } elseif (!empty($tempat_periksa)) {
+            $query->where(function ($q) {
+                $q->where('tempat_periksa', '!=', 'Lainnya')->orWhereNull('tempat_periksa');
+            });
+        }
+
+        // Filter Tanggal Registrasi
+        $tgl_registrasi = $request->tgl_registrasi;
+        if (!empty($tgl_registrasi) && $tgl_registrasi !== 'null' && $tgl_registrasi !== 'undefined') {
+            $query->whereDate('tgl_registrasi', $tgl_registrasi);
+        }
+
+        // Filter Tanggal Periksa
+        $tgl_periksa = $request->tgl_periksa;
+        if (!empty($tgl_periksa) && $tgl_periksa !== 'null' && $tgl_periksa !== 'undefined') {
+            $query->whereDate('tgl_periksa', $tgl_periksa);
+        }
+
+        $records = $query->get();
+
+        // ====================================================================
+        // 4. TIMPA ANGKA TAHAPAN PROGRES SESUAI HASIL FILTER
+        // ====================================================================
+        $records->groupBy('study_program_id')->each(function ($group, $prodiId) use (&$baseRekap) {
+            // Pastikan prodinya ada di array dasar
+            if (isset($baseRekap[$prodiId])) {
+                $baseRekap[$prodiId]['registrasi']      = $group->whereNotNull('tgl_registrasi')->count();
+                $baseRekap[$prodiId]['antropometri']    = $group->whereNotNull('tinggi_badan')->count();
+                $baseRekap[$prodiId]['fisik1']          = $group->whereNotNull('status_kulit')->count();
+                $baseRekap[$prodiId]['fisik2']          = $group->whereNotNull('status_thyroid')->count();
+                $baseRekap[$prodiId]['gigi']            = $group->whereNotNull('status_gigi')->count();
+                $baseRekap[$prodiId]['narkoba']         = $group->whereNotNull('amp')->count();
+
+                $baseRekap[$prodiId]['periksa_lengkap'] = $group->filter(function ($i) {
+                    return $i->tinggi_badan !== null && $i->status_kulit !== null &&
+                        $i->status_thyroid !== null && $i->status_gigi !== null && $i->amp !== null;
+                })->count();
+
+                $baseRekap[$prodiId]['kesimpulan']  = $group->whereNotNull('rekomendasi')->count();
+                $baseRekap[$prodiId]['dapat']       = $group->where('rekomendasi', 'Dapat')->count();
+                $baseRekap[$prodiId]['tidak_dapat'] = $group->where('rekomendasi', 'Tidak Dapat')->count();
+            }
+        });
+
+        // 5. Ubah kembali array associative menjadi indexed array untuk DataTables
+        $rekaps = array_values($baseRekap);
+
+        return response()->json([
+            'data' => $rekaps
+        ]);
     }
 
     public function import_no_rek()

@@ -81,10 +81,7 @@ class ReportController extends Controller
             $baseRekap[$prodi->id] = [ // Gunakan ID sebagai key array
                 'prodi_id'        => $prodi->id,
                 'prodi'           => $prodi->name,
-                // Masukkan angka dari $totalPerProdi. Jika kosong, beri 0.
                 'total_peserta'   => $totalPerProdi[$prodi->id] ?? 0,
-
-                // Set default tahapan progres ke 0 dulu
                 'registrasi'      => 0,
                 'antropometri'    => 0,
                 'fisik1'          => 0,
