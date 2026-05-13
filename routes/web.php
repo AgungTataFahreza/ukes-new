@@ -31,7 +31,7 @@ use App\Http\Controllers\TestController;
 */
 
 // Route::get('/', [DashboardController::class, 'index']);
-Route::get('test', [TestController::class, 'index']);
+// Route::get('test', [TestController::class, 'index']);
 Route::get('autocomplete', [TestController::class, 'autocomplete']);
 
 // Route::get('/', [DashboardController::class, 'index']);
